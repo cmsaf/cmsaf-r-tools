@@ -1,0 +1,299 @@
+#' Plotting routine designed for the CM SAF R Toolbox.
+#'
+#' This function renders a difference plot (absolute or relative) of two variables.
+#'
+#'@param var1 Name of the first NetCDF variable (character).
+#'@param infile1 Filename of the first input NetCDF file. This may include the directory
+#'  (character).
+#'@param var2 Name of the second NetCDF variable (character).
+#'@param infile2 Filename of the second input NetCDF file. This may include the directory
+#'  (character).
+#'@param outfile Filename of output NetCDF file. This may include the directory
+#'  (character).
+#'@param plot.out logical; if TRUE, the plot will be stored in the same folder as outfile. 
+#'  If FALSE, the plot will not be saved.
+#'@param relative logical; if TRUE, plot a relative difference plot
+#'@param nc34 NetCDF version of output file. If \code{nc34 = 3} the output file will be
+#'  in NetCDFv3 format (numeric). Default output is NetCDFv4.
+#'@param overwrite logical; should existing output file be overwritten?
+#'@param verbose logical; if TRUE, progress messages are shown
+#'@param toolbox logical; if TRUE, toolbox mode enabled. The two files are adjusted in space 
+#'  and time so that they can be plotted.
+#'
+#'@return A NetCDF file is written.
+#'@export
+#'
+#'@family 2d visualization 
+#'
+cmsaf.diff <- function(var1, infile1, var2, infile2, outfile, plot.out = FALSE, relative = FALSE, nc34 = 4, overwrite = FALSE, verbose = FALSE, toolbox = FALSE) {
+  gc()
+  calc_time_start <- Sys.time()
+  
+  if(overwrite){
+    if(file.exists(outfile)){
+      unlink(outfile)
+    }
+  }
+  
+  temp_outfile_one <- file.path(tempdir(), "outfile_one_tmp.nc")
+  temp_outfile_two <- file.path(tempdir(), "outfile_two_tmp.nc")
+    
+  # unlink tmp files
+  if(file.exists(temp_outfile_one)){
+    unlink(temp_outfile_one)
+  }
+  if(file.exists(temp_outfile_two)){
+    unlink(temp_outfile_two)
+  }
+  cmsafops::cmsaf.adjust.two.files(var1 = var1, infile1 = infile1, 
+                         var2 = var2, infile2 = infile2, 
+                         outfile1 = temp_outfile_one, outfile2 = temp_outfile_two, 
+                         nc34 = nc34, overwrite = overwrite, verbose = verbose)
+
+  infile1 <- temp_outfile_one
+  infile2 <-  temp_outfile_two
+  
+  if(relative == FALSE) {
+    # difference plot absolute
+    argumentList <- list(var1 = var1,
+                         var2 = var2,
+                         infile1 = infile1,
+                         infile2 = infile2,
+                         outfile = outfile,
+                         nc34 = nc34,
+                         overwrite = overwrite,
+                         verbose = verbose)
+    fun <- get("cmsaf.sub", asNamespace("cmsafops"))
+    try(do.call(fun, argumentList))
+  } else {
+    # difference plot relative
+    cmsafops::cmsaf.sub.rel(var1 = var1, 
+                            infile1 = infile1, 
+                            var2 = var2, 
+                            infile2 = infile2, 
+                            outfile = outfile, 
+                            nc34 = nc34, 
+                            overwrite = overwrite, 
+                            verbose = verbose)
+  }
+  
+  if(!toolbox) {
+    id <- ncdf4::nc_open(outfile)
+    data <- try(ncdf4::ncvar_get(id, var1, collapse_degen = FALSE))
+    time <- try(ncdf4::ncvar_get(id, "time"))
+    t_unit <- ncdf4::ncatt_get(id, "time", "units")$value
+    date.time <- as.character(cmsafops::get_time(t_unit, time))
+    lon <- ncdf4::ncvar_get(id, "lon")
+    lat <- ncdf4::ncvar_get(id, "lat")
+    varname <- ncdf4::ncatt_get(id, var1, "long_name")$value
+    if (varname == 0)
+      (varname <- ncdf4::ncatt_get(id, var1, "standard_name")$value)
+    if (varname == 0)
+      (varname <- var1)
+    text1 <- varname
+    
+    unit <- ncdf4::ncatt_get(id, var1, "units")$value
+    if (unit == 0)
+      (unit <- "-")
+    text3 <- paste0(text1, " [", unit, "]")
+    
+    for(i in seq_along(time)) {
+      if(plot.out) 
+      {
+        plot_filepath <- dirname(outfile)
+        if(relative)
+        {
+          plot_filename <- paste0("cmsaf_diff_plot_relative_", date.time[i], ".png")
+          if(file.exists(paste0(plot_filepath, "/", plot_filename)))
+          {
+            unlink(paste0(plot_filepath, "/", plot_filename))
+          }
+        } 
+        else 
+        {
+          plot_filename <- paste0("cmsaf_diff_plot_absolute_", date.time[i], ".png")
+          if(file.exists(paste0(plot_filepath, "/", plot_filename)))
+          {
+            unlink(paste0(plot_filepath, "/", plot_filename))
+          }
+        }
+        
+        grDevices::png(paste0(plot_filepath, "/", plot_filename), width = 1024, height = 1024)
+      }
+      min_data <- min(data, na.rm = TRUE)
+      max_data <- max(data, na.rm = TRUE)
+      num_tick <- 5
+      num_rmin <- min_data
+      num_rmax <- max_data
+      tlab <- break_num(
+        ln = num_tick,
+        bn = num_tick,
+        minn = num_rmin,
+        maxn = num_rmax,
+        max_data = max_data
+      )
+      
+      min_lon <- min(lon, na.rm = TRUE)
+      max_lon <- max(lon, na.rm = TRUE)
+      
+      min_lat <- min(lat, na.rm = T)
+      max_lat <- max(lat, na.rm = T)
+      lon_bounds <- c(max(round(as.numeric(min_lon)), -180), min(round(as.numeric(max_lon)), 180))
+      lat_bounds <- c(max(round(as.numeric(min_lat)), -90), min(round(as.numeric(max_lat)), 90))
+      
+      xtick  <- grDevices::axisTicks(lon_bounds, log = FALSE)
+      ytick  <- grDevices::axisTicks(lat_bounds, log = FALSE)
+      
+      xlab <-
+        unlist(lapply(xtick, function(x)
+          ifelse(
+            x < 0,
+            paste0(abs(x), " W"), ifelse(x > 0, paste0(abs(x), " E"), x)
+          )))
+      ylab <-
+        unlist(lapply(ytick, function(x)
+          ifelse(
+            x < 0, paste0(abs(x), " S"),
+            ifelse(x > 0, paste0(abs(x), " N"), x)
+          )))
+      
+      if (min(xtick) == round(lon_bounds[1])) {
+        xlab[1] <- " "
+      }
+      if (max(xtick) == round(lon_bounds[2])) {
+        xlab[length(xlab)] <- " "
+      }
+      if (min(ytick) == round(lat_bounds[1])) {
+        ylab[1] <- " "
+      }
+      if (max(ytick) == round(lat_bounds[2])) {
+        ylab[length(ylab)] <- " "
+      }
+     
+      # default Color palette = "sunny"
+      col <- c("#000000", "#120000", "#250101", "#380202", "#460202", "#530101", 
+               "#610000", "#710600", "#820D00", "#921500", "#A32300", "#B33300", 
+               "#C34400", "#D35500", "#E36500", "#F37600", "#FC8709", "#FD9719",
+               "#FEA82A", "#FFB83A", "#FFC94A", "#FFD95A", "#FFE76A", "#FFEF7A", 
+               "#FFF88B", "#FFFF9B", "#FFFFAB", "#FFFFBC", "#FFFFCC", "#FFFFDD", 
+               "#FFFFEE", "#FFFFFF")
+      
+      textsize <- 1.2
+      graphics::par(cex = textsize)
+      
+      graphics::par(mar = c(2, 2, 2.6, 2))
+      
+      # Plot with legend and title
+      fields::image.plot(
+        lon,
+        lat,
+        data[,,i],
+        main = text1,
+        xlab = " ",
+        ylab = " ",
+        xlim = lon_bounds,
+        ylim = lat_bounds,
+        zlim = c(num_rmin, num_rmax),
+        col = col,
+        axis.args = list(
+          cex.axis = 1,
+          at = as.numeric(tlab[tlab != ""]),
+          labels = tlab[tlab != ""],
+          mgp = c(1, 0.4, 0),
+          tck = c(-0.3)
+        ),
+        legend.lab = text3,
+        legend.line = -2,
+        axes = FALSE
+      )
+      na.color <- "gray80"
+      # linesize, bordercolor, plot_grid, and grid_col, na.color can be found in global.R
+      graphics::image(
+        lon,
+        lat,
+        array(1:2, dim(data[,,i])),
+        xlab = " ",
+        ylab = " ",
+        col = na.color,
+        axes = FALSE,
+        xlim = lon_bounds,
+        ylim = lat_bounds,
+        add = TRUE
+      )
+      
+      graphics::image(
+        lon,
+        lat,
+        data[,,i],
+        xlab = " ",
+        ylab = " ",
+        xlim = lon_bounds,
+        ylim = lat_bounds,
+        zlim = c(num_rmin, num_rmax),
+        col = col,
+        axes = FALSE,
+        add = TRUE
+      )
+      
+      bordercolor <- "gray20"
+      linesize <- 1.5
+      
+      countriesHigh <- numeric(0)  # Hack to prevent IDE warning in second next line (see https://stackoverflow.com/questions/62091444/how-to-load-data-from-other-package-in-my-package)
+      utils::data("countriesHigh", package = "rworldxtra", envir = environment())
+      world_countries <- methods::as(countriesHigh, "SpatialLines")
+      raster::plot(world_countries,
+                   add = TRUE,
+                   lwd = linesize,
+                   col = bordercolor)
+      
+      grid_col <- "cornsilk2"
+      graphics::grid(NULL, NULL, lty = 3, col = grid_col) #linetype dotted
+      
+      textsize <- 1.2
+      # Add axes
+      graphics::axis(
+        1,                            # below the image
+        mgp = c(0, -2.5, 0),          # label margins
+        tck = c(0.01),                # tickmarks length
+        col.axis = bordercolor,       # axis color
+        cex.axis = 0.8 * textsize,    # label textsize
+        at = xtick,                   # tickmarks positions
+        labels = xlab                 # tickmarks labels
+      )
+      
+      graphics::axis(
+        2,                            # left side
+        mgp = c(0, -2.5, 0),          # label margins
+        tck = c(0.01),                # tickmarks length
+        las = 1,                      # vertical orientation
+        col.axis = bordercolor,       # axis color
+        cex.axis = 0.8 * textsize,    # label textsize
+        at = ytick,                   # tickmarks positions
+        labels = ylab                 # tickmarks labels
+      )
+      
+      graphics::box(col = bordercolor, lwd = linesize)
+      
+      # Add subtitle and copyright tag
+      if(relative){
+        text2 <- "Difference plot (relative)"
+      } else {
+        text2 <- "Difference plot (absolute)"
+      }
+      graphics::mtext(text2)
+      
+      creator_att <- ncdf4::ncatt_get(id, 0, "creator_name")
+      creator <- ifelse(creator_att$hasatt, creator_att$value, "-")
+      copyrightText <- paste0("Data Source: ", creator)
+      graphics::mtext(copyrightText,
+                      side = 1,
+                      adj = 1)
+      
+      if(plot.out)
+        grDevices::dev.off()
+    }
+    ncdf4::nc_close(id)
+  }
+  calc_time_end <- Sys.time()
+  if (verbose) message(cmsafops::get_processing_time_string(calc_time_start, calc_time_end))
+}

@@ -1,0 +1,266 @@
+body {
+  padding-top: 15px;
+}
+
+img.select-pal {
+   width:  100%;
+   height: 30px;
+   margin: 0 2px;
+   padding: 0px;
+}
+
+.well {
+  padding-top: 2vh !important;
+  padding-bottom: 2vh !important;
+  height: 95.5vh;
+  overflow-y: auto;
+  overflow-x: auto;
+}
+
+.customPanel {
+  background-color: #ECF0F1;
+  padding: 15px;
+  border-radius: 15px;
+}
+
+.customPanelMain {
+  background-color: #FFFFFF;
+  padding: 15px;
+  border-radius: 15px;
+}
+
+pre {
+  color: darkslategray;
+  background-color: white;
+  border: 0 !important;
+}
+
+.btn-success {
+  max-width: 248px !important;
+  font-size: 20px !important;
+}
+
+.btn-success:disabled {
+  background-color: gray;
+  border-color: gray;
+}
+
+.btn-success:hover:disabled {
+  background-color: dimgray;
+  border-color: dimgray;
+}
+
+.exit-button {
+  background-color: red;
+  border-color: red;
+  color: white;
+  min-width: 70px !important;
+}
+
+.exit-button:disabled {
+  background-color: gray;
+  border-color: gray;
+}
+
+.exit-button:hover:disabled {
+  background-color: dimgray;
+  border-color: dimgray;
+}
+
+.selectize-input {
+  border-width: 2px;
+  padding: 10px 15px;
+}
+
+/* Prepare File Wrapping */
+#or_prepare {
+  margin-left: 15px;
+  margin-right: 15px;
+}
+
+/* Analyze File Wrapping */
+#useOutputFile_analyze, #useOutputFile_visualize {
+  display: inline-block;
+}
+#or_analyze, #or_visualize {
+  display: inline-block;
+  margin-left: 15px;
+  margin-right: 15px;
+}
+
+#ncFileLocal_analyze, #ncFileLocal_visualize  {
+  display: inline-block;
+}
+
+#ncFileRemote_analyze, #ncFileRemote_visualize {
+  display: inline-block;
+}
+
+#add_loc {
+  margin-top: 5px;
+  border: 0;
+}
+
+#valid_num_vars {
+  color: red;
+}
+
+#plots_div {
+  width: 100%;
+  text-align: center;
+}
+
+#myImage {
+  margin: auto;
+}
+
+.homeimg {
+  padding: 10px;
+  min-width: 240px;
+}
+
+#prepare {
+  margin-top: 20px;
+  min-width: 240px;
+}
+
+#analyze {
+  margin-top: 20px;
+  min-width: 240px;
+}
+
+#visualize {
+  margin-top: 20px;
+  min-width: 240px;
+}
+
+#exit {
+  margin-top: 20px;
+  min-width: 240px;
+}
+
+#modify_userDir {
+  width: 100% !important;
+  margin-top: 20px;
+  min-width: 240px;
+}
+
+#download {
+  width: 100% !important;
+  margin-top: 20px;
+  min-width: 240px;
+}
+
+#aux_upload {
+  width: 100%;
+  max-width: none !important;
+}
+
+#aux_download {
+  width: 100%;
+  max-width: none !important;
+}
+
+#proceed_with_plot {
+  position: absolute;
+  height: 100%;
+  width: 98%;
+}
+
+#proceed {
+  padding: 50px !important;
+  margin-left: calc(50% - 77px);
+  margin-top: 40vh;
+}
+
+/* SPINNER */
+#wrapper_analyze_spinner {
+  position: absolute;
+  width: 100%;
+  top: 50%;
+  bottom: 0px;
+  right: 0px;
+}
+
+#backToSetup {
+  margin-bottom: 2vh !important;
+}
+
+#multi_warning {
+  color: red !important;
+  margin-top: 7px !important;
+  margin-bottom: 7px !important;
+}
+
+#multiDayNonAccuGraphic {
+  color: red !important;
+  margin-bottom: 15px !important;
+}
+
+#attach_warning {
+  color: red !important;
+  margin-bottom: 15px !important;
+}
+
+.spinner {
+  width: 100%;
+  height: 100%;
+}
+
+#spinner_plot1 {
+  color: gray;
+}
+
+.spinner-title {
+  width: 100%;
+  text-align: center;
+  margin-top: 35vh;
+}
+
+.double-bounce1, .double-bounce2 {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: #333;
+  opacity: 0.6;
+  position: absolute;
+  top: 40vh;
+  left: calc(50% - 25px);
+
+  -webkit-animation: sk-bounce 2.0s infinite ease-in-out;
+  animation: sk-bounce 2.0s infinite ease-in-out;
+}
+
+.double-bounce2 {
+  -webkit-animation-delay: -1.0s;
+  animation-delay: -1.0s;
+}
+
+@-webkit-keyframes sk-bounce {
+  0%, 100% { -webkit-transform: scale(0.0) }
+  50% { -webkit-transform: scale(1.0) }
+}
+
+@keyframes sk-bounce {
+  0%, 100% {
+    transform: scale(0.0);
+    -webkit-transform: scale(0.0);
+  } 50% {
+    transform: scale(1.0);
+    -webkit-transform: scale(1.0);
+  }
+}
+
+/* Remove input increments */
+input[type=number] {
+  -moz-appearance:textfield;
+}
+
+input[type=number]::{
+  -moz-appearance:textfield;
+}
+
+input[type=number]::-webkit-outer-spin-button, input[type=number]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}

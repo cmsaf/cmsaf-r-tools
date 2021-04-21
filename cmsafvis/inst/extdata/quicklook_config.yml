@@ -1,0 +1,107 @@
+  AOD:
+  BTR:
+  CAL:
+  CFC:
+  CFL:
+  CFS:
+  CMA:
+    CMAin003SVMSG01:
+      Dataset: CLAAS-2
+      CMA:
+        limits:
+          min: 0
+          max: 3
+        legend: FALSE
+        colorscale: clouds
+        logo: black
+  COT:
+  CPH:
+  CPP:
+# CTH:
+  CTO:
+# CTP:
+# CTT:
+  CTX:
+    CTXin003SVMSGE1:
+      Dataset: CLAAS-2
+      CTP:
+        limits:
+          min: 500
+          max: 10000
+        legend: TRUE
+        colorscale: Purples
+        logo: black
+      CTT:
+        limits:
+          min: 150
+          max: 340
+        legend: FALSE
+        colorscale: PinkYl
+        logo: color
+      CTH:
+        limits:
+          min: 1
+          max: 18600
+        legend: TRUE
+        colorscale: Greens
+        logo: color
+# CTY:
+  CWP:
+  DAL:
+  DNI:
+  EMP:
+  EVA:
+  FTH:
+  HLW:
+  HSH:
+  HTW:
+  IWP:
+  JCH:
+  LHF:
+  LTP:
+  LTS:
+  LWP:
+  NSH:
+  PRE:
+  SAL:
+  SDL:
+  SDU:
+    SDUds4001000101:
+      Dataset: SARAH-2.0
+      SDU:
+        limits:
+          min: 0
+          max: 24
+        legend: TRUE
+        colorscale: sunny
+        logo: color
+    SDUds4011000101:
+      Dataset: SARAH-2.1
+      SDU:
+        limits:
+          min: 0
+          max: 24
+        legend: TRUE
+        colorscale: sunny
+        logo: color
+  SID:
+  SIS:
+    SISmm0031000101:
+      Dataset: SARAH-2.1
+      SIS:
+        limits:
+          min: 0
+          max: 1000
+        legend: TRUE
+        colorscale: Purples
+        logo: color
+  SNL:
+  SNS:
+  SOL:
+  SRB:
+  SRI:
+  SWS:
+  TET:
+# TIS:
+  TRS:
+  UTH:

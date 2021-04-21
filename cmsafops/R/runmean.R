@@ -1,0 +1,61 @@
+#'Determine running means
+#'
+#'The function determines running mean values from data of a single CM SAF NetCDF input
+#'file.
+#'
+#'@param var Name of NetCDF variable (character).
+#'@param nts Number of consecutive timesteps. Computes running statistical values over a
+#'  selected number of timesteps.
+#'@param infile Filename of input NetCDF file. This may include the directory
+#'  (character).
+#'@param outfile Filename of output NetCDF file. This may include the directory
+#'  (character).
+#'@param nc34 NetCDF version of output file. If \code{nc34 = 3} the output file will be
+#'  in NetCDFv3 format (numeric). Default output is NetCDFv4.
+#'@param overwrite logical; should existing output file be overwritten?
+#'@param verbose logical; if TRUE, progress messages are shown
+#'
+#'@return A NetCDF file including a time series of running means is written.
+#'@export
+#'
+#'@family running statistics
+#'
+#' @examples
+#'## Create an example NetCDF file with a similar structure as used by CM
+#'## SAF. The file is created with the ncdf4 package.  Alternatively
+#'## example data can be freely downloaded here: <https://wui.cmsaf.eu/>
+#'
+#'library(ncdf4)
+#'
+#'## create some (non-realistic) example data
+#'
+#'lon <- seq(10, 15, 0.5)
+#'lat <- seq(50, 55, 0.5)
+#'time <- seq(as.Date("2006-01-01"), as.Date("2010-12-31"), "month")
+#'origin <- as.Date("1983-01-01 00:00:00")
+#'time <- as.numeric(difftime(time, origin, units = "hour"))
+#'data <- array(250:350, dim = c(11, 11, 60))
+#'
+#'## create example NetCDF
+#'
+#'x <- ncdim_def(name = "lon", units = "degrees_east", vals = lon)
+#'y <- ncdim_def(name = "lat", units = "degrees_north", vals = lat)
+#'t <- ncdim_def(name = "time", units = "hours since 1983-01-01 00:00:00",
+#'  vals = time, unlim = TRUE)
+#'var1 <- ncvar_def("SIS", "W m-2", list(x, y, t), -1, prec = "short")
+#'vars <- list(var1)
+#'ncnew <- nc_create("CMSAF_example_file.nc", vars)
+#'ncvar_put(ncnew, var1, data)
+#'ncatt_put(ncnew, "lon", "standard_name", "longitude", prec = "text")
+#'ncatt_put(ncnew, "lat", "standard_name", "latitude", prec = "text")
+#'nc_close(ncnew)
+#'
+#'## Determine the running means of the example CM SAF NetCDF file and write
+#'## the output to a new file.
+#'runmean(var = "SIS", nts = 10, infile = "CMSAF_example_file.nc", outfile = 
+#'  "CMSAF_example_file_runmean.nc")
+#'
+#'unlink(c("CMSAF_example_file.nc", "CMSAF_example_file_runmean.nc"))
+runmean <- function(var, nts = 6, infile, outfile, nc34 = 4, overwrite = FALSE, verbose = FALSE) {
+  runx_wrapper(5, var, infile, outfile, nc34, overwrite, nts = nts, verbose = verbose)
+}

@@ -1,0 +1,43 @@
+Package: cmsaf
+Version: 3.1.1
+Title: A Toolbox for CM SAF NetCDF Data
+Authors@R: 
+    person(given = "Steffen",
+           family = "Kothe",
+           role = c("aut", "cre"),
+           email = "Steffen.Kothe@dwd.de")
+Contact: CM SAF Team <contact.cmsaf@dwd.de>
+Description: The Satellite Application Facility on Climate Monitoring (CM SAF) 
+    is a ground segment of the European Organization for the Exploitation of 
+    Meteorological Satellites (EUMETSAT) and one of EUMETSATs Satellite Application 
+    Facilities. The CM SAF contributes to the sustainable monitoring of the climate 
+    system by providing essential climate variables related to the energy and water 
+    cycle of the atmosphere (<http://www.cmsaf.eu>). It is a joint cooperation of eight 
+    National Meteorological and Hydrological Services.
+    The 'cmsaf' R-package includes a 'shiny' based interface for an easy application of 
+    the 'cmsafops' and 'cmsafvis' packages - the CM SAF R Toolbox. The Toolbox offers an 
+    easy way to prepare, manipulate, analyse and visualize CM SAF NetCDF formatted data. 
+    Other CF conform NetCDF data with time, longitude and latitude dimension should be 
+    applicable, but there is no guarantee for an error-free application.
+    CM SAF climate data records are provided for free via (<https://wui.cmsaf.eu/safira>).
+    Detailed information and test data are provided on the CM SAF webpage 
+    (<http://www.cmsaf.eu/R_toolbox>).
+URL: https://www.cmsaf.eu
+License: GPL (>= 3)
+Depends: R (>= 3.6), cmsafops (>= 1.0.0), cmsafvis (>= 1.0.0)
+Imports: colourpicker (>= 1.0), colorspace (>= 1.4), fields (>= 10.3),
+        FNN (>= 1.1), mapproj (>= 1.2), maps (>= 3.3), maptools (>=
+        0.9), ncdf4 (>= 1.17), R.utils (>= 2.9), raster (>= 3.0),
+        rworldxtra (>= 1.01), shiny (>= 1.4), shinyFiles (>= 0.8.0),
+        shinyjs (>= 1.1), shinythemes (>= 1.1), sp (>= 1.4), tcltk (>=
+        3.5), data.table, SearchTrees
+NeedsCompilation: no
+Repository: CRAN
+LazyData: true
+Suggests: spelling (>= 2.1), testthat (>= 2.3)
+RoxygenNote: 7.1.1
+Encoding: UTF-8
+Language: en-US
+Packaged: 2021-02-15 09:14:12 UTC; tinz
+Author: Steffen Kothe [aut, cre]
+Maintainer: Steffen Kothe <Steffen.Kothe@dwd.de>
