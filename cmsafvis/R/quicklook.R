@@ -27,8 +27,6 @@ quicklook <- function(config,
                       jpeg_quality = 75,
                       dpi = 150,
                       iwidth = 760,
-                      
-                      
                       logo = TRUE,
                       copyright = TRUE,
                       bluemarble = FALSE) {
@@ -158,6 +156,12 @@ quicklook <- function(config,
   logos <- c()
   slots <- c()
   
+  # define plotting area in case of polar projection
+  area <- ""
+  if (grepl("North", file_info$area)) area <- "NP"
+  if (grepl("South", file_info$area)) area <- "SP"
+  if (grepl("Global", file_info$area)) area <- "GL"
+  
   if (bluemarble && !file_info$grid == "Satellite projection MSG/Seviri") {
     stop("Bluemarble plotting is only available for CLAAS data on MSG grid.")
   }
@@ -180,7 +184,6 @@ quicklook <- function(config,
     if (logo) logos <- c(logos, configParams[[file_info$product_type]][[file_info$id]][[vars[i]]]$logo)
   }
   
-  
   ### Read infiles ###
   
   nc    <- ncdf4::nc_open(ref_file)
@@ -194,14 +197,7 @@ quicklook <- function(config,
   for (k in seq_along(vars)) {
     varnames <- c(varnames, ncdf4::ncatt_get(nc, vars[k], "long_name")$value)
     units <- c(units, ncdf4::ncatt_get(nc, vars[k], "units")$value)
-    
   }
-  
-  
-  
-  
-  
-  
   
   if ("lon" %in% names(nc$dim)) {
     lon_min <- min(ncdf4::ncvar_get(nc, "lon"), na.rm = TRUE)
@@ -217,14 +213,16 @@ quicklook <- function(config,
     stop("unable to get a lon/lat reference")
   }
   
+  if (area == "NP" | area == "SP") {
+    lond <- ncdf4::ncvar_get(nc, "lon")
+    latd <- ncdf4::ncvar_get(nc, "lat")
+  }
+  
   # get time info for all slots
   date.time   <- ncdf4::ncvar_get(nc,"time") 
   t_unit      <- ncdf4::ncatt_get(nc,"time","units")$value
   date.time   <- cmsafops::get_time(t_unit,date.time)
   date.time   <- date.time[slots]
-  
-  
-  
   
   ncdf4::nc_close(nc)
   
@@ -235,11 +233,36 @@ quicklook <- function(config,
   
   aspect <- lon_range/lat_range
   
-  iheight <- round((iwidth/aspect)*0.95)
+  if (area == "NP" | area == "SP") {
+    iheight <- round(iwidth*0.94)
+    } else if (area == "GL") {
+      iheight <- round((iwidth/aspect)*0.98)
+      } else {
+          iheight <- round((iwidth/aspect)*0.95)
+  }
   
   if (logo) {
     AR_color <- dims_color[1] / dims_color[2] * iwidth / iheight
     AR_black <- dims_black[1] / dims_black[2] * iwidth / iheight
+  }
+  
+  # Prepare polar projection
+  
+  if (area == "NP" | area == "SP") {
+    if (area == "NP") {
+      ori  <- c(89.9, 0, 0)             #orientation North Pole
+    }
+    if (area == "SP") {
+      ori  <- c(-89.9, 0, 0)             #orientation North Pole
+    }
+    nx <- dim(lond)[1]
+    ny <- dim(lond)[2]
+    landcol   <- "cornsilk3"     #"navajowhite3"
+    oceancol  <- "cornsilk2"     #"cadetblue3"
+    outcol    <- "cornsilk4"
+    bordercol <- "gray"
+  
+    m <- maps::map("world", plot = FALSE)
   }
   
   ### Plot ###
@@ -319,63 +342,212 @@ quicklook <- function(config,
       } else {
         col <- getColors(col_from_config[[j]], palettes, 32, FALSE)
       }
-      # bluemarble plot
-      if (bluemarble) {
-        stop("Bluemarble plotting is not available. See https://www.cmsaf.eu/R_toolbox")
-        # raster::extent(stacks[[j]]) <- c(-1, 1, -1, 1)
-        # fields::quilt.plot(
-        # # This is generated in data-raw/generate_internal_data.R
-        # blue_marble$projection$x,
-        # blue_marble$projection$y,
-        # blue_marble$data_values,
-        # xlim = c(-1, 1),
-        # ylim = c(-1, 1),
-        # nx = blue_marble$n_lon_unique / blue_marble$xf,
-        # ny = blue_marble$n_lat_unique / blue_marble$yf,
-        # xlab = " ",
-        # ylab = " ",
-        # main = "",
-        # col = blue_marble$colors,
-        # add.legend = FALSE,
-        # axes = FALSE
-        # )
+      
+      # Polar Projection Plot
+      if (area == "NP" | area == "SP") {
+       
+        rotate_cc <- function(x) {apply(t(x), 2, rev)}
         
-        # raster::image(stacks[[j]], y = slot_i,
-        # main = "",
-        # axes = FALSE,
-        # xlab = "",
-        # ylab = "",
-        # col = col,
-        # add = TRUE)
+        datav <- raster::as.matrix(stacks[[j]][[i]])
+        # for some reason the data are mirrored; this has to be corrected
+        datav <- rotate_cc(datav)
+        datav <- datav[dim(datav)[1]:1,dim(datav)[2]:1]
+        datav <- as.vector(datav)
         
+        lonv  <- as.vector(lond)
+        latv  <- as.vector(latd)
         
+        a <-
+          mapproj::mapproject(
+            x = lonv,
+            y = latv,
+            projection = "orthographic",
+            orientation = ori
+          )
+
+        # filter Nas
+        if (sum(is.na(a$x)) > 0 | sum(is.na(a$y)) > 0) {
+          dummy <- NULL
+          dummy <- !is.na(a$x)
+          a$x   <- a$x[dummy]
+          a$y   <- a$y[dummy]
+          datav <- datav[dummy]
+          dummy <- NULL
+          dummy <- !is.na(a$y)
+          a$x   <- a$x[dummy]
+          a$y   <- a$y[dummy]
+          datav <- datav[dummy]
+        }
         
+        # define grid factors
+        xr <-
+          abs(range(lonv, na.rm = TRUE)[1]) + abs(range(lonv, na.rm = TRUE)[2])
+        yr <-
+          abs(range(latv, na.rm = TRUE)[1]) + abs(range(latv, na.rm = TRUE)[2])
+        l1 <- 3.1  # max value for nx/xf
+        l2 <- 2.0  # max value for ny/yf
         
+        x1 <- c(40, 360)
+        y1 <- c(1, l1)
+        c1 <- stats::lm(y1 ~ x1)$coeff[[1]]
+        c2 <- stats::lm(y1 ~ x1)$coeff[[2]]
         
+        if (xr > 40 & xr <= 360) {
+          xf <- c2 * xr + c1
+          xf <- round(xf, digits = 1)
+        } else {
+          xf <- 1
+        }
         
+        x1 <- c(40, 180)
+        y1 <- c(1, l2)
+        c1 <- stats::lm(y1 ~ x1)$coeff[[1]]
+        c2 <- stats::lm(y1 ~ x1)$coeff[[2]]
         
+        if (yr > 40 & yr <= 180) {
+          yf <- c2 * yr + c1
+          yf <- round(yf, digits = 1)
+        } else {
+          yf <- 1
+        }
+        
+        fields::quilt.plot(
+          a$x,
+          a$y,
+          datav,
+          xlim = c(-0.7, 0.7),
+          ylim = c(-0.7, 0.7),
+          nx = nx / xf,
+          ny = ny / yf,
+          xlab = " ",
+          ylab = " ",
+          main = " ",
+          col = col,
+          add.legend = FALSE,
+          axes = FALSE,
+          asp = 1
+        )
+        
+        graphics::polygon(
+          sin(seq(0, 2 * pi, length.out = 100)),
+          cos(seq(0, 2 * pi, length.out = 100)),
+          col = oceancol,
+          border = grDevices::rgb(1, 1, 1, 0.5),
+          lwd = 1
+        )
+        
+        suppressWarnings(
+          maps::map(
+            "world",
+            projection = "orthographic",
+            orientation = ori,
+            add = TRUE,
+            interior = FALSE,
+            fill = TRUE,
+            col = landcol,
+            lwd = 0.5,
+            resolution = 0,
+            border = NA
+          )
+        )
+        
+        fields::quilt.plot(
+          a$x,
+          a$y,
+          datav,
+          xlim = c(-0.7, 0.7),
+          ylim = c(-0.7, 0.7),
+          nx = nx / xf,
+          ny = ny / yf,
+          xlab = " ",
+          ylab = " ",
+          main = "text1",
+          col = col,
+          add.legend = FALSE,
+          axes = FALSE,
+          add = TRUE,
+          asp = 1
+        )
+        
+        # Plot borders
+        suppressWarnings(
+          maps::map(
+            "world",
+            projection = "orthographic",
+            orientation = ori,
+            add = TRUE,
+            interior = FALSE,
+            col = outcol,
+            lwd = 0.5,
+            resolution = 0
+          )
+        )
+        
+        mapproj::map.grid(
+          m,
+          nx = 18,
+          ny = 9,
+          lty = 3,
+          col = "gray",
+          cex = 0.55
+        )
       } else {
+        
+      # bluemarble plot
+       if (bluemarble) {
+         if (exists("blue_marble")) {
+          raster::extent(stacks[[j]]) <- c(-1, 1, -1, 1)
+          fields::quilt.plot(
+          # This is generated in data-raw/generate_internal_data.R
+          blue_marble$projection$x,
+          blue_marble$projection$y,
+          blue_marble$data_values,
+          xlim = c(-1, 1),
+          ylim = c(-1, 1),
+          nx = blue_marble$n_lon_unique / blue_marble$xf,
+          ny = blue_marble$n_lat_unique / blue_marble$yf,
+          xlab = " ",
+          ylab = " ",
+          main = "",
+          col = blue_marble$colors,
+          add.legend = FALSE,
+          axes = FALSE
+          )
+        
+          raster::image(stacks[[j]], y = slot_i,
+          main = "",
+          axes = FALSE,
+          xlab = "",
+          ylab = "",
+          col = col,
+          add = TRUE)
+         } else {
+           stop("Bluemarble plotting is not available. See https://www.cmsaf.eu/R_toolbox")
+         }
+       } else {
         # borderline plots for scale
         if (file_info$grid == "Satellite projection MSG/Seviri") {
-          stop("Bluemarble plotting is not available. See https://www.cmsaf.eu/R_toolbox")
-          # graphics::par(pty = "s")
-          # raster::extent(stacks[[j]]) <- c(-1, 1, -1, 1)
-          # fields::quilt.plot(
-          # # This is generated in data-raw/generate_internal_data.R
-          # blue_marble$projection$x,
-          # blue_marble$projection$y,
-          # blue_marble$data_values,
-          # xlim = c(-1, 1),
-          # ylim = c(-1, 1),
-          # nx = blue_marble$n_lon_unique / blue_marble$xf,
-          # ny = blue_marble$n_lat_unique / blue_marble$yf,
-          # xlab = " ",
-          # ylab = " ",
-          # col = "gray",
-          # add.legend = FALSE,
-          # axes = FALSE
-          # )
-          
+          if (exists("blue_marble")) {
+            graphics::par(pty = "s")
+            raster::extent(stacks[[j]]) <- c(-1, 1, -1, 1)
+            fields::quilt.plot(
+            # This is generated in data-raw/generate_internal_data.R
+            blue_marble$projection$x,
+            blue_marble$projection$y,
+            blue_marble$data_values,
+            xlim = c(-1, 1),
+            ylim = c(-1, 1),
+            nx = blue_marble$n_lon_unique / blue_marble$xf,
+            ny = blue_marble$n_lat_unique / blue_marble$yf,
+            xlab = " ",
+            ylab = " ",
+            col = "gray",
+            add.legend = FALSE,
+            axes = FALSE
+            )
+          } else {
+              stop("Bluemarble plotting is not available. See https://www.cmsaf.eu/R_toolbox")
+            }
         } else {
           graphics::image(lon_min:(lon_max*1.2),
                           lat_min:lat_max,
@@ -386,7 +558,8 @@ quicklook <- function(config,
                           xlab = " ",
                           ylab = " ",
                           col = "gray",
-                          axes = FALSE
+                          axes = FALSE,
+                          asp = 1
           )
         }
         
@@ -401,6 +574,7 @@ quicklook <- function(config,
                       zlim = plot_lim[j,],
                       col = col,
                       colNA = "gray",
+                      asp = 1,
                       add = TRUE
         )
         
@@ -413,7 +587,9 @@ quicklook <- function(config,
         } else {
           maps::map("world", interior = FALSE, xlim = c(lon_min, lon_max), ylim = c(lat_min, lat_max), add = TRUE)
         }
-      }
+       }
+      } # end if polar projection 
+      
       # plot logo and copyright text
       if (logo || copyright) {
         graphics::par(usr = c(0, 1, 0, 1))
@@ -444,7 +620,8 @@ quicklook <- function(config,
                               logo.y + 0.01,
                               logo.x + logo.scale,
                               logo.y + (AR * logo.scale),
-                              interpolate = TRUE
+                              interpolate = TRUE,
+                              asp = 1
         )
       }
       if (copyright) {
@@ -479,16 +656,14 @@ quicklook <- function(config,
                                       side = 2, 
                                       font = 2, 
                                       line = 0.2, 
-                                      cex = 1.2),
-                     
-                     
+                                      cex = 1.25),
                      col = col,
                      add = TRUE)
       }
       
       
       # figure title
-      if (is_multiplot) graphics::mtext(CapWords(varnames[j]), line = 0.4, cex = 1.2)
+      if (is_multiplot) graphics::mtext(CapWords(varnames[j]), line = 0.4, cex = 1.25)
       
     }
     
@@ -498,7 +673,7 @@ quicklook <- function(config,
                       side = 3,
                       line = -2,
                       outer = TRUE,
-                      cex = 1.4,
+                      cex = 1.45,
                       
                       font = 2
       )
@@ -508,11 +683,15 @@ quicklook <- function(config,
                       line = -3,
                       
                       outer = TRUE,
-                      cex = 1.4,
+                      cex = 1.45,
                       
                       font = 2
       )
     }
     grDevices::dev.off()
+  }
+  # Clean up 
+  if (file.exists("Rplots.pdf")) {
+    file.remove("Rplots.pdf")
   }
 }
