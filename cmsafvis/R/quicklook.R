@@ -351,7 +351,12 @@ quicklook <- function(config,
         datav <- raster::as.matrix(stacks[[j]][[i]])
         # for some reason the data are mirrored; this has to be corrected
         datav <- rotate_cc(datav)
-        datav <- datav[dim(datav)[1]:1,dim(datav)[2]:1]
+        if (area == "NP") {
+          datav <- datav[dim(datav)[1]:1,dim(datav)[2]:1]
+        }
+        if (area == "SP") {
+          datav <- datav[,dim(datav)[2]:1]
+        }
         datav <- as.vector(datav)
         
         lonv  <- as.vector(lond)
