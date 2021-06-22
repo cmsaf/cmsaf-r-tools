@@ -24,9 +24,9 @@
 quicklook <- function(config,
                       filelist,
                       outpath = getwd(),
-                      jpeg_quality = 75,
+                      jpeg_quality = 100,
                       dpi = 150,
-                      iwidth = 760,
+                      iwidth = 800,
                       logo = TRUE,
                       copyright = TRUE,
                       bluemarble = FALSE) {
@@ -246,19 +246,27 @@ quicklook <- function(config,
     AR_black <- dims_black[1] / dims_black[2] * iwidth / iheight
   }
   
+  if (is_multiplot) {
+    iheight <- iheight*1.5
+    iwidth  <- iwidth*1.5
+  }
+  
+  # factor for font size
+  fsf <- iwidth / 800
+  
   # Prepare polar projection
   
   if (area == "NP" | area == "SP") {
     if (area == "NP") {
-      ori  <- c(89.9, 0, 0)             #orientation North Pole
+      ori  <- c(89.9, 0, 0)             # orientation North Pole
     }
     if (area == "SP") {
-      ori  <- c(-89.9, 0, 0)             #orientation North Pole
+      ori  <- c(-89.9, 0, 0)            # orientation South Pole
     }
     nx <- dim(lond)[1]
     ny <- dim(lond)[2]
-    landcol   <- "cornsilk3"     #"navajowhite3"
-    oceancol  <- "cornsilk2"     #"cadetblue3"
+    landcol   <- "cornsilk3"     # "navajowhite3"
+    oceancol  <- "cornsilk2"     # "cadetblue3"
     outcol    <- "cornsilk4"
     bordercol <- "gray"
   
@@ -323,10 +331,12 @@ quicklook <- function(config,
       ncols <- ceiling(sqrt(nvars))
       nrows <- ceiling(nvars/ncols)
       graphics::par(mfrow = c(nrows, ncols))
+      graphics::par(mar = c(2, 4, 4, 6) + 0.1)
+      graphics::par(oma = c(0, 0, 1, 5))
+    } else {
+      graphics::par(mar = c(2, 4, 4, 6) + 0.1)
+      graphics::par(oma = c(0, 0, 1, 1))
     }
-    
-    graphics::par(mar = c(2, 4, 4, 6) + 0.1)
-    graphics::par(oma = c(0, 0, 1, 1))
     
     for (j in seq_along(vars)) {
       
@@ -494,7 +504,7 @@ quicklook <- function(config,
           ny = 9,
           lty = 3,
           col = "gray",
-          cex = 0.55
+          cex = 0.55*fsf
         )
       } else {
         
@@ -554,15 +564,15 @@ quicklook <- function(config,
               stop("Bluemarble plotting is not available. See https://www.cmsaf.eu/R_toolbox")
             }
         } else {
-          graphics::image(lon_min:(lon_max*1.2),
+          graphics::image(lon_min:(lon_max*1.01),
                           lat_min:lat_max,
-                          outer(lon_min:(lon_max*1.2),lat_min:lat_max,"+"),
+                          outer(lon_min:(lon_max*1.01),lat_min:lat_max,"+"),
                           main = "",
                           xlim = c(lon_min, lon_max),
                           ylim = c(lat_min, lat_max),
                           xlab = " ",
                           ylab = " ",
-                          col = "gray",
+                          col = "cornsilk2",
                           axes = FALSE,
                           asp = 1
           )
@@ -578,7 +588,7 @@ quicklook <- function(config,
                       ylab = "",
                       zlim = plot_lim[j,],
                       col = col,
-                      colNA = "gray",
+                      colNA = "cornsilk2",
                       asp = 1,
                       add = TRUE
         )
@@ -589,8 +599,12 @@ quicklook <- function(config,
           suppressWarnings(
             maps::map("world", projection = "orthographic", interior = FALSE, orientation = c(0,0,0), add = TRUE)
           )
+        } else if (area == "GL") {
+            maps::map("world", interior = FALSE, xlim = c(lon_min, lon_max), 
+                    ylim = c(lat_min, lat_max), wrap = c(lon_min, lon_max), add = TRUE)
         } else {
-          maps::map("world", interior = FALSE, xlim = c(lon_min, lon_max), ylim = c(lat_min, lat_max), add = TRUE)
+            maps::map("world", interior = FALSE, xlim = c(lon_min, lon_max), 
+                    ylim = c(lat_min, lat_max), add = TRUE)
         }
        }
       } # end if polar projection 
@@ -646,6 +660,8 @@ quicklook <- function(config,
       }
       
       # plot legend
+      # graphics::par(cex = 1*fsf)
+      
       if (legends[j]) {
         raster::plot(stacks[[j]], y = slot_i,
                      main = "",
@@ -661,14 +677,15 @@ quicklook <- function(config,
                                       side = 2, 
                                       font = 2, 
                                       line = 0.2, 
-                                      cex = 1.25),
+                                      cex = 1.25*fsf),
+                     axis.args=list(cex.axis = 1*fsf),
                      col = col,
                      add = TRUE)
       }
       
       
       # figure title
-      if (is_multiplot) graphics::mtext(CapWords(varnames[j]), line = 0.4, cex = 1.25)
+      if (is_multiplot) graphics::mtext(CapWords(varnames[j]), line = 0.4, cex = 1.25*fsf)
       
     }
     
@@ -678,7 +695,7 @@ quicklook <- function(config,
                       side = 3,
                       line = -2,
                       outer = TRUE,
-                      cex = 1.45,
+                      cex = 1.45*fsf,
                       
                       font = 2
       )
@@ -688,7 +705,7 @@ quicklook <- function(config,
                       line = -3,
                       
                       outer = TRUE,
-                      cex = 1.45,
+                      cex = 1.45*fsf,
                       
                       font = 2
       )
