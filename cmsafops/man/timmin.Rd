@@ -72,6 +72,7 @@ Other temporal operators:
 \code{\link{cmsaf.detrend}()},
 \code{\link{cmsaf.mk.test}()},
 \code{\link{cmsaf.regres}()},
+\code{\link{timavg}()},
 \code{\link{timmax}()},
 \code{\link{timmean}()},
 \code{\link{timpctl}()},

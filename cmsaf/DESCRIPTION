@@ -1,5 +1,5 @@
 Package: cmsaf
-Version: 3.1.1
+Version: 3.1.2
 Title: A Toolbox for CM SAF NetCDF Data
 Authors@R: 
     person(given = "Steffen",
@@ -24,7 +24,7 @@ Description: The Satellite Application Facility on Climate Monitoring (CM SAF)
     (<http://www.cmsaf.eu/R_toolbox>).
 URL: https://www.cmsaf.eu
 License: GPL (>= 3)
-Depends: R (>= 3.6), cmsafops (>= 1.0.0), cmsafvis (>= 1.0.0)
+Depends: R (>= 3.6), cmsafops (>= 1.1.1), cmsafvis (>= 1.1.1)
 Imports: colourpicker (>= 1.0), colorspace (>= 1.4), fields (>= 10.3),
         FNN (>= 1.1), mapproj (>= 1.2), maps (>= 3.3), maptools (>=
         0.9), ncdf4 (>= 1.17), R.utils (>= 2.9), raster (>= 3.0),
@@ -38,6 +38,6 @@ Suggests: spelling (>= 2.1), testthat (>= 2.3)
 RoxygenNote: 7.1.1
 Encoding: UTF-8
 Language: en-US
-Packaged: 2021-02-15 09:14:12 UTC; tinz
+Packaged: 2021-07-27 12:30:00 UTC; SK
 Author: Steffen Kothe [aut, cre]
 Maintainer: Steffen Kothe <Steffen.Kothe@dwd.de>

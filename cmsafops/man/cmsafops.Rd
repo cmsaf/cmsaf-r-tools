@@ -80,7 +80,7 @@ in the \link[cmsaf:cmsaf]{cmsaf package}, which helps to apply 'cmsafops' operat
 
 \section{Temporal operators}{
  \code{\link{cmsaf.detrend}}, \code{\link{cmsaf.mk.test}}, \code{\link{cmsaf.regres}},
-\code{\link{timmax}}, \code{\link{timmean}}, \code{\link{timmin}}, \code{\link{timpctl}},
+\code{\link{timmax}}, \code{\link{timmean}}, \code{\link{timavg}}, \code{\link{timmin}}, \code{\link{timpctl}},
 \code{\link{timsd}}, \code{\link{timsum}}, \code{\link{trend_advanced}}, \code{\link{trend}}
 }
 

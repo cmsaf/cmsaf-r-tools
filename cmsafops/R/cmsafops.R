@@ -52,7 +52,7 @@
 #'  \code{\link{gridboxsum}}, \code{\link{gridboxvar}}
 #'
 #'@section Temporal operators: \code{\link{cmsaf.detrend}}, \code{\link{cmsaf.mk.test}}, \code{\link{cmsaf.regres}}, 
-#'  \code{\link{timmax}}, \code{\link{timmean}}, \code{\link{timmin}}, \code{\link{timpctl}}, 
+#'  \code{\link{timmax}}, \code{\link{timmean}}, \code{\link{timavg}}, \code{\link{timmin}}, \code{\link{timpctl}}, 
 #'  \code{\link{timsd}}, \code{\link{timsum}}, \code{\link{trend_advanced}}, \code{\link{trend}}
 #'  
 #'@section Time range statistics: \code{\link{timselmean}}, \code{\link{timselsum}}

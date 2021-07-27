@@ -25,7 +25,7 @@ right in and analyze or visualize a .nc file.
 Suggestions for improvements and praise for the developers
 can be sent to contact.cmsaf@dwd.de.
 
-- Steffen Kothe - 2020-02-11 -"
+- Steffen Kothe - 2021-02-11 -"
 
 # Variable can be found in global.R
 if (isRunningLocally) {
@@ -379,7 +379,7 @@ fluidPage(
                                                           class = "btn btn-success btn-lg btn-block",
                                                           style = "font-size: 30px"),
                                              h5("If you would like to have more functions included contact:"),
-                                             h5("cmsaf.training@dwd.de"),
+                                             h5("training.cmsaf@dwd.de"),
                                              br()
                                       ),
                                       column(width = 7,

@@ -79,6 +79,7 @@ unlink(c(file.path(tempdir(),"CMSAF_example_file.nc"),
 Other temporal operators: 
 \code{\link{cmsaf.mk.test}()},
 \code{\link{cmsaf.regres}()},
+\code{\link{timavg}()},
 \code{\link{timmax}()},
 \code{\link{timmean}()},
 \code{\link{timmin}()},

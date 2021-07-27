@@ -3,7 +3,7 @@
 # You should not use this R-script on its own!
 #
 # Have fun with the CM SAF R TOOLBOX!
-#                                              (Steffen Kothe / CM SAF 2021-02-11)
+#                                              (Steffen Kothe / CM SAF 2021-07-27)
 #__________________________________________________________________________________
 
 # Use home directory for storing config file (e.g. C:\Users\<user>\Documents
@@ -142,14 +142,15 @@ operators[["Grid boxes statistics"]] <- c("Gridbox maxima" = "gridboxmax",
                                           "Gridbox sums" = "gridboxsum",
                                           "Gridbox variances" = "gridboxvar")
 
-operators[["Temporal operators"]] <- c("All-time maxima" = "timmax",
-                                       "All-time means" = "timmean",
+operators[["Temporal operators"]] <- c("All-time average" = "timavg",
+									   "All-time maxima" = "timmax",
+                                       "All-time mean" = "timmean",
                                        "All-time minima" = "timmin",
-                                       "All-time percentiles" = "timpctl",
-                                       "All-time standard deviations" = "timsd",
-                                       "All-time sums" = "timsum",
+                                       "All-time percentile" = "timpctl",
+                                       "All-time standard deviation" = "timsd",
+                                       "All-time sum" = "timsum",
                                        "Detrend" = "cmsaf.detrend",
-                                       "Linear trends" = "trend",
+                                       "Linear trend" = "trend",
                                        "Mann-Kendall Test" = "cmsaf.mk.test",
                                        "Regression" = "cmsaf.regres",
                                        "Multiple linear regression" = "trend_advanced"
