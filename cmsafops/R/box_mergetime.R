@@ -331,20 +331,21 @@ box_mergetime <- function(var, path, pattern, outfile, lon1 = -180, lon2 = 180,
                                                   units = c("days"))) / 30.4375))
         } else if(unit_ref == "secs"){
           if(fdim > 1){
-            file_data_1 <- read_file(file, var)
-            file_time_info_units <- file_data_1$time_info$units
-            extract_string <- substr(file_time_info_units, 1, 24)
-
-            dt_dum <- get_time(extract_string, counter_time)
-            counter_time <- counter_time + 3600
+            ### Not clear why this is done
+            # file_data_1 <- read_file(file, var)
+            # file_time_info_units <- file_data_1$time_info$units
+            # extract_string <- substr(file_time_info_units, 1, 24)
+            # 
+            # dt_dum <- get_time(extract_string, counter_time)
+            # counter_time <- counter_time + 3600
             dum_time2 <- difftime(dt_dum, dt_ref, units = c(unit_ref))
-
-            counter_days <- counter_days + 1
-            if(counter_days == 24)
-            {
-              counter_days <- 0
-              counter_time <- 0
-            }
+            # 
+            # counter_days <- counter_days + 1
+            # if(counter_days == 24)
+            # {
+            #   counter_days <- 0
+            #   counter_time <- 0
+            # }
           }
           else{
             dum_time2 <- difftime(dt_dum, dt_ref, units = c(unit_ref))

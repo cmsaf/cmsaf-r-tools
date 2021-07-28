@@ -18,6 +18,16 @@ get_time <- function(time.unit, time.step) {
   stopifnot(is.character(time.unit))
   stopifnot(is.numeric(time.step) && !any(is.na(time.step)))
 
+  # fix date and time if needed (adapted to LSA SAF data)
+  
+  if (nchar(unlist(strsplit(time.unit," "))[3]) == 20) {
+    time.unit <- paste(unlist(strsplit(time.unit," "))[1], 
+                        unlist(strsplit(time.unit," "))[2],
+                        substr(unlist(strsplit(time.unit," "))[3],1,10),
+                        substr(unlist(strsplit(time.unit," "))[3],12,19),
+                        sep = " ")
+  }
+  
   # convert time.unit to POSIXct
 
   if (unlist(strsplit(time.unit, " "))[2] == "since") {
