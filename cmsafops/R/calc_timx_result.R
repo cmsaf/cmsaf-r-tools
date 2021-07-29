@@ -16,8 +16,8 @@ calc_timx_result <- function(op, infile, dimension_data, var_name, na.rm, p) {
       mean = {rowMeans(dum_dat, dims = 2, na.rm = TRUE)},
       sum = {rowSums(dum_dat, dims = 2, na.rm = na.rm)},
       sd = {apply(dum_dat, c(1, 2), stats::sd, na.rm = TRUE)},
-	  avg = {rowMeans(dum_dat, dims = 2, na.rm = FALSE)},
-      pctl = {apply(dum_dat, c(1, 2), stats::quantile, probs = p, names = FALSE, na.rm = TRUE)}
+	  pctl = {apply(dum_dat, c(1, 2), stats::quantile, probs = p, names = FALSE, na.rm = TRUE)},
+	  avg = {rowMeans(dum_dat, dims = 2, na.rm = FALSE)}
     )
   } else {
     nr_of_possible_x_dims <- round(
@@ -48,8 +48,8 @@ calc_timx_result <- function(op, infile, dimension_data, var_name, na.rm, p) {
           mean = {rowMeans(dum_dat, dims = 2, na.rm = TRUE)},
           sum = {rowSums(dum_dat, dims = 2, na.rm = na.rm)},
           sd = {apply(dum_dat, c(1, 2), stats::sd, na.rm = TRUE)},
-		  avg = {rowMeans(dum_dat, dims = 2, na.rm = FALSE)},
-          pctl = {apply(dum_dat, c(1, 2), stats::quantile, probs = p, names = FALSE, na.rm = TRUE)}
+		  pctl = {apply(dum_dat, c(1, 2), stats::quantile, probs = p, names = FALSE, na.rm = TRUE)},
+		  avg = {rowMeans(dum_dat, dims = 2, na.rm = FALSE)}
         )
     }
   }

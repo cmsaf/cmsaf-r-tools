@@ -1,52 +1,60 @@
-timx_wrapper <- function(op, var, infile, outfile, nc34, overwrite,
-                         na.rm = TRUE, p = NULL, verbose) {
-  calc_time_start <- Sys.time()
-
+# Wrapper for number of timesteps depending on threshold
+#
+# Wrapper function for counting the number of timesteps depending on a threshold
+# (num_above, num_below, num_equal). Argument op is one of 1-3, depending on
+# the function used.
+num_wrapper <- function(op, var, thld, infile, outfile, nc34, overwrite,
+                           verbose) {
   check_variable(var)
+  check_constant(thld)
   check_infile(infile)
   check_outfile(outfile)
   outfile <- correct_filename(outfile)
   check_overwrite(outfile, overwrite)
   check_nc_version(nc34)
 
+  calc_time_start <- Sys.time()
+  
   ##### extract data from file #####
   file_data <- read_file(infile, var)
-  if (op %in% c("mean", "sum", "sd", "pctl","avg")) {
-    file_data$variable$prec <- "float"
-  }
-
+  
   time_bnds <- get_time_bounds_1(
     file_data$dimension_data$t
   )
 
-  if (op == "pctl") {
-    if (length(p) > 1) {
-      p <- p[1]
-    }
-    if (p < 0 || p > 1) {
-      if (verbose) message("Your given p-value is outside [0,1]. The default will be used (0.95).")
-      p <- 0.95
-    }
+  # calculate results
+  nc_in <- nc_open(infile)
+  
+  # initialize array with zeros
+  result <- array(0, dim = c(length(file_data$dimension_data$x), 
+					length(file_data$dimension_data$y)))
+
+  for (i in seq_len(length(file_data$dimension_data$t))) {
+    dum_dat <- ncvar_get(nc_in, file_data$variable$name, start = c(1, 1, i),
+                         count = c(-1, -1, 1))
+	
+    dum_dat <- switch(op,
+                      dum_dat > thld,
+                      dum_dat > thld,
+                      dum_dat == thld
+    )
+	
+	dum_dat[is.na(dum_dat)] <- 0
+	result <- result + dum_dat
+	
   }
 
-  result <- calc_timx_result(op, infile, file_data$dimension_data,
-                            file_data$variable$name, na.rm, p)
-  result[is.na(result)] <- file_data$variable$attributes$missing_value
-
+  nc_close(nc_in)
   vars_data <- list(result = result, time_bounds = time_bnds)
 
   nc_format <- get_nc_version(nc34)
+  file_data$variable$prec <- "short"
 
   cmsaf_info <- switch(op,
-         max = {"cmsafops::timmax"},
-         min = {"cmsafops::timmin"},
-         mean = {"cmsafops::timmean"},
-         sum = {"cmsafops::timsum"},
-         sd = {"cmsafops::timsd"},
-         pctl = {paste0("cmsafops::timpctl with p = ", p)},
-		 avg = {"cmsafops::timavg"}
+                       paste0("cmsafops::num_above for variable ", var),
+                       paste0("cmsafops::num_below for variable ", var),
+                       paste0("cmsafops::num_equal for variable ", var)
   )
-  cmsaf_info <- paste0(cmsaf_info, " for variable ", file_data$variable$name)
 
   time_data <- time_bnds[1, ]
 
