@@ -80,17 +80,20 @@ unlink(c(file.path(tempdir(),"CMSAF_example_file.nc"),
  file.path(tempdir(),"CMSAF_example_file_num_above.nc")))
 }
 \seealso{
-Other mathematical operators: 
-\code{\link{cmsaf.abs}()},
-\code{\link{cmsaf.addc}()},
-\code{\link{cmsaf.add}()},
-\code{\link{cmsaf.divc}()},
-\code{\link{cmsaf.div}()},
-\code{\link{cmsaf.mulc}()},
-\code{\link{cmsaf.mul}()},
-\code{\link{cmsaf.subc}()},
-\code{\link{cmsaf.sub}()},
-\code{\link{divdpm}()},
-\code{\link{muldpm}()}
+Other temporal operators: 
+\code{\link{cmsaf.detrend}()},
+\code{\link{cmsaf.mk.test}()},
+\code{\link{cmsaf.regres}()},
+\code{\link{num_below}()},
+\code{\link{num_equal}()},
+\code{\link{timavg}()},
+\code{\link{timmax}()},
+\code{\link{timmean}()},
+\code{\link{timmin}()},
+\code{\link{timpctl}()},
+\code{\link{timsd}()},
+\code{\link{timsum}()},
+\code{\link{trend_advanced}()},
+\code{\link{trend}()}
 }
-\concept{mathematical operators}
+\concept{temporal operators}

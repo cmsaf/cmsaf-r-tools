@@ -81,7 +81,6 @@ Other mathematical operators:
 \code{\link{cmsaf.mul}()},
 \code{\link{cmsaf.subc}()},
 \code{\link{cmsaf.sub}()},
-\code{\link{divdpm}()},
-\code{\link{num_above}()}
+\code{\link{divdpm}()}
 }
 \concept{mathematical operators}

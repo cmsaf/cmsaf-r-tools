@@ -153,7 +153,10 @@ operators[["Temporal operators"]] <- c("All-time average" = "timavg",
                                        "Linear trend" = "trend",
                                        "Mann-Kendall Test" = "cmsaf.mk.test",
                                        "Regression" = "cmsaf.regres",
-                                       "Multiple linear regression" = "trend_advanced"
+                                       "Multiple linear regression" = "trend_advanced",
+									                     "Number of timesteps above threshold" = "num_above",
+									                     "Number of timesteps below threshold" = "num_below",
+									                     "Number of timesteps equal threshold" = "num_equal"
                                        )
 
 operators[["Time range statistics"]] <- c("Time selection mean" = "timselmean",
@@ -221,13 +224,17 @@ operatorOptions <- c("constant",
                      "file_selection",
                      "running",
                      "timeRange",
-                     "compare_data")
+                     "compare_data",
+                     "threshold")
 
 operatorOptionsDict <- c()
 operatorOptionsDict[["constant"]] <- c("cmsaf.addc",
                                        "cmsaf.divc",
                                        "cmsaf.mulc",
                                        "cmsaf.subc")
+operatorOptionsDict[["threshold"]] <- c("num_above",
+                                        "num_below",
+                                        "num_equal")
 operatorOptionsDict[["region"]] <- c("sellonlatbox",
                                      "absolute_map",
                                      "anomaly_map",

@@ -32,15 +32,15 @@ num_wrapper <- function(op, var, thld, infile, outfile, nc34, overwrite,
   for (i in seq_len(length(file_data$dimension_data$t))) {
     dum_dat <- ncvar_get(nc_in, file_data$variable$name, start = c(1, 1, i),
                          count = c(-1, -1, 1))
+    dum_dat[is.na(dum_dat)] <- 0
 	
     dum_dat <- switch(op,
                       dum_dat > thld,
-                      dum_dat > thld,
+                      dum_dat < thld,
                       dum_dat == thld
     )
 	
-	dum_dat[is.na(dum_dat)] <- 0
-	result <- result + dum_dat
+	  result <- result + dum_dat
 	
   }
 

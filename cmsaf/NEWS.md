@@ -1,5 +1,14 @@
 # Release notes for cmsaf
 
+## 3.1.2
+
+- Add new operators timavg, num_above, num_below, num_equal
+
+## 3.1.1
+
+- Minor update of dates and mail address
+- Bug fix in box_mergetime and get_time due to unit 'seconds since'
+
 ## 3.1.0
 
 - Extend functionalities of Climate Analysis

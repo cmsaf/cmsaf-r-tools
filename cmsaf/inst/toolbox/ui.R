@@ -3,13 +3,13 @@
 # You should not use this R-script on its own!
 #
 # Have fun with the CM SAF R TOOLBOX!
-#                                              (Steffen Kothe / CM SAF 2021-02-11)
+#                                              (Steffen Kothe / CM SAF 2021-08-05)
 #__________________________________________________________________________________
 
 descriptionString <-
   "
 
-The CM SAF R TOOLBOX 3.1.0 -- 'Beware of the Leopard'
+The CM SAF R TOOLBOX 3.1.2 -- 'Beware of the Leopard'
 
 The intention of the CM SAF R Toolbox is to help you using
 CM SAF NetCDF formatted data
@@ -25,7 +25,7 @@ right in and analyze or visualize a .nc file.
 Suggestions for improvements and praise for the developers
 can be sent to contact.cmsaf@dwd.de.
 
-- Steffen Kothe - 2021-02-11 -"
+- Steffen Kothe - 2021-08-05 -"
 
 # Variable can be found in global.R
 if (isRunningLocally) {
@@ -262,6 +262,10 @@ fluidPage(
                                              shinyjs::hidden(numericInput("constant",
                                                                           "Enter a number",
                                                                           value = 1,
+                                                                          width = "320px")),
+											 shinyjs::hidden(numericInput("threshold",
+                                                                          "Enter a number",
+                                                                          value = 0,
                                                                           width = "320px")),
                                              shinyjs::hidden(uiOutput("select_country")),
                                              shinyjs::hidden(uiOutput("region_to_select")),

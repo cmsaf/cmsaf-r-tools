@@ -2782,7 +2782,14 @@ function(input, output, session) {
                            outfile = newOutfile,
                            nc34 = input$format,
                            overwrite = TRUE)
-    } else if (currentOperatorOption() == "constant") {
+    } else if (currentOperatorOption() == "threshold") {
+      argumentList <- list(var = input$usedVariable,
+                           thld = input$threshold,
+                           infile = nc_path_analyze(),
+                           outfile = newOutfile,
+                           nc34 = input$format,
+                           overwrite = TRUE)
+	} else if (currentOperatorOption() == "constant") {
       argumentList <- list(var = input$usedVariable,
                            const = input$constant,
                            infile = nc_path_analyze(),
@@ -6303,7 +6310,7 @@ function(input, output, session) {
     cat("This tool helps you to visualize 1D-timeseries and 2D-maps.", "\n")
     cat("\n")
     cat("This version ('Beware of the Leopard') was tested with the cmsaf", "\n")
-    cat("R-package in version 3.1.0.", "\n")
+    cat("R-package in version 3.1.2.", "\n")
     cat("\n")
     cat("Suggestions for improvements and praise for the developers", "\n")
     cat("can be send to contact.cmsaf@dwd.de.", "\n")

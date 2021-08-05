@@ -1,5 +1,8 @@
 # Changelog for cmsafops package
 
+## 1.1.2
+- Add new operators: timavg, num_above, num_below, num_equal
+
 ## 1.1.1
 - Fix a bug, which led to an error using cmsafvis anomaly_map
 

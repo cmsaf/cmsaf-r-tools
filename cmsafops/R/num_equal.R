@@ -1,6 +1,6 @@
-#'Number of timesteps above a threshold.
+#'Number of timesteps equal a threshold.
 #'
-#'This function counts the number of timesteps above a certain threshold for each 
+#'This function counts the number of timesteps equal a certain threshold for each 
 #'grid point of a dataset.
 #'
 #'
@@ -51,15 +51,15 @@
 #'ncatt_put(ncnew, "lat", "standard_name", "latitude", prec = "text")
 #'nc_close(ncnew)
 #'
-#'## Count the number of timesteps above a threshold of each grid point  
+#'## Count the number of timesteps equal a threshold of each grid point  
 #'## of the example CM SAF NetCDF file and write the output to a new file.
-#'num_above(var = "SIS", thld = 300, infile = file.path(tempdir(),
+#'num_equal(var = "SIS", thld = 300, infile = file.path(tempdir(),
 #'  "CMSAF_example_file.nc"), outfile = file.path(tempdir(),
-#'  "CMSAF_example_file_num_above.nc"))
+#'  "CMSAF_example_file_num_equal.nc"))
 #'
 #'unlink(c(file.path(tempdir(),"CMSAF_example_file.nc"), 
-#'  file.path(tempdir(),"CMSAF_example_file_num_above.nc")))
-num_above <- function(var, thld = 0, infile, outfile, nc34 = 4,
+#'  file.path(tempdir(),"CMSAF_example_file_num_equal.nc")))
+num_equal <- function(var, thld = 0, infile, outfile, nc34 = 4,
                        overwrite = FALSE, verbose = FALSE) {
-  num_wrapper(1, var, thld, infile, outfile, nc34, overwrite, verbose)
+  num_wrapper(3, var, thld, infile, outfile, nc34, overwrite, verbose)
 }
