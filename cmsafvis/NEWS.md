@@ -1,5 +1,9 @@
 # Changelog for cmsafvis package
 
+## 1.1.5
+- Several adaptations in quicklook operator
+- New config parameters for quicklook
+
 ## 1.1.0
 
 - Add new funtionalities to monitor_climate operator (warming stripes, trend plot, time series plot)

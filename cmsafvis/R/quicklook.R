@@ -155,6 +155,7 @@ quicklook <- function(config,
   legends <- c()
   logos <- c()
   slots <- c()
+  invert <- c()
   
   # define plotting area in case of polar projection
   area <- ""
@@ -180,6 +181,11 @@ quicklook <- function(config,
     plot_lim <- rbind(plot_lim, c(limits$min, limits$max))
     legends <- c(legends, configParams[[file_info$product_type]][[file_info$id]][[vars[i]]]$legend)
     slots <- c(slots, configParams[[file_info$product_type]][[file_info$id]][[vars[i]]]$slot)
+    iinvert <- configParams[[file_info$product_type]][[file_info$id]][[vars[i]]]$invert_col
+    if (is.null(iinvert)) {
+      iinvert <- FALSE
+    }
+    invert <- append(invert, iinvert)
     col_from_config <- c(col_from_config, configParams[[file_info$product_type]][[file_info$id]][[vars[i]]]$colorscale)
     if (logo) logos <- c(logos, configParams[[file_info$product_type]][[file_info$id]][[vars[i]]]$logo)
   }
@@ -351,6 +357,13 @@ quicklook <- function(config,
         plot_lim[j,] <- range(raster::values(stacks[[j]][[i]]),na.rm = TRUE)
       } else {
         col <- getColors(col_from_config[[j]], palettes, 32, FALSE)
+      }
+      
+      # invert colors if invert_col is TRUE
+      if (!is.null(invert)) {
+        if (invert[j]) {
+          col <- rev(col)
+        }
       }
       
       # Polar Projection Plot
