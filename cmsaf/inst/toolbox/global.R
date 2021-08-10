@@ -3,7 +3,7 @@
 # You should not use this R-script on its own!
 #
 # Have fun with the CM SAF R TOOLBOX!
-#                                              (Steffen Kothe / CM SAF 2021-07-27)
+#                                              (Steffen Kothe / CM SAF 2021-08-09)
 #__________________________________________________________________________________
 
 # Use home directory for storing config file (e.g. C:\Users\<user>\Documents
@@ -98,7 +98,10 @@ operators[["Monthly statistics"]] <- c("Monthly anomalies" = "mon.anomaly",
                                        "Multi-year monthly means" = "ymonmean",
                                        "Multi-year monthly minima" = "ymonmin",
                                        "Multi-year monthly standard deviations" = "ymonsd",
-                                       "Multi-year monthly sums" = "ymonsum")
+                                       "Multi-year monthly sums" = "ymonsum",
+									   "Monthly number of timesteps above threshold" = "mon_num_above",
+									   "Monthly number of timesteps below threshold" = "mon_num_below",
+									   "Monthly number of timesteps equal threshold" = "mon_num_equal")
 
 operators[["Seasonal statistics"]] <- c("Seasonal anomalies" = "seas.anomaly",
                                         "Seasonal means" = "seasmean",
@@ -154,9 +157,9 @@ operators[["Temporal operators"]] <- c("All-time average" = "timavg",
                                        "Mann-Kendall Test" = "cmsaf.mk.test",
                                        "Regression" = "cmsaf.regres",
                                        "Multiple linear regression" = "trend_advanced",
-									                     "Number of timesteps above threshold" = "num_above",
-									                     "Number of timesteps below threshold" = "num_below",
-									                     "Number of timesteps equal threshold" = "num_equal"
+									   "Number of timesteps above threshold" = "num_above",
+									   "Number of timesteps below threshold" = "num_below",
+									   "Number of timesteps equal threshold" = "num_equal"								                     
                                        )
 
 operators[["Time range statistics"]] <- c("Time selection mean" = "timselmean",
@@ -234,7 +237,10 @@ operatorOptionsDict[["constant"]] <- c("cmsaf.addc",
                                        "cmsaf.subc")
 operatorOptionsDict[["threshold"]] <- c("num_above",
                                         "num_below",
-                                        "num_equal")
+                                        "num_equal",
+										"mon_num_above",
+										"mon_num_below",
+										"mon_num_equal")
 operatorOptionsDict[["region"]] <- c("sellonlatbox",
                                      "absolute_map",
                                      "anomaly_map",

@@ -84,6 +84,9 @@ unlink(c(file.path(tempdir(),"CMSAF_example_file.nc"),
 \seealso{
 Other monthly statistics: 
 \code{\link{mon.anomaly}()},
+\code{\link{mon_num_above}()},
+\code{\link{mon_num_below}()},
+\code{\link{mon_num_equal}()},
 \code{\link{monavg}()},
 \code{\link{mondaymean}()},
 \code{\link{monmax}()},

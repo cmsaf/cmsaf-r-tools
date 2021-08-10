@@ -27,7 +27,8 @@
 #'  \code{\link{monmax}}, \code{\link{monmean}}, \code{\link{monmin}}, \code{\link{monpctl}}, \code{\link{monsd}},
 #'  \code{\link{monsum}}, \code{\link{monvar}}, \code{\link{multimonmean}}, 
 #'  \code{\link{multimonsum}}, \code{\link{ymonmax}}, \code{\link{ymonmean}}, 
-#'  \code{\link{ymonmin}}, \code{\link{ymonsd}}, \code{\link{ymonsum}}
+#'  \code{\link{ymonmin}}, \code{\link{ymonsd}}, \code{\link{ymonsum}}, \code{\link{mon_num_above}},
+#'  \code{\link{mon_num_below}}, \code{\link{mon_num_equal}}
 #'
 #'@section Seasonal statistics: \code{\link{seas.anomaly}},
 #'  \code{\link{seasmean}}, \code{\link{seassd}}, \code{\link{seassum}}, 
@@ -53,7 +54,8 @@
 #'
 #'@section Temporal operators: \code{\link{cmsaf.detrend}}, \code{\link{cmsaf.mk.test}}, \code{\link{cmsaf.regres}}, 
 #'  \code{\link{timmax}}, \code{\link{timmean}}, \code{\link{timavg}}, \code{\link{timmin}}, \code{\link{timpctl}}, 
-#'  \code{\link{timsd}}, \code{\link{timsum}}, \code{\link{trend_advanced}}, \code{\link{trend}}
+#'  \code{\link{timsd}}, \code{\link{timsum}}, \code{\link{trend_advanced}}, \code{\link{trend}},
+#'  \code{\link{num_above}}, \code{\link{num_below}}, \code{\link{num_equal}}
 #'  
 #'@section Time range statistics: \code{\link{timselmean}}, \code{\link{timselsum}}
 #'
