@@ -3,7 +3,7 @@
 # You should not use this R-script on its own!
 #
 # Have fun with the CM SAF R TOOLBOX!
-#                                              (Steffen Kothe / CM SAF 2021-08-09)
+#                                              (Steffen Kothe / CM SAF 2021-08-10)
 #__________________________________________________________________________________
 
 # Use home directory for storing config file (e.g. C:\Users\<user>\Documents
@@ -61,7 +61,9 @@ operators[["Mathematical operators"]] <- c("Compute absolute values" = "cmsaf.ab
                                            "Divide by days per month" = "divdpm",
                                            "Multiply by days per month" = "muldpm",
                                            "Add values from another file" = "cmsaf.add",
-                                           "Subtract values from another file" = "cmsaf.sub")
+                                           "Subtract values from another file" = "cmsaf.sub",
+                                           "Multiply values from another file" = "cmsaf.mul",
+                                           "Divide by values from another file" = "cmsaf.div")
 
 operators[["Hourly statistics"]] <- c("Hourly mean" = "hourmean",
                                       "Hourly sum" = "hoursum")
@@ -290,7 +292,9 @@ operatorOptionsDict[["monitor_climate"]] <- c("absolute_map",
                                               "time_series_plot",
                                               "trend_plot")
 operatorOptionsDict[["file_select"]] <- c("cmsaf.add", 
-                                          "cmsaf.sub")
+                                          "cmsaf.sub",
+                                          "cmsaf.mul",
+                                          "cmsaf.div")
 operatorOptionsDict[["file_selection"]] <- c("fldcor", 
                                              "fldcovar", 
                                              "timcor", 
