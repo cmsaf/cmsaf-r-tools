@@ -318,7 +318,7 @@ bordercolor <- "gray20"
 # imageheight <- -1
 na.color    <- "gray80"
 image_def <- 800         # default image size
-ihsf      <- 0.1         # default image heigth scale factor
+#ihsf      <- 0.1        # default image heigth scale factor (new slider for ihsf in visualizer)
 grid_col  <- "cornsilk2" # default color of grid lines
 plot_grid <- TRUE        # plot grid lines (TRUE = yes, FALSE = no)
 

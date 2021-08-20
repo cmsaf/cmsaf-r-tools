@@ -1,10 +1,11 @@
 # Release notes for cmsaf
 
-## 3.1.2
+## 3.2.0
 
 - Add new operators timavg, num_above, num_below, num_equal,
   mon_num_above, mon_num_below, mon_num_equal
 - Add operators cmsaf.mul and cmsaf.div to Toolbox
+- New slider in visualizer to change image ratio
 
 ## 3.1.1
 
