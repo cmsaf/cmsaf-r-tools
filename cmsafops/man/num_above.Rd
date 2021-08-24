@@ -38,7 +38,7 @@ written. Standard output precision is 'integer'.
 }
 \description{
 This function counts the number of timesteps above a certain threshold for each
-grid point of a dataset.
+grid point of a dataset (x > thld).
 }
 \examples{
 ## Create an example NetCDF file with a similar structure as used by CM

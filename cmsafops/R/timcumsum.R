@@ -49,7 +49,7 @@ timcumsum <- function(var,
   nc_format <- get_nc_version(nc34)
 
   cmsaf_info <-
-    paste0("cmsaf::timcumsum for variable ", file_data$variable$name)
+    paste0("cmsafops::timcumsum for variable ", file_data$variable$name)
 
   ##### prepare output #####
   global_att_list <- names(file_data$global_att)

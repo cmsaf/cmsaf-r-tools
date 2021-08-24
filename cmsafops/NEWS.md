@@ -1,7 +1,10 @@
 # Changelog for cmsafops package
 
-## 1.1.2
-- Add new operators: timavg, num_above, num_below, num_equal
+## 1.2.0
+- Add new operators: timavg, num_above, num_below, num_equal,
+  mon_num_above, mon_num_below, mon_num_equal
+- Bug fix for wrong time stamp in selpoint.multi
+- Bug fix for box_mergetime when time unit is seconds
 
 ## 1.1.1
 - Fix a bug, which led to an error using cmsafvis anomaly_map

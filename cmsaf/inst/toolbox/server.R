@@ -3,7 +3,7 @@
 # You should not use this R-script on its own!
 #
 # Have fun with the CM SAF R TOOLBOX!
-#                                              (Steffen Kothe / CM SAF 2021-08-17)
+#                                              (Steffen Kothe / CM SAF 2021-08-23)
 #__________________________________________________________________________________
 
 # Function to compute first of month
@@ -3875,9 +3875,12 @@ function(input, output, session) {
     if (varname == 0)
       (varname <- var)
 
-    creator_att <- ncdf4::ncatt_get(id, 0, "publisher_name")
+    creator_att <- ncdf4::ncatt_get(id, 0, "institution")
     if (!creator_att$hasatt) {
-      creator_att <- ncdf4::ncatt_get(id, 0, "creator_name")  
+      creator_att <- ncdf4::ncatt_get(id, 0, "publisher_name")
+      if (!creator_att$hasatt) {
+        creator_att <- ncdf4::ncatt_get(id, 0, "creator_name")  
+      } 
     } 
     creator <- ifelse(creator_att$hasatt, creator_att$value, "-")
     copyrightText <- paste0("Data Source: ", creator)
@@ -6365,13 +6368,13 @@ function(input, output, session) {
     cat("The CMSAF Visualizer is part of the CM SAF R Toolbox.", "\n")
     cat("This tool helps you to visualize 1D-timeseries and 2D-maps.", "\n")
     cat("\n")
-    cat("This version ('Beware of the Leopard') was tested with the cmsaf", "\n")
-    cat("R-package in version 3.1.2.", "\n")
+    cat("This version ('This must be Thursday') was tested with the cmsaf", "\n")
+    cat("R-package in version 3.2.0.", "\n")
     cat("\n")
     cat("Suggestions for improvements and praise for the developers", "\n")
     cat("can be send to contact.cmsaf@dwd.de.", "\n")
     cat("\n")
-    cat("                              - Steffen Kothe - 2021-02-10 -", "\n")
+    cat("                              - Steffen Kothe - 2021-08-26 -", "\n")
     cat("\n")
     cat("\n")
   })

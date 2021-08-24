@@ -17,6 +17,8 @@ mon_num_equal(
 \arguments{
 \item{var}{Name of NetCDF variable (character).}
 
+\item{thld}{Threshold (numeric).}
+
 \item{infile}{Filename of input NetCDF file. This may include the directory
 (character).}
 
@@ -35,8 +37,8 @@ A NetCDF file including a time series of monthly maxima is written.
 }
 \description{
 This function counts the number of timesteps equal a certain threshold for each
-month and grid point of a dataset. This operator should be applied to data with
-temporal resolution < monthly (e.g., daily).
+month and grid point of a dataset (x == thld). This operator should be applied to
+data with temporal resolution < monthly (e.g., daily).
 }
 \examples{
 ## Create an example NetCDF file with a similar structure as used by CM

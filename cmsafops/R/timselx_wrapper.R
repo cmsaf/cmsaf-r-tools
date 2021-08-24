@@ -25,8 +25,8 @@ timselx_wrapper <- function(op, var, nts, infile, outfile, nc34, overwrite, verb
   
     cmsaf_info <- switch(
       op,
-      paste0("cmsaf::timselsum for variable ", file_data$variable$name),
-      paste0("cmsaf::timselmean for variable ", file_data$variable$name),
+      paste0("cmsafops::timselsum for variable ", file_data$variable$name),
+      paste0("cmsafops::timselmean for variable ", file_data$variable$name),
     )
   
     time_data <- time_bnds[1, ]

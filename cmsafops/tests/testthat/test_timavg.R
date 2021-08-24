@@ -1,12 +1,12 @@
 data_dir <- file.path("..", "testdata")
 tempfile_nc <- function() {
-  tempfile_helper("timmean_")
+  tempfile_helper("timavg_")
 }
 
 ########## output ncdf version 3 ##########
 file_in <- file.path(data_dir, "ex_normal1.nc")
 file_out <- tempfile_nc()
-timmean("SIS", file_in, file_out)
+timavg("SIS", file_in, file_out)
 file <- nc_open(file_out)
 
 test_that("data is correct", {
@@ -69,7 +69,7 @@ test_that("attributes are correct", {
   expect_equal(actual, -999)
 
   actual <- ncatt_get(file, "SIS", "cmsaf_info")$value
-  expect_equal(actual, "cmsafops::timmean for variable SIS")
+  expect_equal(actual, "cmsafops::timavg for variable SIS")
 
   global_attr <- ncatt_get(file, 0)
   expect_equal(length(global_attr), 1)
@@ -97,7 +97,7 @@ nc_close(file)
 ########## output ncdf version 4 ##########
 file_in <- file.path(data_dir, "ex_normal1.nc")
 file_out <- tempfile_nc()
-timmean("SIS", file_in, file_out, nc34 = 4)
+timavg("SIS", file_in, file_out, nc34 = 4)
 file <- nc_open(file_out)
 
 test_that("data is correct", {
@@ -176,7 +176,7 @@ file_out <- tempfile_nc()
 
 test_that("error is thrown if ncdf version is wrong", {
   expect_error(
-    timmean("SIS", file_in, file_out, nc34 = 7),
+    timavg("SIS", file_in, file_out, nc34 = 7),
     "nc version must be in c(3, 4), but was 7", fixed = TRUE
   )
 })
@@ -187,7 +187,7 @@ file_out <- tempfile_nc()
 
 test_that("ncdf version NULL throws an error", {
   expect_error(
-    timmean("SIS", file_in, file_out, nc34 = NULL),
+    timavg("SIS", file_in, file_out, nc34 = NULL),
     "nc_version must not be NULL"
   )
 })
@@ -198,7 +198,7 @@ file_out <- tempfile_nc()
 
 test_that("warning is shown if var does not exist", {
   expect_warning(
-    timmean("lat", file_in, file_out),
+    timavg("lat", file_in, file_out),
     "Variable 'lat' not found. Variable 'SIS' will be used instead."
   )
 })
@@ -283,7 +283,7 @@ file_out <- tempfile_nc()
 
 test_that("error is thrown if variable is NULL", {
   expect_error(
-    timmean(NULL, file_in, file_out),
+    timavg(NULL, file_in, file_out),
     "variable must not be NULL"
   )
 })
@@ -294,7 +294,7 @@ file_out <- tempfile_nc()
 
 test_that("warning is shown if var is empty", {
   expect_warning(
-    timmean("", file_in, file_out),
+    timavg("", file_in, file_out),
     "Variable '' not found. Variable 'SIS' will be used instead."
   )
 })
@@ -379,7 +379,7 @@ file_out <- tempfile_nc()
 
 test_that("no error is thrown if input file does not exist", {
   expect_error(
-    timmean("SIS", file_in, file_out),
+    timavg("SIS", file_in, file_out),
     "Input file does not exist"
   )
 })
@@ -389,7 +389,7 @@ file_out <- tempfile_nc()
 
 test_that("error is thrown if input filename is NULL", {
   expect_error(
-    timmean("SIS", NULL, file_out),
+    timavg("SIS", NULL, file_out),
     "Input filepath must be of length one and not NULL"
   )
 })
@@ -401,7 +401,7 @@ cat("test\n", file = file_out)
 
 test_that("error is thrown if output file already exists", {
   expect_error(
-    timmean("SIS", file_in, file_out),
+    timavg("SIS", file_in, file_out),
     paste0("File '",
            file_out,
            "' already exists. Specify 'overwrite = TRUE' if you want to overwrite it."),
@@ -418,7 +418,7 @@ cat("test\n", file = file_out)
 
 test_that("no error is thrown if overwrite = TRUE", {
   expect_error(
-    timmean("SIS", file_in, file_out, overwrite = TRUE),
+    timavg("SIS", file_in, file_out, overwrite = TRUE),
     NA
   )
 })
@@ -498,7 +498,7 @@ nc_close(file)
 ########## time length is 2 ##########
 file_in <- file.path(data_dir, "ex_time_dim1.nc")
 file_out <- tempfile_nc()
-timmean("SIS", file_in, file_out)
+timavg("SIS", file_in, file_out)
 file <- nc_open(file_out)
 
 test_that("data is correct", {
@@ -578,7 +578,7 @@ nc_close(file)
 ########## time length is 4 ##########
 file_in <- file.path(data_dir, "ex_time_dim3.nc")
 file_out <- tempfile_nc()
-timmean("SIS", file_in, file_out)
+timavg("SIS", file_in, file_out)
 file <- nc_open(file_out)
 
 test_that("data is correct", {
@@ -657,7 +657,7 @@ nc_close(file)
 ########## input ncdf version 4 ##########
 file_in <- file.path(data_dir, "ex_v4_1.nc")
 file_out <- tempfile_nc()
-timmean("SIS", file_in, file_out)
+timavg("SIS", file_in, file_out)
 file <- nc_open(file_out)
 
 test_that("data is correct", {

@@ -128,8 +128,8 @@ tim_cor_covar_wrapper <- local({
     nc_format <- get_nc_version(nc34)
     
     cmsaf_info <- switch(op,
-                         timcor = {"cmsaf::timcor"},
-                         timcovar = {"cmsaf::timcovar"},
+                         timcor = {"cmsafops::timcor"},
+                         timcovar = {"cmsafops::timcovar"},
     )
     cmsaf_info <- paste0(cmsaf_info, " for variable ", file_data_one$variable$name)
     

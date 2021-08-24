@@ -1,10 +1,11 @@
 #'Number of timesteps per month below a threshold.
 #'
 #'This function counts the number of timesteps below a certain threshold for each 
-#'month and grid point of a dataset. This operator should be applied to data with
-#'temporal resolution < monthly (e.g., daily).
+#'month and grid point of a dataset (x < thld). This operator should be applied to 
+#'data with temporal resolution < monthly (e.g., daily).
 #'
 #'@param var Name of NetCDF variable (character).
+#'@param thld Threshold (numeric).
 #'@param infile Filename of input NetCDF file. This may include the directory
 #'  (character).
 #'@param outfile Filename of output NetCDF file. This may include the directory

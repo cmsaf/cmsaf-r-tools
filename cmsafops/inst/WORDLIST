@@ -8,6 +8,7 @@ Chatterjee
 checkfile
 climatological
 cmsaf
+cmsafvis
 CMSAF
 colorbar
 colourpicker
@@ -68,6 +69,7 @@ ncvar
 netcdf
 NetCDF
 NetCDFv
+num
 ORD
 outfile
 Pfeifroth
@@ -95,6 +97,7 @@ strsplit
 subc
 sys
 tbnds
+timavg
 timcumsum
 timeseries
 Timeseries

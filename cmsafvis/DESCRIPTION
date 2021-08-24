@@ -36,6 +36,6 @@ Encoding: UTF-8
 Language: en-US
 Suggests: plotKML (>= 0.6), rnaturalearth (>= 0.1), spelling (>= 2.1),
         testthat (>= 2.3)
-Packaged: 2021-02-15 09:11:47 UTC
+Packaged: 2021-08-24 09:11:47 UTC
 Author: Steffen Kothe [aut, cre]
 Maintainer: Steffen Kothe <Steffen.Kothe@dwd.de>

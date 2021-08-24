@@ -226,6 +226,22 @@ selpoint.multi <- function(var, infile, path, pattern, outpath, lon1, lat1,
     } # end for
   }
 
+  # get time reference
+    dt_ref <- get_time(file_data$time_info$units, 0)
+    unit_ref <- unlist(strsplit(file_data$time_info$units, split = " "))[1]
+
+    # check reference time unit
+    unit_ref_test <- switch(
+      substr(toupper(unit_ref), 1, 3),
+      "MIN" = "mins",
+      "SEC" = "secs",
+      "HOU" = "hours",
+      "DAY" = "days",
+      "WEE" = "weeks",
+      "MON" = "months",
+      "auto"
+    )
+	
   if (case == 1) {
 
     if (file_data$time_info$has_time_bnds) {
@@ -248,7 +264,12 @@ selpoint.multi <- function(var, infile, path, pattern, outpath, lon1, lat1,
           dummy <- rbind(dummy, result)
         }
       }
-      dum_time <- as.numeric(ncvar_get(id, TIME_NAMES$DEFAULT))
+      
+	  dum_time <- as.numeric(ncvar_get(id, TIME_NAMES$DEFAULT))
+	  dum_t_units <- ncatt_get(id, TIME_NAMES$DEFAULT, ATTR_NAMES$UNITS)$value
+    dt_dum <- get_time(dum_t_units, dum_time)
+	  dum_time <- as.integer(difftime(dt_dum, dt_ref, units = c(unit_ref)))
+	  
       time_sorting <- append(time_sorting, dum_time)
       result_data <- rbind(result_data, dummy)
       if (file_data$time_info$has_time_bnds) {
@@ -262,23 +283,7 @@ selpoint.multi <- function(var, infile, path, pattern, outpath, lon1, lat1,
     result_data <- aperm(result_data, c(2, 1))
     result_data <- result_data[, order(time_sorting)]
 }
-    # get time reference
-    dt_ref <- get_time(file_data$time_info$units, 0)
-    unit_ref <- unlist(strsplit(file_data$time_info$units, split = " "))[1]
-
-    # check reference time unit
-    unit_ref_test <- switch(
-      substr(toupper(unit_ref), 1, 3),
-      "MIN" = "mins",
-      "SEC" = "secs",
-      "HOU" = "hours",
-      "DAY" = "days",
-      "WEE" = "weeks",
-      "MON" = "months",
-      "auto"
-    )
-
-
+    
   target_lon <- round(target_lon, digits = 3)
   target_lat <- round(target_lat, digits = 3)
 
