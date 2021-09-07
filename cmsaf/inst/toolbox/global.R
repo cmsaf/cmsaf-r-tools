@@ -240,9 +240,9 @@ operatorOptionsDict[["constant"]] <- c("cmsaf.addc",
 operatorOptionsDict[["threshold"]] <- c("num_above",
                                         "num_below",
                                         "num_equal",
-										"mon_num_above",
-										"mon_num_below",
-										"mon_num_equal")
+										                "mon_num_above",
+										                "mon_num_below",
+										                "mon_num_equal")
 operatorOptionsDict[["region"]] <- c("sellonlatbox",
                                      "absolute_map",
                                      "anomaly_map",

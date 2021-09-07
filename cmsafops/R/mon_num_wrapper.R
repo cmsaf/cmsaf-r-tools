@@ -103,8 +103,8 @@ mon_num_wrapper <- function(op, var, thld, infile, outfile, nc34, overwrite, ver
     dum_dat <- ncvar_get(nc_in, file_data$variable$name, start = c(1, 1, startt), count = c(-1, -1, countt), collapse_degen = FALSE)
 
     dum_dat <- switch(op,
-                      dum_dat > thld,
-                      dum_dat < thld,
+                      dum_dat >= thld,
+                      dum_dat <= thld,
                       dum_dat == thld
     )
     

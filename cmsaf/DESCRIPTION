@@ -33,7 +33,6 @@ Imports: colourpicker (>= 1.0), colorspace (>= 1.4), fields (>= 10.3),
         3.5), data.table, SearchTrees
 NeedsCompilation: no
 Repository: CRAN
-LazyData: true
 Suggests: spelling (>= 2.1), testthat (>= 2.3)
 RoxygenNote: 7.1.1
 Encoding: UTF-8

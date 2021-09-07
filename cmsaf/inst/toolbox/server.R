@@ -6318,6 +6318,8 @@ function(input, output, session) {
       cat(paste0("Maximum:            ", da_max), "\n")
       cat(paste0("Minimum:            ", da_min), "\n")
       cat(paste0("Unit:               ", visualizeVariables()$unit), "\n")
+      cat("\n")
+      cat(paste0("To save the histogram figure: right-click + save image as..."), "\n")
     })
 
     # Missing values can be found in global.R

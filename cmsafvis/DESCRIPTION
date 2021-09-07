@@ -1,6 +1,6 @@
 Package: cmsafvis
 Title: Tools to Visualize CM SAF NetCDF Data
-Version: 1.1.5
+Version: 1.1.6
 Authors@R: 
     person(given = "Steffen",
            family = "Kothe",
@@ -29,13 +29,12 @@ Imports: animation (>= 2.6), assertthat (>= 0.2.1), cmsafops (>=
         rgdal, utils
 NeedsCompilation: no
 Repository: CRAN
-LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
 Encoding: UTF-8
 Language: en-US
 Suggests: plotKML (>= 0.6), rnaturalearth (>= 0.1), spelling (>= 2.1),
         testthat (>= 2.3)
-Packaged: 2021-08-24 09:11:47 UTC
+Packaged: 2021-09-07 09:11:47 UTC
 Author: Steffen Kothe [aut, cre]
 Maintainer: Steffen Kothe <Steffen.Kothe@dwd.de>

@@ -28,7 +28,6 @@ Imports: assertthat (>= 0.2.1), fields (>= 10.3), FNN (>= 1.1), ncdf4
         progress, trend, SearchTrees, utils
 NeedsCompilation: no
 Repository: CRAN
-LazyData: true
 Suggests: cmsaf, cmsafvis, spelling (>= 2.1), testthat (>= 2.3)
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1

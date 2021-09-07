@@ -34,8 +34,8 @@ num_wrapper <- function(op, var, thld, infile, outfile, nc34, overwrite,
                          count = c(-1, -1, 1))
 	
     dum_dat <- switch(op,
-                      dum_dat > thld,
-                      dum_dat < thld,
+                      dum_dat >= thld,
+                      dum_dat <= thld,
                       dum_dat == thld
     )
     

@@ -59,6 +59,9 @@ quicklook <- function(config,
   assert_that(is.flag(copyright))
   assert_that(is.flag(bluemarble))
   
+  # define some global variables, which are part of the bluemarble data
+  nc_crs <- blue_marble <- NULL
+  
   ### Build colorpalettes ###
   
   palettes <- GetPaletteConfig(gui = TRUE)
@@ -248,8 +251,13 @@ quicklook <- function(config,
   }
   
   if (logo) {
-    AR_color <- dims_color[1] / dims_color[2] * iwidth / iheight
-    AR_black <- dims_black[1] / dims_black[2] * iwidth / iheight
+    if (area == "NP" | area == "SP") {
+      AR_color <- dims_color[1] / dims_color[2] * iwidth / iheight
+      AR_black <- dims_black[1] / dims_black[2] * iwidth / iheight
+    } else {
+      AR_color <- dims_color[1] / dims_color[2] * lon_range / lat_range
+      AR_black <- dims_black[1] / dims_black[2] * lon_range / lat_range
+    }
   }
   
   if (is_multiplot) {
@@ -287,7 +295,7 @@ quicklook <- function(config,
     for (k in seq_along(vars)) {
       stacks <- c(stacks, raster::stack(filelist[i], quick = TRUE, varname = vars[k]))
     }
-    if (exists("nc_crs")) {
+    if (!is.null(nc_crs)) {
       for (l in seq_along(stacks)) {
         raster::crs(stacks[[l]]) <- nc_crs
       }
@@ -445,6 +453,7 @@ quicklook <- function(config,
           datav,
           xlim = c(-0.7, 0.7),
           ylim = c(-0.7, 0.7),
+          zlim = plot_lim[j,],
           nx = nx / xf,
           ny = ny / yf,
           xlab = " ",
@@ -485,6 +494,7 @@ quicklook <- function(config,
           datav,
           xlim = c(-0.7, 0.7),
           ylim = c(-0.7, 0.7),
+          zlim = plot_lim[j,],
           nx = nx / xf,
           ny = ny / yf,
           xlab = " ",
@@ -523,7 +533,7 @@ quicklook <- function(config,
         
       # bluemarble plot
        if (bluemarble) {
-         if (exists("blue_marble")) {
+         if (!is.null(blue_marble)) {
           raster::extent(stacks[[j]]) <- c(-1, 1, -1, 1)
           fields::quilt.plot(
           # This is generated in data-raw/generate_internal_data.R
@@ -532,6 +542,7 @@ quicklook <- function(config,
           blue_marble$data_values,
           xlim = c(-1, 1),
           ylim = c(-1, 1),
+          zlim = plot_lim[j,],
           nx = blue_marble$n_lon_unique / blue_marble$xf,
           ny = blue_marble$n_lat_unique / blue_marble$yf,
           xlab = " ",
@@ -555,7 +566,7 @@ quicklook <- function(config,
        } else {
         # borderline plots for scale
         if (file_info$grid == "Satellite projection MSG/Seviri") {
-          if (exists("blue_marble")) {
+          if (!is.null(blue_marble)) {
             graphics::par(pty = "s")
             raster::extent(stacks[[j]]) <- c(-1, 1, -1, 1)
             fields::quilt.plot(
@@ -565,6 +576,7 @@ quicklook <- function(config,
             blue_marble$data_values,
             xlim = c(-1, 1),
             ylim = c(-1, 1),
+            zlim = plot_lim[j,],
             nx = blue_marble$n_lon_unique / blue_marble$xf,
             ny = blue_marble$n_lat_unique / blue_marble$yf,
             xlab = " ",
@@ -624,6 +636,18 @@ quicklook <- function(config,
       
       # plot logo and copyright text
       if (logo || copyright) {
+        # check figure min and max and calculate a correction
+        xmin <- par("usr")[1]
+        xmax <- par("usr")[2]
+        ymin <- par("usr")[3]
+        ymax <- par("usr")[4]
+        
+        xoff <- (1 / (abs(xmin) + abs(xmax))) * (abs(xmin - lon_min) + 1)
+        yoff <- (1 / (abs(ymin) + abs(ymax))) * (abs(ymin - lat_min) + 1)
+        
+        if (xoff <= 0 || xoff >= 0.1) xoff <- 0
+        if (yoff <= 0 || yoff >= 0.1) yoff <- 0
+        
         graphics::par(usr = c(0, 1, 0, 1))
         
         if (logos[j] == "color") {
@@ -640,20 +664,19 @@ quicklook <- function(config,
       }
       if (logo) {
         graphics::rasterImage(array(0.75, dim = dim(logo_cmsaf)),
-                              logo.x + 0.01,
-                              logo.y + 0.01,
-                              logo.x + logo.scale,
-                              logo.y + (AR * logo.scale),
+                              logo.x + 0.01 + xoff,
+                              logo.y + 0.01 + yoff,
+                              logo.x + logo.scale + xoff,
+                              logo.y + (AR * logo.scale) + yoff,
                               interpolate = TRUE,
                               bg = "white")
         
         graphics::rasterImage(logo_cmsaf,
-                              logo.x + 0.01,
-                              logo.y + 0.01,
-                              logo.x + logo.scale,
-                              logo.y + (AR * logo.scale),
-                              interpolate = TRUE,
-                              asp = 1
+                              logo.x + 0.01 + xoff,
+                              logo.y + 0.01 + yoff,
+                              logo.x + logo.scale + xoff,
+                              logo.y + (AR * logo.scale) + yoff,
+                              interpolate = TRUE
         )
       }
       if (copyright) {
@@ -661,13 +684,13 @@ quicklook <- function(config,
         cr.scale <- (logo.scale - 0.02)/graphics::strwidth(txt)
         dims_text <- c(round(dim(logo_cmsaf)[1]/2), dim(logo_cmsaf)[2], dim(logo_cmsaf)[3])
         graphics::rasterImage(array(0.75, dim = dim(logo_cmsaf)),
-                              text.x - logo.scale,
-                              text.y,
-                              text.x,
-                              text.y + ((AR * logo.scale)/2),
+                              text.x - logo.scale - xoff,
+                              text.y + yoff,
+                              text.x - xoff,
+                              text.y + ((AR * logo.scale)/2) + yoff,
                               interpolate = TRUE)
         
-        graphics::text(text.x, text.y + 0.01, txt,
+        graphics::text(text.x - xoff, text.y + 0.01 + yoff, txt,
                        cex = cr.scale,
                        adj = c(1,0))
       }

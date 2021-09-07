@@ -1,7 +1,7 @@
 #'Number of timesteps above a threshold.
 #'
 #'This function counts the number of timesteps above a certain threshold for each 
-#'grid point of a dataset (x > thld).
+#'grid point of a dataset (x >= thld).
 #'
 #'
 #'@param var Name of NetCDF variable (character).
