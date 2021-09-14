@@ -13,7 +13,8 @@ quicklook(
   iwidth = 800,
   logo = TRUE,
   copyright = TRUE,
-  bluemarble = FALSE
+  bluemarble = FALSE,
+  verbose = TRUE
 )
 }
 \arguments{
@@ -38,11 +39,13 @@ quicklook(
 \item{bluemarble}{logical; should the data be plotted onto a NASA bluemarble (only available for MSG/Seviri based data)?
 Due to data size this option is not available for the cmsafvis package on CRAN. Please have a look at
 our website https://www.cmsaf.eu/R_toolbox}
+
+\item{verbose}{logical; if TRUE, progress messages are shown}
 }
 \value{
 A jpeg file with the same name as the original NetCDF file.
 }
 \description{
 The function creates a plot of the variables in NetCDF file(s) specified in the config file.
-Only NetCDF files that conform to the \href{https://www.cmsaf.eu/EN/Products/NamingConvention/Naming_Convention_node.html}{CMSAF naming convention} are supported.
+Only NetCDF files that conform to the \href{https://www.cmsaf.eu/EN/Products/NamingConvention/Naming_Convention_node.html}{CM SAF naming convention} are supported.
 }

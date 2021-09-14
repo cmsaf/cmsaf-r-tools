@@ -1,7 +1,7 @@
 #'Create a quicklook of NetCDF data
 #'
 #'The function creates a plot of the variables in NetCDF file(s) specified in the config file.
-#'Only NetCDF files that conform to the [CMSAF naming convention](https://www.cmsaf.eu/EN/Products/NamingConvention/Naming_Convention_node.html) are supported.
+#'Only NetCDF files that conform to the [CM SAF naming convention](https://www.cmsaf.eu/EN/Products/NamingConvention/Naming_Convention_node.html) are supported.
 #'
 #'@param filelist list of NetCDF file to create plots from (character).
 #'@param config filename of configuration file. This may include the directory
@@ -16,6 +16,7 @@
 #'@param bluemarble logical; should the data be plotted onto a NASA bluemarble (only available for MSG/Seviri based data)?
 #'   Due to data size this option is not available for the cmsafvis package on CRAN. Please have a look at
 #'   our website https://www.cmsaf.eu/R_toolbox
+#'@param verbose logical; if TRUE, progress messages are shown
 #'
 #'@return A jpeg file with the same name as the original NetCDF file.
 #'@export
@@ -29,7 +30,8 @@ quicklook <- function(config,
                       iwidth = 800,
                       logo = TRUE,
                       copyright = TRUE,
-                      bluemarble = FALSE) {
+                      bluemarble = FALSE,
+                      verbose = TRUE) {
   # Make sure that any user settings are reset when the function exits
   # This is a requirement by CRAN
   oldpar <- graphics::par(no.readonly = TRUE)
@@ -97,6 +99,7 @@ quicklook <- function(config,
     )
     
     # Size and location of the logo
+    xwidth <- iwidth
     logo.scale_black <- 0.3
     
     logo.x <- 0
@@ -143,12 +146,36 @@ quicklook <- function(config,
     text.x <- 0.99
     text.y <- 0.01
   }
-  
+ 
   ### Read config file ###
-  
   configParams <- yaml::read_yaml(config)
-  ref_file <- filelist[1]
+  
+  # loop over files in filelist
+  for (ifile in 1:length(filelist)) {
+  
+  suppressWarnings(reset_par()) # just to be sure
+  invisible(grDevices::dev.off())
+    
+  plotfile <- filelist[ifile]   
+  ref_file <- plotfile[1]
   file_info <- get_file_info(ref_file)
+  iwidth <- xwidth 
+  
+  # check config entry
+  if (sum(grepl(file_info$id, configParams)) == 1) {
+    if (verbose) {
+      cat("Config entry found for: ", basename(ref_file), sep = "")
+      cat ("\n")
+    }
+    
+  } else {
+    if (verbose) {
+      cat("!!! Warning !!! Config entry missing for: ", 
+          basename(ref_file)," ", file_info$id, sep = "")
+      cat ("\n")
+    }
+    next
+  }
   
   varnames <- c()
   units <- c()
@@ -289,11 +316,10 @@ quicklook <- function(config,
   
   ### Plot ###
   
-  for (i in 1:length(filelist)) {
     # read data
     stacks <- c()
     for (k in seq_along(vars)) {
-      stacks <- c(stacks, raster::stack(filelist[i], quick = TRUE, varname = vars[k]))
+      stacks <- c(stacks, raster::stack(plotfile[1], quick = TRUE, varname = vars[k]))
     }
     if (!is.null(nc_crs)) {
       for (l in seq_along(stacks)) {
@@ -306,15 +332,15 @@ quicklook <- function(config,
     
     
     # filename and timestamp for title
-    filename <- unlist(strsplit(basename(filelist[i]), "\\."))
+    filename <- unlist(strsplit(basename(plotfile[1]), "\\."))
     outfile <- file.path(outpath, paste0(filename[1], ".jpg"))
     fi <- get_file_info(filename[1])
-    if (is.null(slots[i])) {
+    if (is.null(slots[1])) {
       file_time <- fi$date_time
-      slot_i <- i
+      slot_i <- 1
     } else {
-      file_time <- date.time[i]
-      slot_i <- slots[i]
+      file_time <- date.time[1]
+      slot_i <- slots[1]
     }
     
     if (file_info$time_interval == "instantaneous")
@@ -356,13 +382,13 @@ quicklook <- function(config,
       
       # Set color palette
       if (col_from_config[[1]] == "clouds") {
-        stacks[[j]][[i]][is.na(stacks[[j]][[i]])] <- 0
-        if (raster::maxValue(stacks[[j]][[i]]) == 3) {
+        stacks[[j]][[1]][is.na(stacks[[j]][[1]])] <- 0
+        if (raster::maxValue(stacks[[j]][[1]]) == 3) {
           col <- cloud_mask1
         } else {
           col <- cloud_mask2
         }
-        plot_lim[j,] <- range(raster::values(stacks[[j]][[i]]),na.rm = TRUE)
+        plot_lim[j,] <- range(raster::values(stacks[[j]][[1]]),na.rm = TRUE)
       } else {
         col <- getColors(col_from_config[[j]], palettes, 32, FALSE)
       }
@@ -379,7 +405,7 @@ quicklook <- function(config,
        
         rotate_cc <- function(x) {apply(t(x), 2, rev)}
         
-        datav <- raster::as.matrix(stacks[[j]][[i]])
+        datav <- raster::as.matrix(stacks[[j]][[1]])
         # for some reason the data are mirrored; this has to be corrected
         datav <- rotate_cc(datav)
         if (area == "NP") {
