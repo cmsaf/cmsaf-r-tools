@@ -10,7 +10,7 @@ quicklook(
   outpath = getwd(),
   jpeg_quality = 100,
   dpi = 150,
-  iwidth = 800,
+  iwidth = 1242,
   logo = TRUE,
   copyright = TRUE,
   bluemarble = FALSE,

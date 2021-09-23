@@ -27,7 +27,7 @@ quicklook <- function(config,
                       outpath = getwd(),
                       jpeg_quality = 100,
                       dpi = 150,
-                      iwidth = 800,
+                      iwidth = 1242,
                       logo = TRUE,
                       copyright = TRUE,
                       bluemarble = FALSE,
@@ -37,6 +37,11 @@ quicklook <- function(config,
   oldpar <- graphics::par(no.readonly = TRUE)
   # Warning: In graphics::par(oldpar) : par(new) ohne Plot aufgerufen
   on.exit(suppressWarnings(graphics::par(oldpar)))
+  
+  # temporarly switch warnings off due to unwanted crs warnings
+  oldw <- getOption("warn")
+  options(warn = -1)
+  on.exit(options(warn = oldw))
   
   ### check parameters ###
   assert_that(is.string(config))
@@ -145,6 +150,9 @@ quicklook <- function(config,
     
     text.x <- 0.99
     text.y <- 0.01
+    
+    lsb <- logo.scale_black
+    lsc <- logo.scale_color
   }
  
   ### Read config file ###
@@ -167,7 +175,6 @@ quicklook <- function(config,
       cat("Config entry found for: ", basename(ref_file), sep = "")
       cat ("\n")
     }
-    
   } else {
     if (verbose) {
       cat("!!! Warning !!! Config entry missing for: ", 
@@ -272,7 +279,7 @@ quicklook <- function(config,
   if (area == "NP" | area == "SP") {
     iheight <- round(iwidth*0.94)
     } else if (area == "GL") {
-      iheight <- round((iwidth/aspect)*0.98)
+      iheight <- round((iwidth/aspect)*1.04)
       } else {
           iheight <- round((iwidth/aspect)*0.95)
   }
@@ -287,11 +294,29 @@ quicklook <- function(config,
     }
   }
   
-  if (is_multiplot) {
-    iheight <- iheight*1.5
-    iwidth  <- iwidth*1.5
+  if (logo) {
+    if (area == "GL") {
+      logo.scale_black <- 0.18
+      logo.height_black <- logo.scale_black * iwidth * dims_black[1] / dims_black[2]
+      
+      if (logo.scale_black * iwidth * dims_black[1] / dims_black[2] < 30) {
+        logo.height_black <- 30
+        logo.scale_black <- logo.height_black / dims_black[1] * dims_black[2] / iwidth
+      }
+      
+      logo.scale_color <- 0.18
+      logo.height_color <- logo.scale_color * iwidth * dims_color[1] / dims_color[2]
+      
+      if (logo.scale_color * iwidth * dims_color[1] / dims_color[2] < 30) {
+        logo.height_color <- 30
+        logo.scale_color <- logo.height_color / dims_color[1] * dims_color[2] / iwidth
+      }
+    } else {
+      logo.scale_black <- lsb
+      logo.scale_color <- lsc
+    } 
   }
-  
+
   # factor for font size
   fsf <- iwidth / 800
   
@@ -372,12 +397,15 @@ quicklook <- function(config,
       nrows <- ceiling(nvars/ncols)
       graphics::par(mfrow = c(nrows, ncols))
       graphics::par(mar = c(2, 4, 4, 6) + 0.1)
-      graphics::par(oma = c(0, 0, 1, 5))
+      graphics::par(oma = c(0, 0, 2, 5))
+    }  else if (area == "GL") {
+        graphics::par(mar = c(2, 0, 4, 5) + 0.1)
+        graphics::par(oma = c(0, 0, 1, 1))
     } else {
-      graphics::par(mar = c(2, 4, 4, 6) + 0.1)
-      graphics::par(oma = c(0, 0, 1, 1))
+        graphics::par(mar = c(2, 4, 4, 7) + 0.1)
+        graphics::par(oma = c(0, 0, 1, 2))
     }
-    
+
     for (j in seq_along(vars)) {
       
       # Set color palette
@@ -671,8 +699,8 @@ quicklook <- function(config,
         xoff <- (1 / (abs(xmin) + abs(xmax))) * (abs(xmin - lon_min) + 1)
         yoff <- (1 / (abs(ymin) + abs(ymax))) * (abs(ymin - lat_min) + 1)
         
-        if (xoff <= 0 || xoff >= 0.1) xoff <- 0
-        if (yoff <= 0 || yoff >= 0.1) yoff <- 0
+        if (xoff <= 0 || xoff >= 0.5) xoff <- 0
+        if (yoff <= 0 || yoff >= 0.5) yoff <- 0
         
         graphics::par(usr = c(0, 1, 0, 1))
         
@@ -680,28 +708,30 @@ quicklook <- function(config,
           logo_cmsaf <- logo_cmsaf_color
           AR <- AR_color
           logo.scale <- logo.scale_color
-          logo.height <- logo.height_color
+          logo.height <-
+            (dims_color[1]/dims_color[2] *((abs(xmin) + abs(xmax)) * logo.scale)) / (abs(ymin) + abs(ymax))
         } else {
           logo_cmsaf <- logo_cmsaf_black
           AR <- AR_black
           logo.scale <- logo.scale_black
-          logo.height <- logo.height_black
+          logo.height <-
+            (dims_black[1]/dims_black[2] *((abs(xmin) + abs(xmax)) * logo.scale)) / (abs(ymin) + abs(ymax))
         }
       }
       if (logo) {
         graphics::rasterImage(array(0.75, dim = dim(logo_cmsaf)),
                               logo.x + 0.01 + xoff,
                               logo.y + 0.01 + yoff,
-                              logo.x + logo.scale + xoff,
-                              logo.y + (AR * logo.scale) + yoff,
+                              logo.x + logo.scale + 0.01 + xoff,
+                              logo.y + logo.height + 0.01 + yoff,
                               interpolate = TRUE,
                               bg = "white")
         
         graphics::rasterImage(logo_cmsaf,
                               logo.x + 0.01 + xoff,
                               logo.y + 0.01 + yoff,
-                              logo.x + logo.scale + xoff,
-                              logo.y + (AR * logo.scale) + yoff,
+                              logo.x + logo.scale + 0.01 + xoff,
+                              logo.y + logo.height + 0.01 + yoff,
                               interpolate = TRUE
         )
       }
@@ -733,7 +763,7 @@ quicklook <- function(config,
                      zlim = plot_lim[j,],
                      legend.only = TRUE,
                      legend.shrink = 0.9,
-                     legend.width = 1,
+                     legend.width = 1.5,
                      legend.mar = 5.1,
                      legend.args=list(text = units[j], 
                                       side = 2, 
