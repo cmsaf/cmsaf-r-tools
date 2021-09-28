@@ -69,6 +69,70 @@ renderString <-
     }
 }'
 
+months_list <- c("January", "February", "March", "April", "May", "June",
+                 "July", "August", "September", "October", "November", "December")
+data_cube_urls <- list(
+  "CMSAF CDR" = list(
+    "https://psd.cube.eumetsat.int/thredds/ncss/CMSAF_CDR_DNI_M_rnsds/CMSAF_CDR_DNI_M_rnsds.nc/dataset.html",
+    "https://psd.cube.eumetsat.int/thredds/ncss/CMSAF_CDR_DNI_M_rnsdscs/CMSAF_CDR_DNI_M_rnsdscs.nc/dataset.html",
+    "https://psd.cube.eumetsat.int/thredds/ncss/CMSAF_CDR_DNI_D_rnsds/CMSAF_CDR_DNI_D_rnsds.nc/dataset.html",
+    "https://psd.cube.eumetsat.int/thredds/ncss/CMSAF_CDR_DNI_D_rnsdscs/CMSAF_CDR_DNI_D_rnsdscs.nc/dataset.html",
+    "https://psd.cube.eumetsat.int/thredds/ncss/CMSAF_CDR_SDU_M/CMSAF_CDR_SDU_M.nc/dataset.html",
+    "https://psd.cube.eumetsat.int/thredds/ncss/CMSAF_CDR_SDU_D/CMSAF_CDR_SDU_D.nc/dataset.html",
+    "https://psd.cube.eumetsat.int/thredds/ncss/CMSAF_CDR_SIS_M_rsds/CMSAF_CDR_SIS_M_rsds.nc/dataset.html",
+    "https://psd.cube.eumetsat.int/thredds/ncss/CMSAF_CDR_SIS_M/CMSAF_CDR_SIS_M_rsdscs.nc/dataset.html",
+    "https://psd.cube.eumetsat.int/thredds/ncss/CMSAF_CDR_SIS_D_rsds/CMSAF_CDR_SIS_D_rsds.nc/dataset.html",
+    "https://psd.cube.eumetsat.int/thredds/ncss/CMSAF_CDR_SIS_D/CMSAF_CDR_SIS_D_rsdscs.nc/dataset.html"
+    ),
+  "CMSAF ICDR" = list(
+    "https://psd.cube.eumetsat.int/thredds/ncss/CMSAF_ICDR_DNI_M_rnsds/CMSAF_ICDR_DNI_M_rnsds.nc/dataset.html",
+    "https://psd.cube.eumetsat.int/thredds/ncss/CMSAF_ICDR_DNI_M_rnsdscs/CMSAF_ICDR_DNI_M_rnsdscs.nc/dataset.html",
+    "https://psd.cube.eumetsat.int/thredds/ncss/CMSAF_ICDR_DNI_D_rnsds/CMSAF_ICDR_DNI_D_rnsds.nc/dataset.html",
+    "https://psd.cube.eumetsat.int/thredds/ncss/CMSAF_ICDR_DNI_D/CMSAF_ICDR_DNI_D_rnsdscs.nc/dataset.html",
+    "https://psd.cube.eumetsat.int/thredds/ncss/CMSAF_ICDR_SDU_M/CMSAF_ICDR_SDU_M.nc/dataset.html",
+    "https://psd.cube.eumetsat.int/thredds/ncss/CMSAF_ICDR_SIS_M_rsds/CMSAF_ICDR_SIS_M_rsds.nc/dataset.html",
+    "https://psd.cube.eumetsat.int/thredds/ncss/CMSAF_ICDR_SIS_M_rsdscs/CMSAF_ICDR_SIS_M_rsdscs.nc/dataset.html",
+    "https://psd.cube.eumetsat.int/thredds/ncss/CMSAF_ICDR_SIS_D_rsds/CMSAF_ICDR_SIS_D_rsds.nc/dataset.html",
+    "https://psd.cube.eumetsat.int/thredds/ncss/CMSAF_ICDR_SIS_D_rsdscs/CMSAF_ICDR_SIS_D_rsdscs.nc/dataset.html"
+    ),
+  "ECMWF" = list(
+    "https://psd.cube.eumetsat.int/thredds/ncss/ECMWF_T2M_M/ECMWF_T2M_M.nc/dataset.html"
+    ),
+  "GPCC" = list(
+    "https://psd.cube.eumetsat.int/thredds/ncss/GPCC_PRECIP_M/GPCC_PRECIP_M.nc/dataset.html"
+    ),
+  "HSAF CDR" = list(
+    "https://psd.cube.eumetsat.int/thredds/ncss/HSAF_CDR_WET_D_swi1/HSAF_CDR_WET_D_swi1.nc/dataset.html",
+    "https://psd.cube.eumetsat.int/thredds/ncss/HSAF_CDR_WET_D_swi2/HSAF_CDR_WET_D_swi2.nc/dataset.html",
+    "https://psd.cube.eumetsat.int/thredds/ncss/HSAF_CDR_WET_D_swi3/HSAF_CDR_WET_D_swi3.nc/dataset.html",
+    "https://psd.cube.eumetsat.int/thredds/ncss/HSAF_CDR_WET_D_swi4/HSAF_CDR_WET_D_swi4.nc/dataset.html"
+    ),
+  "HSAF ICDR" = list(
+    "https://psd.cube.eumetsat.int/thredds/ncss/HSAF_ICDR_WET_D_swi1/HSAF_ICDR_WET_D_swi1.nc/dataset.html",
+    "https://psd.cube.eumetsat.int/thredds/ncss/HSAF_ICDR_WET_D_swi2/HSAF_ICDR_WET_D_swi2.nc/dataset.html",
+    "https://psd.cube.eumetsat.int/thredds/ncss/HSAF_ICDR_WET_D_swi3/HSAF_ICDR_WET_D_swi3.nc/dataset.html",
+    "https://psd.cube.eumetsat.int/thredds/ncss/HSAF_ICDR_WET_D_swi4/HSAF_ICDR_WET_D_swi4.nc/dataset.html"
+    ),
+  "LSASAF CDR" = list(
+    "https://psd.cube.eumetsat.int/thredds/ncss/LSASAF_CDR_FAPAR_D/LSASAF_CDR_FAPAR_D.nc/dataset.html",
+    "https://psd.cube.eumetsat.int/thredds/ncss/LSASAF_CDR_FVC_D/LSASAF_CDR_FVC_D.nc/dataset.html",
+    "https://psd.cube.eumetsat.int/thredds/ncss/LSASAF_CDR_LAI_D/LSASAF_CDR_LAI_D.nc/dataset.html",
+    "https://psd.cube.eumetsat.int/thredds/ncss/LSASAF_CDR_LST_H/LSASAF_CDR_LST_H.nc/dataset.html",
+    "https://psd.cube.eumetsat.int/thredds/ncss/LSASAF_CDR_METREF_D/LSASAF_CDR_METREF_D.nc/dataset.html",
+    "https://psd.cube.eumetsat.int/thredds/ncss/LSASAF_CDR_NDVI_10D/LSASAF_CDR_NDVI_10D.nc/dataset.html"
+    ),
+  "LSASAF ICDR" = list(
+    "https://psd.cube.eumetsat.int/thredds/ncss/LSASAF_ICDR_FAPAR_D/LSASAF_ICDR_FAPAR_D.nc/dataset.html",
+    "https://psd.cube.eumetsat.int/thredds/ncss/LSASAF_ICDR_FVC_D/LSASAF_ICDR_FVC_D.nc/dataset.html",
+    "https://psd.cube.eumetsat.int/thredds/ncss/LSASAF_ICDR_LAI_D/LSASAF_ICDR_LAI_D.nc/dataset.html",
+    "https://psd.cube.eumetsat.int/thredds/ncss/LSASAF_ICDR_NDVI_10D/LSASAF_ICDR_NDVI_10D.nc/dataset.html"
+    ),
+  "LSASAF NRT" = list(
+    "https://psd.cube.eumetsat.int/thredds/ncss/LSASAF_NRT_LST_H/LSASAF_NRT_LST_H.nc/dataset.html",
+    "https://psd.cube.eumetsat.int/thredds/ncss/LSASAF_NRT_METREF_D/LSASAF_NRT_METREF_D.nc/dataset.html"
+    )
+  )
+
 fluidPage(
   theme = shinythemes::shinytheme("flatly"),
   tags$head(tags$link(rel = "stylesheet", type = "text/css", href = "style.css")),
@@ -116,14 +180,18 @@ fluidPage(
                                                                                          label = "Choose a .tar-file...",
                                                                                          multiple = FALSE,
                                                                                          title = "Please select a .tar-file.")),
-                                            shinyjs::hidden(span(id = "or_prepare", "or")),
+                                            shinyjs::hidden(span(id = "or_prepare", "or", class = "or")),
                                             shinyjs::hidden(actionButton("ncFileLocal",
                                                                          label = "Choose .nc-files...")),
                                             shinyjs::hidden(shinyFiles::shinyFilesButton(
                                                                                          id = "ncFileRemote",
                                                                                          label = "Choose .nc-files...",
                                                                                          multiple = FALSE,
-                                                                                         title = "Please select .nc-files.")))
+                                                                                         title = "Please select .nc-files.")),
+                                            shinyjs::hidden(span(id = "or_prepare2", "or", class = "or")),
+                                            shinyjs::hidden(actionButton("ncURL",
+                                                                         label = "Enter .nc file URL..."))
+                                            )
                                     )),
                                    
                          shinyjs::hidden(
@@ -132,7 +200,90 @@ fluidPage(
                                     shinyjs::disabled(actionButton("untarAndUnzip",
                                                                    "Untar and unzip files.")),
                                     )),
-                         
+                         shinyjs::hidden(
+                           tags$div(id = "panel_prepare_nc_url",
+                                    selectizeInput("nc_url_text",
+                                                   label = "Please enter a URL to a NetCDF (.nc) file", 
+                                                   width = "100%",
+                                                   selected = NULL, options = list(create = TRUE, persist = TRUE, delimiter = ";;;"),
+                                                   choices = c("Select or Enter URL..." = "", 
+                                                     data_cube_urls)),
+                                    shinyjs::disabled(actionButton("nc_url_connect", "Connect to URL")),
+                                    tags$br(),
+                                    tags$br(),
+                                    htmlOutput("nc_url_valid_message"),
+                                    shinyjs::hidden(
+                                      tags$div(id = "nc_url_file_info",
+                                               h3("Short File Information"),
+                                               verbatimTextOutput("ncurlShortInfo"))
+                                      ),
+                                    shinyjs::hidden(actionButton("nc_url_download", "")),
+                                    shinyjs::hidden(actionButton("nc_url_subset", "Subset this file")),
+                                    shinyjs::hidden(span(id = "or_prepare3", "or", class = "or")),
+                                    shinyjs::hidden(actionButton("nc_url_analyze", "Analyze this file")),
+                                    shinyjs::hidden(span(id = "or_prepare4", "or", class = "or")),
+                                    shinyjs::hidden(actionButton("nc_url_visualize", "Visualize this file")),
+                                    tags$br(),
+                                    tags$br(),
+                                    shinyjs::hidden(
+                                      tags$div(id = "nc_url_download_analyze_or_visualise",
+                                               actionButton("nc_url_download_analyze", "Analyze this file"),
+                                               span(id = "or_prepare5", "or", class = "or"),
+                                               actionButton("nc_url_download_visualize", "Visualise this file"),
+                                               )
+                                      ),
+                                    shinyjs::hidden(tags$div(id = "spinner_prepare_nc_url_connect",
+                                                             class = "spinner",
+                                                             tags$div(class = "spinner-title", h4("Connecting to URL...")),
+                                                             tags$div(class = "double-bounce1"),
+                                                             tags$div(class = "double-bounce2"))),
+                                    shinyjs::hidden(tags$div(id = "spinner_prepare_nc_url_download",
+                                                             class = "spinner",
+                                                             tags$div(class = "spinner-title", h4("Downloading NetCDF (.nc) file...")),
+                                                             tags$div(class = "double-bounce1"),
+                                                             tags$div(class = "double-bounce2")))
+                           )),
+                         # NetCDF Subset Selection (NCSS) URL options
+                         shinyjs::hidden(
+                           tags$div(id = "panel_prepare_ncss_url_subset",
+                                    # make these uiOutput instead
+                                    htmlOutput("ncss_url_print"),
+                                    uiOutput("ncss_var_list_ui"),
+                                    uiOutput("ncss_lon_range_ui"),
+                                    uiOutput("ncss_lat_range_ui"),
+                                    radioButtons("ncss_time_type",
+                                                 "Time Selection",
+                                                 choices = c("Date Range" = "date_range",
+                                                             "Extract Months" = "extract_months"),
+                                                 inline = TRUE),
+                                    shinyjs::hidden(uiOutput("ncss_date_range_ui")),
+                                    shinyjs::hidden(
+                                      tags$div(id = "ncss_month_range",
+                                               tags$div(tags$b("Please select a month range")),
+                                               tags$div(style = "display:inline-block", selectInput("ncss_month_from", "From", months_list, selected = months_list[1], width = "130px")),
+                                               tags$div(style = "display:inline-block", selectInput("ncss_month_to", "To", months_list, selected = months_list[12], width = "130px"))
+                                      )
+                                    ),
+                                    shinyjs::hidden(uiOutput("ncss_year_range_ui")),
+                                    actionButton("ncss_subset_download", ""),
+                                    shinyjs::hidden(
+                                      tags$div(id = "ncss_file_info",
+                                               h3("Short File Information"),
+                                               verbatimTextOutput("ncssShortInfo"))
+                                    ),
+                                    shinyjs::hidden(
+                                      tags$div(id = "ncss_download_analyze_or_visualise",
+                                               actionButton("ncss_download_analyze", "Analyze this file"),
+                                               span(id = "or_prepare6", "or", class = "or"),
+                                               actionButton("ncss_download_visualize", "Visualise this file"),
+                                      )
+                                    ),
+                                    shinyjs::hidden(tags$div(id = "spinner_prepare_ncss_download",
+                                                             class = "spinner",
+                                                             tags$div(class = "spinner-title", h4("Downloading NetCDF (.nc) file...")),
+                                                             tags$div(class = "double-bounce1"),
+                                                             tags$div(class = "double-bounce2")))
+                                    )),
                          # date range .nc-files selection
                          shinyjs::hidden(
                            tags$div(id = "panel_prepareInput1Nc",

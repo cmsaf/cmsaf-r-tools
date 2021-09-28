@@ -25,12 +25,27 @@ Description: The Satellite Application Facility on Climate Monitoring (CM SAF)
 URL: https://www.cmsaf.eu
 License: GPL (>= 3)
 Depends: R (>= 3.6), cmsafops (>= 1.1.1), cmsafvis (>= 1.1.1)
-Imports: colourpicker (>= 1.0), colorspace (>= 1.4), fields (>= 10.3),
-        FNN (>= 1.1), mapproj (>= 1.2), maps (>= 3.3), maptools (>=
-        0.9), ncdf4 (>= 1.17), R.utils (>= 2.9), raster (>= 3.0),
-        rworldxtra (>= 1.01), shiny (>= 1.4), shinyFiles (>= 0.8.0),
-        shinyjs (>= 1.1), shinythemes (>= 1.1), sp (>= 1.4), tcltk (>=
-        3.5), data.table, SearchTrees
+Imports: 
+    colourpicker (>= 1.0),
+    colorspace (>= 1.4),
+    fields (>= 10.3),
+    FNN (>= 1.1),
+    mapproj (>= 1.2),
+    maps (>= 3.3),
+    maptools (>= 0.9),
+    ncdf4 (>= 1.17),
+    R.utils (>= 2.9),
+    raster (>= 3.0),
+    rworldxtra (>= 1.01),
+    shiny (>= 1.4),
+    shinyFiles (>= 0.8.0),
+    shinyjs (>= 1.1),
+    shinythemes (>= 1.1),
+    sp (>= 1.4),
+    tcltk (>= 3.5),
+    data.table,
+    SearchTrees,
+    xml2
 NeedsCompilation: no
 Repository: CRAN
 Suggests: spelling (>= 2.1), testthat (>= 2.3)

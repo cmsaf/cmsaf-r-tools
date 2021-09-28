@@ -16,7 +16,7 @@ firstOfMonth <- function(x) {
 # Get tarlist sorted by name.
 getTarList <- function(path_to_tar, tar_flag = 1, includeClaasAux = FALSE) {
   
-  ordname <- basename(path_to_tar)
+  ordname <- cmsafops::get_basename(path_to_tar)
   ordpath <- dirname(path_to_tar)
 
   if (identical(path_to_tar, character(0))) {
@@ -79,7 +79,7 @@ extractDateRange <- function(path_to_tar, tar_flag) {
 # A function to extract ALL dates from .nc-files.
 extractAllDatesNc <- function(path_to_nc, nc_flag) {
   
-  ordname <- basename(path_to_nc)
+  ordname <- cmsafops::get_basename(path_to_nc)
   ordpath <- dirname(path_to_nc)
   
   if (identical(path_to_nc, character(0))) {
@@ -129,6 +129,119 @@ choose_directory <- function(caption = "Select data directory") {
   }
 }
 
+# Validate an .nc URL
+# Parameters
+# x: a string containing a URL to validate whether it leads to a .nc file
+# Value
+# -1 if cannot connect to the URL
+# TRUE if URL appears to lead to a .nc file and FALSE if not.
+# Details
+# It is suggested to use this check only if ncdf4::nc_open() fails.
+# Some valid .nc URLs do not return the "application/x-netcdf" content-type.
+# An additional proxy check requiring a "text" or "application/octet-stream" content-type 
+# and ".nc" appearing in the URL is used to ensure these URLs are considered valid.
+# However, this may lead to some invalid URLs returning TRUE, 
+# which will be detected later in the app.
+valid_nc_url <- function(x) {
+  con_type <- ""
+  try({
+    url_head <- httr::HEAD(x)
+    con_type <- httr::headers(url_head)[["content-type"]]
+    stat_code <- as.character(httr::status_code(url_head))
+  })
+  # If the content type is blank or the status code begins with 4 e.g. 404 
+  # then it's likely the URL is invalid.
+  if (con_type == "" || startsWith(stat_code, "4")) return(-1)
+  else if (con_type %in% c("application/x-netcdf", "application/x-netcdf4")) return(TRUE)
+  else {
+    # Many URL which lead to NetCDF file e.g. links from THREDDS servers,
+    # do not have the NetCDF content type, hence an additional check is needed.
+    # These often have a "text" content type.
+    # Some NetCDF files are also coded as "application/octet-stream" which is like "unknown" or "generic"
+    return((startsWith(con_type, "text/plain") || startsWith(con_type, "text/html") || con_type == "application/octet-stream") && grepl(".nc", x))
+  }
+}
+
+# Strips suffix of .nc URL to get base .nc URL
+# e.g. by removing "dataset.html" or "dataset.xml" at the end of the URL provided by a user
+base_ncss_url <- function(x) {
+  if (!endsWith(x, ".nc")) {
+    x <- gsub(pattern = "([^/]+$)", replacement = "", x)
+    x <- gsub(pattern = "(\\/+$)", replacement = "", x)
+    x
+  } else x
+}
+
+# Gets the data description (XML file) from a NetCDF Subset Service (NCSS) URL.
+# NULL is returned for invalid URLs.
+# The data description is returned as a list constructed by xml2::as_list()
+ncss_data_description <- function(x) {
+  x <- base_ncss_url(x)
+  # If the URL does not end in .nc then it will not be an ncss URL
+  if (!endsWith(x, ".nc")) return(NULL)
+  x <- paste0(x, "/dataset.xml")
+  res <- try(xml2::read_xml(x))
+  # If this fails then URL is not an ncss URL or no connection
+  if (class(res) == "try-error") return(NULL)
+  res <- xml2::as_list(res)
+  res
+}
+
+# Constructs a query URL from an NCSS nc file.
+# This is used to download a subset defined in panel_prepare_ncss_url_subset
+construct_ncss_url <- function(base_url, var, north, west, east, south, h_stride = 1, time_start, time_end, time_stide = 1, accept = "netcdf") {
+  if (missing(var)) stop("var must be supplied.")
+  n_dir <- sum(!missing(north), !missing(west), !missing(east), !missing(south))
+  if (n_dir > 0 & n_dir < 4) stop("All four lat/lon bounds must be supplied, or none for the full range.")
+  if (missing(time_start) || missing(time_end)) stop("time_start and time_end must be supplied.")
+  
+  colon <- "%3A"
+  q_url <- base_url
+  q_url <- paste0(q_url, "?var=", var, "&")
+  if (n_dir == 4) {
+    q_url <- paste0(q_url, "north=", north, "&")
+    q_url <- paste0(q_url, "west=", west, "&")
+    q_url <- paste0(q_url, "east=", east, "&")
+    q_url <- paste0(q_url, "south=", south, "&")
+  }
+  # This assumes time_start and time_end are "Date" types without time components
+  # TODO add option for time_start and time_end to be different classes
+  time_start <- paste0(time_start, "T", "00", colon, "00", colon, "00", "Z")
+  time_end <- paste0(time_end, "T", "23", colon, "59", colon, "59", "Z")
+  q_url <- paste0(q_url, "time_start=", time_start, "&")
+  q_url <- paste0(q_url, "time_end=", time_end, "&")
+  q_url <- paste0(q_url, "timeStride=", time_stide, "&")
+  
+  q_url <- paste0(q_url, "accept=", accept)
+  q_url
+}
+
+months_list <- c("January", "February", "March", "April", "May", "June",
+                 "July", "August", "September", "October", "November", "December")
+
+# Constructs a list of query URLs from an NCSS nc file to extract a range of months for each year.
+# This is used to download a subset defined in panel_prepare_ncss_url_subset
+construct_ncss_url_month_extract <- function(base_url, var, north, west, east, south, h_stride = 1, month_start, month_end, year_start, year_end, accept = "netcdf") {
+  month_min <- match(month_start, months_list)
+  month_max <- match(month_end, months_list)
+  month_max_next <- ifelse(month_max == 12, 1, month_max + 1)
+  years <- year_start:year_end
+  urls <- vector("character", length(years))
+  for(i in seq_along(years)) {
+    y_min <- years[i]
+    y_max <- ifelse(month_min <= month_max, y_min, y_min + 1)
+    time_start <- as.Date(paste(y_min, month_min, "1"), format = "%Y %m %d")
+    # Get the first day of the next month and subtract 1 to get last day of month_max
+    if (month_max == 12) time_end <- as.Date(paste(y_max + 1, month_max_next, "1"), format = "%Y %m %d")
+    else time_end <- as.Date(paste(y_max, month_max_next, "1"), format = "%Y %m %d")
+    time_end <- time_end - 1
+    urls[i] <- construct_ncss_url(base_url = base_url, var = var, 
+                                  north = north, west = west, east = east, south = south, 
+                                  h_stride = h_stride,
+                                  time_start, time_end, accept = "netcdf")
+  }
+  return(urls)
+}
 function(input, output, session) {
   #### Preparation and session set up ####
   # TODO: Setting the maximum request size. WARNING: NOT SURE WHAT'S A GOOD VALUE FOR THIS
@@ -141,22 +254,31 @@ function(input, output, session) {
     shinyjs::show("tarFileLocal")
     shinyjs::show("ncFileLocal")
     shinyjs::show("or_prepare")
+    shinyjs::show("ncURL")
+    shinyjs::show("or_prepare2")
     shinyjs::show("ncFileLocal_analyze")
     shinyjs::show("ncFileLocal_visualize")
     shinyjs::show("shapefileLocal")
 
     # Let user be able to modify the output directory.
     shinyjs::show("modify_userDir")
+    updateActionButton(inputId = "nc_url_download", label = "Download this file")
+    updateActionButton(inputId = "ncss_subset_download", label = "Download this subset")
   } else {
     shinyjs::show("tarFileRemote")
     shinyjs::show("ncFileRemote")
     shinyjs::show("or_prepare")
+    shinyjs::show("ncURL")
+    shinyjs::show("or_prepare2")
     shinyjs::show("ncFileRemote_analyze")
     shinyjs::show("ncFileRemote_visualize")
     shinyjs::show("shapefileRemote")
 
     # Let user be able to download the output directory.
     shinyjs::show("downloader")
+    
+    updateActionButton(inputId = "nc_url_download", label = "Download to server")
+    updateActionButton(inputId = "ncss_subset_download", label = "Download subset to server")
   }
 
   dir.create(config_directory, showWarnings = FALSE)
@@ -173,8 +295,15 @@ function(input, output, session) {
   outputDir <<- ""
   action_userDir_change <- reactiveVal(0)
 
+  # Number of remote files created by the user.
+  # This is used to inform the user of any created files before exiting.
+  n_remote_files <- reactiveVal(0)
+  
   # 'Unique' session name
-  sessionName <- paste0(session$user, format(Sys.time(), "%Y%m%d%H%M%S", tz = "UTC"))
+  # session$token is the recommended unique identifier
+  # timestamps should be avoided in case of multiple users accessing instantaneously.
+  sessionName <- session$token
+
   videoDir <- reactiveVal(file.path(getwd(), "www", "video"))
   observe({
     if (dir.exists(videoDir())) {
@@ -196,6 +325,10 @@ function(input, output, session) {
   # Reactive value for nc-file-path.
   nc_path <- reactiveVal("")
   nc_path_action <- reactiveVal(0)
+  
+  # Reactive value for the URL and data description of an NCSS .nc URL
+  ncss_url <- reactiveVal(NULL)
+  ncss_url_data_desc <- reactiveVal(NULL)
   
   # Reactive value set after untaring files
   untarVals <- reactiveVal()
@@ -425,7 +558,9 @@ function(input, output, session) {
     outputDir <<- userDir
 
     dirFlag <- FALSE
-    # If by any chance this directroy has existed give warning message.
+    # If by any chance this directory has existed give warning message.
+    # Note: This should now never happen through use of session$token
+    # but sensible to keep as a check.
     if (dir.exists(userDir)) {
       dirFlag <- TRUE
       warning(paste0("User directory: ", userDir, " already exists. APP WILL STOP!"))
@@ -531,8 +666,8 @@ function(input, output, session) {
       if (isRunningLocally) {
         # Local host prepare string dependent on userDir
         tags$div(h2("Prepare"),
-                 tags$p("Please select a TAR file", tags$strong("(.tar)"), "or a NetCDF file", tags$strong("(.nc)"), " to start the preparation."),
-                 tags$p("of your data. This is the first step after you downloaded your ordered tar-file(s) or NetCDF files."),
+                 tags$p("Please select a TAR file", tags$strong("(.tar)"), ", a NetCDF file", tags$strong("(.nc)"), " or a NetCDF URL to start the preparation"),
+                 tags$p("of your data. This is the first step after you downloaded your ordered tar-file(s) or NetCDF files or obtained a direct URL."),
                  tags$p("For NetCDF files, you only need to select the first file and the others are selected automatically."),
                  br(),
                  tags$p("This application will help you to extract, unzip and merge the data."),
@@ -615,6 +750,319 @@ function(input, output, session) {
     shinyjs::enable("ncFileLocal")
   }, ignoreInit = TRUE)
 
+  # Prepare enter .nc file from URL button. (local and remote)
+  observeEvent(input$ncURL, {
+    shinyjs::hide(id = "panel_prepareGo")
+    shinyjs::show(id = "panel_prepare_nc_url", anim = TRUE, animType = "fade")
+  }, ignoreInit = TRUE)
+  
+  # Prepare check .nc URL button
+  observeEvent(input$nc_url_text, {
+    shinyjs::toggleState("nc_url_connect", input$nc_url_text != "")
+    output$nc_url_valid_message <- renderText({""})
+    shinyjs::hide(id = "nc_url_file_info")
+    shinyjs::hide(id = "nc_url_download")
+    shinyjs::hide(id = "nc_url_subset")
+    shinyjs::hide(id = "or_prepare3")
+    shinyjs::hide(id = "nc_url_analyze")
+    shinyjs::hide(id = "or_prepare4")
+    shinyjs::hide(id = "nc_url_visualize")
+    shinyjs::hide(id = "nc_url_download_analyze_or_visualise")
+  }, ignoreInit = TRUE)
+  
+  # Clear .nc validation text
+  observeEvent(input$nc_url_text, {
+    shinyjs::toggleState("nc_url_connect", input$nc_url_text != "")
+  }, ignoreInit = TRUE)
+  
+  # Set .nc URL validation and connection text
+  observeEvent(input$nc_url_connect, {
+    shinyjs::disable("panel_prepare_nc_url")
+    shinyjs::show("spinner_prepare_nc_url_connect", anim = TRUE, animType = "fade")
+    user_url <- input$nc_url_text
+    if (endsWith(user_url, "dataset.html") || endsWith(user_url, "dataset.xml")) {
+      ncss_url(base_ncss_url(user_url))
+      ncss_url_data_desc(ncss_data_description(ncss_url()))
+      if (!is.null(ncss_url_data_desc())) {
+        shinyjs::show(id = "nc_url_subset")
+        output$nc_url_valid_message <- renderText({
+          "<span style='color:green'>Valid NetCDF (.nc) URL for subsetting selection.</span>"
+        })
+      } else {
+        output$nc_url_valid_message <- renderText({
+          "<span style='color:red'>URL does not appear to lead to a NetCDF (.nc) file or cannot access URL. Please check the URL or your connection and try again.</span>"
+        })
+        shinyjs::hide(id = "nc_url_subset")
+      }
+    } else {
+      nc <- tryCatch(ncdf4::nc_open(user_url),
+                     error = function(e) return(NULL))
+      if (!is.null(nc)) valid_url <- TRUE
+      else valid_url <- valid_nc_url(user_url)
+      output$nc_url_valid_message <- renderText({
+        if (valid_url == -1) {
+          mes <- "<span style='color:red'>Cannot access URL. Check the URL is correct"
+          if (isRunningLocally) {
+            mes <- paste(mes, "and your internet connection")
+          }
+          return(paste0(mes, " and try again.</span>"))
+        } else if (valid_url) {
+          return("<span style='color:green'>Valid NetCDF (.nc) URL</span>")
+        } else {
+          return("<span style='color:red'>URL does not appear to lead to a NetCDF (.nc) file. Please check the URL and try again.</span>")
+        }
+      })
+      if (isTRUE(valid_url)) {
+        shinyjs::show(id = "nc_url_download")
+        if (!is.null(nc)) {
+          output$ncurlShortInfo <- renderPrint({
+            cmsafops::ncinfo(nc = nc)
+          })
+          shinyjs::show(id = "nc_url_file_info")
+          shinyjs::show(id = "or_prepare3")
+          shinyjs::show(id = "nc_url_analyze")
+          shinyjs::show(id = "or_prepare4")
+          shinyjs::show(id = "nc_url_visualize")
+        } else {
+          shinyjs::hide(id = "nc_url_file_info")
+          shinyjs::hide(id = "or_prepare3")
+          shinyjs::hide(id = "nc_url_analyze")
+          shinyjs::hide(id = "or_prepare4")
+          shinyjs::hide(id = "nc_url_visualize")
+        }
+      } else {
+        shinyjs::hide(id = "nc_url_download")
+      }
+    }
+    shinyjs::hide("spinner_prepare_nc_url_connect")
+    shinyjs::enable("panel_prepare_nc_url")
+  }, ignoreInit = TRUE)
+  
+  # Download .nc URL
+  observeEvent(input$nc_url_download, {
+    shinyjs::disable("panel_prepare_nc_url")
+    shinyjs::show("spinner_prepare_nc_url_download", anim = TRUE, animType = "fade")
+    # Try to get the base name from the URL
+    b <- try(cmsafops::get_basename(input$nc_url_text))
+    # However, some URLs are too long e.g. from THREDDS servers, and don't return a
+    # base name. Hence, a default name "url_download" is used instead.
+    # This could be replaced by something else derived from the URL
+    # e.g. first and last few characters?
+    if (class(b) == "try-error") b <- "url_download"
+    # The timestamp is appended to the file name to ensure the file is unique.
+    url_file <- file.path(userDir, paste0(format(Sys.time(), "%Y%m%d_%H%M%S_"), b))
+    # The base name may not finish with ".nc" so this needs to be added.
+    if (!endsWith(url_file, ".nc")) url_file <- paste0(url_file, ".nc")
+    res <- try(utils::download.file(input$nc_url_text, url_file, method = "auto", mode = "wb"))
+    
+    shinyjs::hide("spinner_prepare_nc_url_download")
+    shinyjs::enable("panel_prepare_nc_url")
+    if (class(res) != "try-error" && res == 0) {
+      shinyjs::hide(id = "nc_url_download")
+      outputFilepath(url_file)
+      output_nc_is_url <<- FALSE
+      output$ncurlShortInfo <- renderPrint({
+        cmsafops::ncinfo(url_file)
+      })
+      shinyjs::show(id = "nc_url_file_info")
+      shinyjs::show(id = "nc_url_download_analyze_or_visualise")
+    } else {
+      showModal(modalDialog(
+        h4("Something went wrong while downloading the file. Please try again or choose another URL."),
+        title = "Error.",
+        size = "l"
+      ))
+    }
+  },
+  ignoreInit = TRUE
+  )
+  
+  # Set up panel_prepare_ncss_url_subset when nc_url_subset clicked
+  observeEvent(input$nc_url_subset, {
+    shinyjs::hide("panel_prepare_nc_url")
+    shinyjs::show("panel_prepare_ncss_url_subset")
+    
+    grid_west <- as.numeric(unlist(ncss_url_data_desc()$gridDataset$LatLonBox$west))
+    grid_east <- as.numeric(unlist(ncss_url_data_desc()$gridDataset$LatLonBox$east))
+    grid_north <- as.numeric(unlist(ncss_url_data_desc()$gridDataset$LatLonBox$north))
+    grid_south <- as.numeric(unlist(ncss_url_data_desc()$gridDataset$LatLonBox$south))
+    #TODO Determine this from data description
+    lon_step <- 0.05
+    lat_step <- 0.05
+    
+    time_min <- as.Date(unlist(ncss_url_data_desc()$gridDataset$TimeSpan$begin))
+    time_max <- as.Date(unlist(ncss_url_data_desc()$gridDataset$TimeSpan$end))
+    year_min <- as.numeric(format(time_min, "%Y"))
+    year_max <- as.numeric(format(time_max, "%Y"))
+    
+    vars <- c()
+    grid_set <- ncss_url_data_desc()$gridDataset$gridSet
+    for (i in seq_along(grid_set)) {
+      if (names(grid_set)[i] == "grid") {
+        vars <- c(vars, attributes(grid_set[[i]])$name)
+      }
+    }
+    output$ncss_url_print <- renderText({paste(tags$b(ncss_url()))})
+    output$ncss_var_list_ui <- renderUI({
+      selectInput(inputId = "ncss_var_list",
+                  label = "Select a variable",
+                  vars)
+    })
+    output$ncss_lon_range_ui <- renderUI({
+      sliderInput(inputId = "ncss_lon_range",
+                  label = "Please select a longitude range.",
+                  min = grid_west,
+                  max = grid_east,
+                  value = c(grid_west, grid_east),
+                  step = lon_step)
+    })
+    output$ncss_lat_range_ui <- renderUI({
+      sliderInput(inputId = "ncss_lat_range",
+                  label = "Please select a latitude range.",
+                  min = grid_south,
+                  max = grid_north,
+                  value = c(grid_south, grid_north),
+                  step = lat_step)
+    })
+    output$ncss_date_range_ui <- renderUI({
+      dateRangeInput(inputId = "ncss_date_range",
+                  label = "Please select a date range.",
+                  start = time_min,
+                  end = time_max,
+                  min = time_min,
+                  max = time_max)
+    })
+    output$ncss_year_range_ui <- renderUI({
+      sliderInput(inputId = "ncss_year_range",
+                  label = "Please select a year range.",
+                  min = year_min,
+                  max = year_max,
+                  value = c(year_min, year_max),
+                  step = 1,
+                  sep = "")
+    })
+  },
+  ignoreInit = TRUE
+  )
+  
+  # Radio buttons for time selection type for subsetting
+  observeEvent(input$ncss_time_type, {
+    if (input$ncss_time_type == "date_range") {
+      shinyjs::show("ncss_date_range_ui")
+      shinyjs::hide("ncss_year_range_ui")
+      shinyjs::hide("ncss_month_range")
+    } else {
+      shinyjs::hide("ncss_date_range_ui")
+      shinyjs::show("ncss_year_range_ui")
+      shinyjs::show("ncss_month_range")
+    }
+  })
+  
+  # Downloading a NCSS subset
+  observeEvent(input$ncss_subset_download, {
+    if (input$ncss_time_type == "date_range") {
+      subset_url <- construct_ncss_url(base_url = ncss_url(), var = input$ncss_var_list, 
+                                       north = input$ncss_lat_range[2], west = input$ncss_lon_range[1], 
+                                       east = input$ncss_lon_range[2], south = input$ncss_lat_range[1], 
+                                       time_start = input$ncss_date_range[1], time_end = input$ncss_date_range[2])
+    } else {
+      subset_url <- construct_ncss_url_month_extract(base_url = ncss_url(), var = input$ncss_var_list,
+                                                     north = input$ncss_lat_range[2], west = input$ncss_lon_range[1],
+                                                     east = input$ncss_lon_range[2], south = input$ncss_lat_range[1],
+                                                     month_start = input$ncss_month_from, month_end = input$ncss_month_to, 
+                                                     year_start = input$ncss_year_range[1], year_end = input$ncss_year_range[2])
+    }
+    
+    # Try to get the base name from the URL
+    b <- try(cmsafops::get_basename(ncss_url()))
+    if (class(b) == "try-error") b <- "url_download"
+    if (endsWith(b, ".nc")) b <- substr(b, 1, nchar(b) - 3)
+    b <- paste0(format(Sys.time(), "%Y%m%d_%H%M%S_"), b)
+    shinyjs::disable("panel_prepare_ncss_url_subset")
+    shinyjs::show("spinner_prepare_ncss_download", anim = TRUE, animType = "fade")
+    url_files <- vector("character", length(subset_url))
+    for (i in seq_along(subset_url)) {
+      # The timestamp is appended to the file name to ensure the file is unique.
+      url_files[i] <- file.path(userDir, paste0(b, "_", i))
+      # The base name may not finish with ".nc" so this needs to be added.
+      if (!endsWith(url_files[i], ".nc")) url_files[i] <- paste0(url_files[i], ".nc")
+      
+      res <- try(utils::download.file(subset_url[i], url_files[i], method = "auto", mode = "wb"))
+      if (class(res) == "try-error" || res != 0) {
+        showModal(modalDialog(
+          h4("Something went wrong while downloading the file. Please try again or choose another URL."),
+          title = "Error.",
+          size = "l"
+        ))
+        break
+      }
+    }
+    if (length(url_files) > 1) {
+      url_file_final <- file.path(userDir, paste0(b, "_", "merge.nc"))
+      res <- try({
+        cmsafops::box_mergetime(var = input$ncss_var_list, path = userDir, pattern = b,
+                                outfile = url_file_final, overwrite = TRUE)
+      })
+      if (!is.null(res)) {
+        showModal(modalDialog(
+          h4("Something went wrong merging downloaded files. Please try again or choose another URL."),
+          title = "Error.",
+          size = "l"
+        ))
+        url_file_final <- NULL
+      }
+    } else url_file_final <- url_files[1]
+    
+    shinyjs::hide("spinner_prepare_ncss_download")
+    shinyjs::enable("panel_prepare_ncss_url_subset")
+    if ((length(url_files) > 1 && is.null(res)) || (class(res) != "try-error" && res == 0)) {
+      shinyjs::hide(id = "nc_url_download")
+      outputFilepath(url_file_final)
+      output_nc_is_url <<- FALSE
+      output$ncssShortInfo <- renderPrint({
+        cmsafops::ncinfo(url_file_final)
+      })
+      shinyjs::show(id = "ncss_file_info")
+      shinyjs::show(id = "ncss_download_analyze_or_visualise")
+    } else {
+      showModal(modalDialog(
+        h4("Something went wrong while downloading the file. Please try again or choose another URL."),
+        title = "Error.",
+        size = "l"
+      ))
+    }
+  },
+  ignoreInit = TRUE
+  )
+  
+  # Prepare downloaded .nc URL for analyze
+  observeEvent(input$nc_url_download_analyze, {
+    resetToAnalyzePanel()
+  },
+  ignoreInit = TRUE
+  )
+  
+  # Prepare downloaded .nc URL for visualize
+  observeEvent(input$nc_url_download_visualize, {
+    resetToVisualizePanel()
+  },
+  ignoreInit = TRUE
+  )
+  
+  # Prepare downloaded .nc URL for analyze
+  observeEvent(input$ncss_download_analyze, {
+    resetToAnalyzePanel()
+  },
+  ignoreInit = TRUE
+  )
+  
+  # Prepare downloaded .nc URL for visualize
+  observeEvent(input$ncss_download_visualize, {
+    resetToVisualizePanel()
+  },
+  ignoreInit = TRUE
+  )
+  
   # Handling remote tar selection.
   shinyFiles::shinyFileChoose(input, 'tarFileRemote', session = session, roots = remoteVolume, filetypes=c('tar'))
     
@@ -807,9 +1255,13 @@ function(input, output, session) {
     shinyjs::hide("panel_analyzeGo")
     shinyjs::hide("panel_visualizeGo")
     shinyjs::hide("panel_prepareInput1")
+    shinyjs::hide("panel_prepare_nc_url")
+    shinyjs::hide("panel_prepare_ncss_url_subset")
     shinyjs::hide("panel_prepareInput1Nc")
     shinyjs::hide("panel_prepareInput2")
     shinyjs::reset("panel_prepareInput1")
+    shinyjs::reset("panel_prepare_nc_url")
+    shinyjs::reset("panel_prepare_ncss_url_subset")
     shinyjs::reset("panel_prepareInput1Nc")
     shinyjs::reset("panel_prepareInput2")
     shinyjs::hide("spinner_prepare1")
@@ -838,9 +1290,13 @@ function(input, output, session) {
     shinyjs::hide("panel_prepareGo")
     shinyjs::hide("panel_visualizeGo")
     shinyjs::hide("panel_prepareInput1")
+    shinyjs::hide("panel_prepare_nc_url")
+    shinyjs::hide("panel_prepare_ncss_url_subset")
     shinyjs::hide("panel_prepareInput1Nc")
     shinyjs::hide("panel_prepareInput2")
     shinyjs::reset("panel_prepareInput1")
+    shinyjs::reset("panel_prepare_nc_url")
+    shinyjs::reset("panel_prepare_ncss_url_subset")
     shinyjs::reset("panel_prepareInput1Nc")
     shinyjs::reset("panel_prepareInput2")
     shinyjs::hide("spinner_visualize")
@@ -869,9 +1325,13 @@ function(input, output, session) {
     shinyjs::hide("panel_prepareGo")
     shinyjs::hide("panel_analyzeGo")
     shinyjs::hide("panel_prepareInput1")
+    shinyjs::hide("panel_prepare_nc_url")
+    shinyjs::hide("panel_prepare_ncss_url_subset")
     shinyjs::hide("panel_prepareInput1Nc")
     shinyjs::hide("panel_prepareInput2")
     shinyjs::reset("panel_prepareInput1")
+    shinyjs::reset("panel_prepare_nc_url")
+    shinyjs::reset("panel_prepare_ncss_url_subset")
     shinyjs::reset("panel_prepareInput1Nc")
     shinyjs::reset("panel_prepareInput2")
     shinyjs::hide("panel_analyze")
@@ -1024,7 +1484,7 @@ function(input, output, session) {
       #   ))
       # }
       
-      filname <- basename(nc_path())
+      filname <- cmsafops::get_basename(nc_path())
       filetype <- substr(filname, 1, 4)
       pattern <- substr(filname, 1, 6)
       if(filetype == "GOME"){
@@ -1125,7 +1585,7 @@ function(input, output, session) {
   # get list of NetCDF files
   getNcList <- function(path_to_nc, nc_flag)
   {
-    ordname <- basename(path_to_nc)
+    ordname <- cmsafops::get_basename(path_to_nc)
     ordpath <- dirname(path_to_nc)
     
     if (identical(path_to_nc, character(0))) {
@@ -1307,7 +1767,7 @@ function(input, output, session) {
     # So filelist just equals tarlist here?
     filelist <- NULL
 
-    ordname <- basename(path_to_tar)
+    ordname <- cmsafops::get_basename(path_to_tar)
     ordpath <- dirname(path_to_tar)
 
     flist <- list.files(ordpath, substr(ordname, 1, 8), full.names = TRUE)
@@ -2125,7 +2585,9 @@ function(input, output, session) {
   })
 
   # Download the created session directory.
-  output$download <- downloadHandler(
+  # session_dir_download_handler is called in two places
+  # For output$download (main button) and output$downloader_modal (button in modal)
+  session_dir_download_handler <- downloadHandler(
     filename = function() {
       paste0(sessionName, ".tar")
     },
@@ -2138,6 +2600,7 @@ function(input, output, session) {
     },
     contentType = "application/x-tar"
   )
+  output$download <- session_dir_download_handler
 
   #### ANALYZING ####
   # If a file has been generated let user decide if they want to continue with
@@ -2146,11 +2609,11 @@ function(input, output, session) {
     if (endsWith(outputFilepath(), ".nc")) {
       output$ncFile_analyze <- renderUI({
         tags$pre("We prepared the following .nc file for you: ",
-                 basename(outputFilepath()))
+                 cmsafops::get_basename(outputFilepath()))
       })
       output$ncFile_visualize <- renderUI({
         tags$pre("We prepared the following .nc file for you: ",
-                 basename(outputFilepath()))
+                 cmsafops::get_basename(outputFilepath()))
       })
       shinyjs::show("ncFile_analyze")
       shinyjs::show("useOutputFile_analyze")
@@ -3068,8 +3531,8 @@ function(input, output, session) {
       if(operatorInput_value() == "cmsaf.adjust.two.files") {
         two_files_compare_data_vis(1)
         time <- as.numeric(format(Sys.time(), "%H%M%S"))
-        newOutfile1 <- file.path(outputDir, paste0("match_data_", time, "_", basename(nc_path_analyze())))
-        newOutfile2 <- file.path(outputDir, paste0("match_data_", time, "_", basename(infile2_analyze_value())))
+        newOutfile1 <- file.path(outputDir, paste0("match_data_", time, "_", cmsafops::get_basename(nc_path_analyze())))
+        newOutfile2 <- file.path(outputDir, paste0("match_data_", time, "_", cmsafops::get_basename(infile2_analyze_value())))
     
         argumentList <- list(var1 = input$usedVariable, infile1 = nc_path_analyze(), 
                              var2 = second_variable_analyze(), infile2 = infile2_analyze_value(), 
@@ -3625,7 +4088,7 @@ function(input, output, session) {
           newRow <- data.frame(operatorInput_value(), currentOperatorOption(), input[[currentOperatorOption()]])
         }
 
-        lastCols <- data.frame(basename(newOutfile))
+        lastCols <- data.frame(cmsafops::get_basename(newOutfile))
         newRow <- cbind(newRow, lastCols)
 
         # Give the row names.
@@ -3754,7 +4217,7 @@ function(input, output, session) {
       # Show selected file name in UI
       output$ncFile_analyze_second_file <- renderUI({
         tags$pre("You selected the following .nc file: ",
-                 basename(infile2_analyze_value()))
+                 cmsafops::get_basename(infile2_analyze_value()))
       })
       shinyjs::show("ncFile_analyze_second_file")
       
@@ -3782,7 +4245,7 @@ function(input, output, session) {
       # Show selected file name in UI
       output$ncFile_analyze_second_file <- renderUI({
         tags$pre("You selected the following file: ",
-                 basename(infile2_analyze_value()))
+                 cmsafops::get_basename(infile2_analyze_value()))
       })
       shinyjs::show("ncFile_analyze_second_file")
       
@@ -6401,10 +6864,38 @@ function(input, output, session) {
   })
 
   #### Destructors ####
+  
+  # This modal is called if the app is running remotely and there exists output files
+  # to warn the user that files will be lost after exiting.
+  confirm_exit_modal <- modalDialog(
+    p("You have files on the server which will be lost when you exit."),
+    downloadButton("downloader_modal", "Download the session files."),
+    title = "Are you sure you want to exit?",
+    footer = tagList(actionButton("exit_app", "Exit App"),
+                     modalButton("Cancel")
+    ),
+    easyClose = TRUE
+  )
+  output$downloader_modal <- session_dir_download_handler
+  
   # Stop app on exit button.
   observeEvent(input$exit, {
-    stopApp(returnValue = invisible(99))
+    n_remote_files(length(list.files(userDir, recursive = TRUE)))
+    if (!isRunningLocally && n_remote_files() > 0) {
+      showModal(confirm_exit_modal)
+    }
+    else {
+      stop_toolbox()
+    }
   })
+  
+  observeEvent(input$exit_app, {
+    stop_toolbox()
+  })
+  
+  stop_toolbox <- function() {
+    stopApp(returnValue = invisible(99))
+  }
 
   # After app is closed do cleanup. (Only if directory hasn't existed before session.)
   session$onSessionEnded(function() {
@@ -6482,13 +6973,13 @@ function(input, output, session) {
   output$download_monitor_climate <- renderUI({
     downloadButton(
       outputId = "download_monitor_climate_output",
-      label = basename(image_path_visualize()),
+      label = cmsafops::get_basename(image_path_visualize()),
       style = "width:100%;")
   })
 
   output$download_monitor_climate_output <- downloadHandler(
     filename = function() {
-      paste0(basename(image_path_visualize()))
+      paste0(cmsafops::get_basename(image_path_visualize()))
     },
     content = function(con) {
       file.copy(image_path_visualize(), con)
