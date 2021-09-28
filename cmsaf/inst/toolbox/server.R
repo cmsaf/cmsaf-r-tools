@@ -770,11 +770,6 @@ function(input, output, session) {
     shinyjs::hide(id = "nc_url_download_analyze_or_visualise")
   }, ignoreInit = TRUE)
   
-  # Clear .nc validation text
-  observeEvent(input$nc_url_text, {
-    shinyjs::toggleState("nc_url_connect", input$nc_url_text != "")
-  }, ignoreInit = TRUE)
-  
   # Set .nc URL validation and connection text
   observeEvent(input$nc_url_connect, {
     shinyjs::disable("panel_prepare_nc_url")
