@@ -16,18 +16,22 @@
 #'  in NetCDFv3 format (numeric). Default output is NetCDFv4.
 #'@param overwrite logical; should existing output file be overwritten?
 #'@param verbose logical; if TRUE, progress messages are shown
+#'@param nc1 Alternatively to \code{infile1} you can specify the input as an
+#'  object of class `ncdf4` (as returned from \code{ncdf4::nc_open}).
+#'@param nc2 Alternatively to \code{infile2} you can specify the input as an
+#'  object of class `ncdf4` (as returned from \code{ncdf4::nc_open}).
 #'
 #'@return A NetCDF file including the subtracted fields of infile1 and infile2
 #'  is written.
 #'  
 #'@export
 cmsaf.sub.rel <- function(var1, infile1, var2, infile2, outfile, nc34=4,
-                      overwrite = FALSE, verbose = FALSE) {
+                      overwrite = FALSE, verbose = FALSE, nc1 = NULL, nc2 = NULL) {
   check_variable(var1)
   check_variable(var2)
   
-  check_infile(infile1)
-  check_infile(infile2)
+  if(!is.null(nc1)) check_infile(infile1)
+  if(!is.null(nc2)) check_infile(infile2)
   check_outfile(outfile)
   
   outfile <- correct_filename(outfile)
@@ -36,8 +40,8 @@ cmsaf.sub.rel <- function(var1, infile1, var2, infile2, outfile, nc34=4,
   check_nc_version(nc34)
   
   # get information about dimensions and attributes
-  file_data1 <- read_file(infile1, var1)
-  file_data2 <- read_file(infile2, var2)
+  file_data1 <- read_file(infile1, var1, nc = nc1)
+  file_data2 <- read_file(infile2, var2, nc = nc2)
   
   file_data1$variable$prec <- "float"
   file_data2$variable$prec <- "float"
@@ -109,8 +113,10 @@ cmsaf.sub.rel <- function(var1, infile1, var2, infile2, outfile, nc34=4,
   )
   
   # get data of infile1 and infile2 and calculate corresponding fields
-  nc_in1 <- nc_open(infile1)
-  nc_in2 <- nc_open(infile2)
+  if (!is.null(nc1)) nc_in1 <- nc1
+  else nc_in1 <- nc_open(infile1)
+  if (!is.null(nc2)) nc_in2 <- nc2
+  else nc_in2 <- nc_open(infile2)
   nc_out <- nc_open(outfile, write = TRUE)
   
   switch(case,
@@ -136,7 +142,7 @@ cmsaf.sub.rel <- function(var1, infile1, var2, infile2, outfile, nc34=4,
          }
   )
   
-  nc_close(nc_in1)
-  nc_close(nc_in2)
+  if (is.null(nc1)) nc_close(nc_in1)
+  if (is.null(nc2)) nc_close(nc_in2)
   nc_close(nc_out)
 }

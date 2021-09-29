@@ -26,6 +26,10 @@
 #'  in NetCDFv3 format (numeric). Default output is NetCDFv4.
 #' @param overwrite logical; should existing output file be overwritten?
 #' @param verbose logical; if TRUE, progress messages are shown
+#'@param nc1 Alternatively to \code{infile1} you can specify the input as an
+#'  object of class `ncdf4` (as returned from \code{ncdf4::nc_open}).
+#'@param nc2 Alternatively to \code{infile2} you can specify the input as an
+#'  object of class `ncdf4` (as returned from \code{ncdf4::nc_open}).
 #'
 #' @return A NetCDF file including the interpolated data of infile1 on the grid of
 #' infile2 is written.
@@ -86,12 +90,12 @@
 #'  file.path(tempdir(),"CMSAF_example_file_2.nc"),
 #'  file.path(tempdir(),"CMSAF_example_file_remap.nc")))
 remap <- function(var, infile1, infile2, outfile, method = "nearest", nc34 = 4,
-                  overwrite = FALSE, verbose = FALSE) {
+                  overwrite = FALSE, verbose = FALSE, nc1 = NULL, nc2 = NULL) {
   calc_time_start <- Sys.time()
 
   check_variable(var)
-  check_infile(infile1)
-  check_infile(infile2)
+  if (is.null(nc1)) check_infile(infile1)
+  if (is.null(nc2)) check_infile(infile2)
   check_outfile(outfile)
   outfile <- correct_filename(outfile)
   check_overwrite(outfile, overwrite)
@@ -99,10 +103,10 @@ remap <- function(var, infile1, infile2, outfile, method = "nearest", nc34 = 4,
   stopifnot(method %in% c("bilinear", "conservative", "nearest"))
 
   ##### extract data from file #####
-  file_data1 <- read_file(infile1, var)
+  file_data1 <- read_file(infile1, var, nc = nc1)
   file_data1$variable$prec <- PRECISIONS_VAR$FLOAT
   if (file_data1$time_info$has_time_bnds) {
-    time_bnds <- get_time_bounds_from_file(infile1)
+    time_bnds <- get_time_bounds_from_file(infile1, nc = nc1)
   }
 
   nc_format <- get_nc_version(nc34)
@@ -115,7 +119,7 @@ remap <- function(var, infile1, infile2, outfile, method = "nearest", nc34 = 4,
     file_data2$grid$is_regular <- TRUE
 
   }else{
-    file_data2 <- read_file(infile2, NULL)
+    file_data2 <- read_file(infile2, NULL, nc = nc2)
   }
 
   isReg1 <- file_data1$grid$is_regular
@@ -233,7 +237,8 @@ remap <- function(var, infile1, infile2, outfile, method = "nearest", nc34 = 4,
   )
 
   ##### calculate and write result #####
-  nc_in <- nc_open(infile1)
+  if (!is.null(nc1)) nc_in <- nc1
+  else nc_in <- nc_open(infile1)
   nc_out <- nc_open(outfile, write = TRUE)
 
   ref_vec1 <- as.vector(ref[[1]])
@@ -314,7 +319,7 @@ remap <- function(var, infile1, infile2, outfile, method = "nearest", nc34 = 4,
   }
 
   nc_close(nc_out)
-  nc_close(nc_in)
+  if (is.null(nc1)) nc_close(nc_in)
 
   calc_time_end <- Sys.time()
   if (verbose) message(get_processing_time_string(calc_time_start, calc_time_end))

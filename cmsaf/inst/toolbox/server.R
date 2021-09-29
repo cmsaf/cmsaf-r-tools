@@ -361,10 +361,18 @@ function(input, output, session) {
   # Reactive value for output file path (nc file)
   outputFilepath <- reactiveVal()
 
+  # Reactive value for output file nc object
+  # An alternative to outputFilepath(), particularly for URL paths
+  # to increase efficiency by avoiding repeated calls ncdf4::nc_open() on the URL
+  outputFilenc <- reactiveVal(NULL)
+  
   # Reactive value for the nc file to be used in analyze. (update action if file stays the same on new upload)
   nc_path_analyze <- reactiveVal()
   nc_path_analyze_action <- reactiveVal(0)
 
+  # Similar to outputFilenc(), reactive value for the nc object to be used in analyze
+  nc_object_analyze <- reactiveVal(NULL)
+  
   # Reactive value for which variable is used
   var_used <- reactiveVal()
 
@@ -407,6 +415,9 @@ function(input, output, session) {
   nc_path_visualize <- reactiveVal()
   nc_path_visualize_2 <- reactiveVal("")
   actionVisualize <- reactiveVal(0)
+  
+  # Similar to outputFilenc(), reactive value for the nc object to be used in visualize
+  nc_object_visualize <- reactiveVal(NULL)
   
   # Reactive value for the csv / RData data to be used in visualize (compare data)
   station_data_compare <- reactiveVal(0)
@@ -813,12 +824,15 @@ function(input, output, session) {
           output$ncurlShortInfo <- renderPrint({
             cmsafops::ncinfo(nc = nc)
           })
+          outputFilepath(user_url)
+          outputFilenc(nc)
           shinyjs::show(id = "nc_url_file_info")
           shinyjs::show(id = "or_prepare3")
           shinyjs::show(id = "nc_url_analyze")
           shinyjs::show(id = "or_prepare4")
           shinyjs::show(id = "nc_url_visualize")
         } else {
+          outputFilenc(NULL)
           shinyjs::hide(id = "nc_url_file_info")
           shinyjs::hide(id = "or_prepare3")
           shinyjs::hide(id = "nc_url_analyze")
@@ -835,6 +849,8 @@ function(input, output, session) {
   
   # Download .nc URL
   observeEvent(input$nc_url_download, {
+    outputFilepath(NULL)
+    outputFilenc(NULL)
     shinyjs::disable("panel_prepare_nc_url")
     shinyjs::show("spinner_prepare_nc_url_download", anim = TRUE, animType = "fade")
     # Try to get the base name from the URL
@@ -855,7 +871,6 @@ function(input, output, session) {
     if (class(res) != "try-error" && res == 0) {
       shinyjs::hide(id = "nc_url_download")
       outputFilepath(url_file)
-      output_nc_is_url <<- FALSE
       output$ncurlShortInfo <- renderPrint({
         cmsafops::ncinfo(url_file)
       })
@@ -1013,7 +1028,6 @@ function(input, output, session) {
     if ((length(url_files) > 1 && is.null(res)) || (class(res) != "try-error" && res == 0)) {
       shinyjs::hide(id = "nc_url_download")
       outputFilepath(url_file_final)
-      output_nc_is_url <<- FALSE
       output$ncssShortInfo <- renderPrint({
         cmsafops::ncinfo(url_file_final)
       })
@@ -1026,6 +1040,36 @@ function(input, output, session) {
         size = "l"
       ))
     }
+  },
+  ignoreInit = TRUE
+  )
+  
+  # Prepare .nc URL for analyze
+  observeEvent(input$nc_url_analyze, {
+    nc_path_analyze(outputFilepath())
+    nc_object_analyze(outputFilenc())
+    if (!endsWith(nc_path_analyze(), ".nc") && is.null(nc_object_analyze())) {
+      isolate(nc_path_analyze(""))
+      wrong_file_modal(".nc")
+    } else {
+      nc_path_analyze_action(nc_path_analyze_action() + 1)
+    }
+    resetToAnalyzePanel()
+  },
+  ignoreInit = TRUE
+  )
+  
+  # Prepare .nc URL for visualize
+  observeEvent(input$nc_url_visualize, {
+    nc_path_visualize(outputFilepath())
+    nc_object_visualize(outputFilenc())
+    if (!endsWith(nc_path_visualize(), ".nc") && is.null(nc_object_visualize())) {
+      isolate(nc_path_visualize(""))
+      wrong_file_modal(".nc")
+    } else {
+      actionVisualize(actionVisualize() + 1)
+    }
+    resetToVisualizePanel()
   },
   ignoreInit = TRUE
   )
@@ -1087,6 +1131,7 @@ function(input, output, session) {
     shinyjs::disable("ncFileLocal_analyze")
     shinyjs::disable("useOutputFile_analyze")
     res <- try(nc_path_analyze(file.choose(new = TRUE)))
+    isolate(nc_object_analyze(NULL))
     if (class(res) != "try-error") {
       if (!endsWith(nc_path_analyze(), ".nc")) {
         isolate(nc_path_analyze(""))
@@ -1108,6 +1153,7 @@ function(input, output, session) {
     pth <- shinyFiles::parseFilePaths(volumes_output,input$ncFileRemote_analyze)
     req(nrow(pth) > 0)
     req(file.exists(pth$datapath))
+    isolate(nc_object_analyze(NULL))
     if (!endsWith(pth$datapath, ".nc")) {
       isolate(nc_path_analyze(""))
       wrong_file_modal(".nc")
@@ -1120,6 +1166,7 @@ function(input, output, session) {
   # If user chooses to take generated nc file update nc_path_analyze. (output file)
   observeEvent(input$useOutputFile_analyze, {
     nc_path_analyze(outputFilepath())
+    isolate(nc_object_analyze(NULL))
     if (!endsWith(nc_path_analyze(), ".nc")) {
       isolate(nc_path_analyze(""))
       wrong_file_modal(".nc")
@@ -1133,6 +1180,7 @@ function(input, output, session) {
     shinyjs::disable("ncFileLocal_visualize")
     shinyjs::disable("useOutputFile_visualize")
     res <- try(nc_path_visualize(file.choose(new = TRUE)))
+    isolate(nc_object_visualize(NULL))
     if (class(res) != "try-error") {
       if (!endsWith(nc_path_visualize(), ".nc")) {
         isolate(nc_path_visualize(""))
@@ -1152,6 +1200,7 @@ function(input, output, session) {
     pth <- shinyFiles::parseFilePaths(volumes_output,input$ncFileRemote_visualize)
     req(nrow(pth) > 0)
     req(file.exists(pth$datapath))
+    isolate(nc_object_visualize(NULL))
     if (!endsWith(pth$datapath, ".nc")) {
       isolate(nc_path_visualize(""))
       wrong_file_modal(".nc")
@@ -2601,14 +2650,14 @@ function(input, output, session) {
   # If a file has been generated let user decide if they want to continue with
   # this file or select another file.
   observeEvent(outputFilepath(), {
-    if (endsWith(outputFilepath(), ".nc")) {
+    if (endsWith(outputFilepath(), ".nc") || !is.null(outputFilenc())) {
       output$ncFile_analyze <- renderUI({
         tags$pre("We prepared the following .nc file for you: ",
-                 cmsafops::get_basename(outputFilepath()))
+                 cmsafops::get_basename(outputFilepath(), nc = outputFilenc()))
       })
       output$ncFile_visualize <- renderUI({
         tags$pre("We prepared the following .nc file for you: ",
-                 cmsafops::get_basename(outputFilepath()))
+                 cmsafops::get_basename(outputFilepath(), nc = outputFilenc()))
       })
       shinyjs::show("ncFile_analyze")
       shinyjs::show("useOutputFile_analyze")
@@ -2632,7 +2681,7 @@ function(input, output, session) {
     req(nc_path_analyze())
 
     # If wrong format alert and stop.
-    if (!endsWith(nc_path_analyze(), ".nc")) {
+    if (!endsWith(nc_path_analyze(), ".nc") && is.null(nc_object_analyze())) {
       isolate(nc_path_analyze(""))
       showModal(modalDialog(
         h4("Wrong file format. Please choose .nc file to continue."),
@@ -2641,10 +2690,11 @@ function(input, output, session) {
       ))
     } else {
       # Getting variable(s)
-      id <- ncdf4::nc_open(nc_path_analyze())
+      if (!is.null(nc_object_analyze())) id <- nc_object_analyze()
+      else id <- ncdf4::nc_open(nc_path_analyze())
       vn <- names(id$var)
       dn <- names(id$dim)
-      ncdf4::nc_close(id)
+      if (is.null(nc_object_analyze())) ncdf4::nc_close(id)
 
       if (!("time" %in% dn)) {
         showModal(modalDialog(
@@ -2795,10 +2845,11 @@ function(input, output, session) {
 
     # Render some UI elements dependent on infile and chosen operator
     if (operatorInput_value() == "selyear") {
-      nc <- ncdf4::nc_open(isolate(nc_path_analyze()))
+      if (!is.null(nc_object_analyze())) nc <- nc_object_analyze()
+      else nc <- ncdf4::nc_open(isolate(nc_path_analyze()))
       time_info <- cmsafops:::get_date_time(ncdf4::ncvar_get(nc, "time"), ncdf4::ncatt_get(nc, "time", "units")$value)
       years2 <- time_info$years
-      ncdf4::nc_close(nc)
+      if (is.null(nc_object_analyze())) ncdf4::nc_close(nc)
 
       output$years_to_select <- renderUI({
         selectInput("years",
@@ -2810,9 +2861,10 @@ function(input, output, session) {
     }
 
     if (operatorInput_value() %in% c("selperiod", "extract.period", climate_analysis_ops)) {
-      nc <- ncdf4::nc_open(isolate(nc_path_analyze()))
+      if (!is.null(nc_object_analyze())) nc <- nc_object_analyze()
+      else nc <- ncdf4::nc_open(isolate(nc_path_analyze()))
       date_time <- as.Date(cmsafops::get_time(ncdf4::ncatt_get(nc, "time", "units")$value, ncdf4::ncvar_get(nc, "time")))
-      ncdf4::nc_close(nc)
+      if (is.null(nc_object_analyze())) ncdf4::nc_close(nc)
 
       if (operatorInput_value() %in% c("selperiod", "extract.period")) {
         output$dateRange_to_select <- renderUI({
@@ -2869,10 +2921,11 @@ function(input, output, session) {
     }
 
     if (operatorInput_value() == "seltime") {
-      nc <- ncdf4::nc_open(isolate(nc_path_analyze()))
+      if (!is.null(nc_object_analyze())) nc <- nc_object_analyze()
+      else nc <- ncdf4::nc_open(isolate(nc_path_analyze()))
       time_info <- cmsafops:::get_date_time(ncdf4::ncvar_get(nc, "time"), ncdf4::ncatt_get(nc, "time", "units")$value)
       times2 <- time_info$times
-      ncdf4::nc_close(nc)
+      if (is.null(nc_object_analyze())) ncdf4::nc_close(nc)
 
       output$times_to_select <- renderUI({
         selectInput("times",
@@ -2889,7 +2942,7 @@ function(input, output, session) {
       # lat <- ncdf4::ncvar_get(nc, "lat")
       # ncdf4::nc_close(nc)
       
-      file_data <- cmsafops::read_file(isolate(nc_path_analyze()), input$usedVariable)
+      file_data <- cmsafops::read_file(isolate(nc_path_analyze()), input$usedVariable, nc = nc_object_analyze())
       lon <- file_data$dimension_data$x
       lat <- file_data$dimension_data$y
       
@@ -2952,7 +3005,7 @@ function(input, output, session) {
       # lat <- ncdf4::ncvar_get(nc, "lat")
       # ncdf4::nc_close(nc)
       
-      file_data <- cmsafops::read_file(isolate(nc_path_analyze()), input$usedVariable)
+      file_data <- cmsafops::read_file(isolate(nc_path_analyze()), input$usedVariable, nc = nc_object_analyze())
       lon <- file_data$dimension_data$x
       lat <- file_data$dimension_data$y
 
@@ -3157,7 +3210,7 @@ function(input, output, session) {
 
     output$ncShortInfo <- renderPrint({
       req(nc_path_analyze())
-      cmsafops::ncinfo(nc_path_analyze())
+      cmsafops::ncinfo(nc_path_analyze(), nc = nc_object_analyze())
     })
 
     if (nrow(operatorDataFrame) == 0) {
@@ -3201,6 +3254,7 @@ function(input, output, session) {
                         )
     } else {
       shinyjs::hide("attach_warning")
+      # TODO Can the idea of attaching be thought of when an nc object is used?
       nc <- ncdf4::nc_open(isolate(nc_path_analyze()))
       date_time <- as.Date(cmsafops::get_time(ncdf4::ncatt_get(nc, "time", "units")$value, ncdf4::ncvar_get(nc, "time")))
       ncdf4::nc_close(nc)
@@ -3274,21 +3328,24 @@ function(input, output, session) {
                            infile = nc_path_analyze(),
                            outfile = newOutfile,
                            nc34 = input$format,
-                           overwrite = TRUE)
+                           overwrite = TRUE,
+                           nc = nc_object_analyze())
     } else if (currentOperatorOption() == "threshold") {
       argumentList <- list(var = input$usedVariable,
                            thld = input$threshold,
                            infile = nc_path_analyze(),
                            outfile = newOutfile,
                            nc34 = input$format,
-                           overwrite = TRUE)
+                           overwrite = TRUE,
+                           nc = nc_object_analyze())
 	} else if (currentOperatorOption() == "constant") {
       argumentList <- list(var = input$usedVariable,
                            const = input$constant,
                            infile = nc_path_analyze(),
                            outfile = newOutfile,
                            nc34 = input$format,
-                           overwrite = TRUE)
+                           overwrite = TRUE,
+                           nc = nc_object_analyze())
     } else if (currentOperatorOption() == "region") {
       # Sellonlatbox
       argumentList <- list(var = input$usedVariable,
@@ -3303,7 +3360,8 @@ function(input, output, session) {
                            lat1 = input$latRegionMin,
                            lat2 = input$latRegionMax,
                            nc34 = input$format,
-                           overwrite = TRUE)
+                           overwrite = TRUE,
+                           nc = nc_object_analyze())
     } else if (currentOperatorOption() == "point") {
       if (operatorInput_value() == "selpoint") {
         argumentList <- list(var = input$usedVariable,
@@ -3312,7 +3370,8 @@ function(input, output, session) {
                              lon1 = input$lonPoint,
                              lat1 = input$latPoint,
                              nc34 = input$format,
-                             overwrite = TRUE)
+                             overwrite = TRUE,
+                             nc = nc_object_analyze())
       } else {
         newOutfile <- nc_path_analyze()
         format <- "nc"
@@ -3327,7 +3386,8 @@ function(input, output, session) {
                              lon1 = as.numeric(chosen_lonPoints()),
                              lat1 = as.numeric(chosen_latPoints()),
                              nc34 = nc34,
-                             format = format)
+                             format = format,
+                             nc = nc_object_analyze())
         chosen_lonPoints(c())
         chosen_latPoints(c())
       }
@@ -3338,7 +3398,8 @@ function(input, output, session) {
                            infile = nc_path_analyze(),
                            outfile = newOutfile,
                            nc34 = input$format,
-                           overwrite = TRUE)
+                           overwrite = TRUE,
+                           nc = nc_object_analyze())
     } else if (currentOperatorOption() == "useFastTrend") {
       trendValue <- 1
       if (!input$useFastTrend) {
@@ -3349,14 +3410,16 @@ function(input, output, session) {
                            outfile = newOutfile,
                            option = trendValue,
                            nc34 = input$format,
-                           overwrite = TRUE)
+                           overwrite = TRUE,
+                           nc = nc_object_analyze())
     } else if (currentOperatorOption() == "percentile") {
       argumentList <- list(var = input$usedVariable,
                            p = input$percentile,
                            infile = nc_path_analyze(),
                            outfile = newOutfile,
                            nc34 = input$format,
-                           overwrite = TRUE)
+                           overwrite = TRUE,
+                           nc = nc_object_analyze())
     } else if (currentOperatorOption() == "gridbox") {
       argumentList <- list(var = input$usedVariable,
                            lonGrid = input$gridbox_lon,
@@ -3364,21 +3427,24 @@ function(input, output, session) {
                            infile = nc_path_analyze(),
                            outfile = newOutfile,
                            nc34 = input$format,
-                           overwrite = TRUE)
+                           overwrite = TRUE,
+                           nc = nc_object_analyze())
     } else if (currentOperatorOption() == "running") {
       argumentList <- list(var = input$usedVariable,
                            nts = input$running_nts,
                            infile = nc_path_analyze(),
                            outfile = newOutfile,
                            nc34 = input$format,
-                           overwrite = TRUE)
+                           overwrite = TRUE,
+                           nc = nc_object_analyze())
     } else if (currentOperatorOption() == "timeRange") {
       argumentList <- list(var = input$usedVariable,
                            nts = input$timeRange_nts,
                            infile = nc_path_analyze(),
                            outfile = newOutfile,
                            nc34 = input$format,
-                           overwrite = TRUE)
+                           overwrite = TRUE,
+                           nc = nc_object_analyze())
     } else if (currentOperatorOption() == "months") {
       monthList <- which(c("January", "February", "March", "April", "May",
                            "June", "July", "August", "September", "October",
@@ -3389,21 +3455,24 @@ function(input, output, session) {
                            infile = nc_path_analyze(),
                            outfile = newOutfile,
                            nc34 = input$format,
-                           overwrite = TRUE)
+                           overwrite = TRUE,
+                           nc = nc_object_analyze())
     }else if (currentOperatorOption() == "years") {
       argumentList <- list(var = input$usedVariable,
                            year = input$years,
                            infile = nc_path_analyze(),
                            outfile = newOutfile,
                            nc34 = input$format,
-                           overwrite = TRUE)
+                           overwrite = TRUE,
+                           nc = nc_object_analyze())
     }else if (currentOperatorOption() == "times") {
       argumentList <- list(var = input$usedVariable,
                            hour_min = input$times,
                            infile = nc_path_analyze(),
                            outfile = newOutfile,
                            nc34 = input$format,
-                           overwrite = TRUE)
+                           overwrite = TRUE,
+                           nc = nc_object_analyze())
     }else if (currentOperatorOption() == "method") {
 
       # Select second input file depending on local or remote session
@@ -3458,7 +3527,8 @@ function(input, output, session) {
                            outfile = newOutfile,
                            method = input$method,
                            nc34 = input$format,
-                           overwrite = TRUE)
+                           overwrite = TRUE,
+                           nc1 = nc_object_analyze())
     } else if (currentOperatorOption() == "file_select") {
       # Select second input file depending on local or remote session
       if (!isRunningLocally) {
@@ -3509,7 +3579,8 @@ function(input, output, session) {
                            infile2 = infile2,
                            outfile = newOutfile,
                            nc34 = input$format,
-                           overwrite = TRUE)
+                           overwrite = TRUE,
+                           nc1 = nc_object_analyze())
     } else if (currentOperatorOption() == "file_selection") {
       if(infile2_analyze_value() == "" || second_variable_analyze() == 0){
         
@@ -3526,13 +3597,14 @@ function(input, output, session) {
       if(operatorInput_value() == "cmsaf.adjust.two.files") {
         two_files_compare_data_vis(1)
         time <- as.numeric(format(Sys.time(), "%H%M%S"))
-        newOutfile1 <- file.path(outputDir, paste0("match_data_", time, "_", cmsafops::get_basename(nc_path_analyze())))
+        newOutfile1 <- file.path(outputDir, paste0("match_data_", time, "_", cmsafops::get_basename(nc_path_analyze(), nc_object_analyze())))
         newOutfile2 <- file.path(outputDir, paste0("match_data_", time, "_", cmsafops::get_basename(infile2_analyze_value())))
     
         argumentList <- list(var1 = input$usedVariable, infile1 = nc_path_analyze(), 
                              var2 = second_variable_analyze(), infile2 = infile2_analyze_value(), 
                              outfile1 = newOutfile1, outfile2 = newOutfile2, 
-                             nc34 = input$format, overwrite = FALSE, verbose = FALSE)
+                             nc34 = input$format, overwrite = FALSE, verbose = FALSE,
+                             nc1 = nc_object_analyze())
       } else {
         plot_type_1d <<- operatorInput_value()
         plot_type_2d <<- operatorInput_value()
@@ -3551,10 +3623,12 @@ function(input, output, session) {
         cmsafops::cmsaf.adjust.two.files(var1 = input$usedVariable, infile1 = nc_path_analyze(), 
                                          var2 = second_variable_analyze(), infile2 = infile2_analyze_value(), 
                                          outfile1 = temp_infile_one, outfile2 = temp_infile_two, 
-                                         nc34 = 4, overwrite = FALSE, verbose = FALSE)
+                                         nc34 = 4, overwrite = FALSE, verbose = FALSE,
+                                         nc1 = nc_object_analyze())
         
         # set the new location of input files
         nc_path_analyze(temp_infile_one)
+        nc_object_analyze(NULL)
         infile2_analyze_value(temp_infile_two)
         
         argumentList <- list(var1 = input$usedVariable,
@@ -3564,7 +3638,9 @@ function(input, output, session) {
                              outfile = newOutfile,
                              nc34 = input$format,
                              overwrite = TRUE,
-                             verbose = TRUE)
+                             verbose = TRUE,
+                             # This is currently always NULL but included for consistency.
+                             nc1 = nc_object_analyze())
       }
     } else if(currentOperatorOption() == "compare_data") {
       if(infile2_analyze_value() == ""){
@@ -3591,7 +3667,9 @@ function(input, output, session) {
       }
       
       if((endsWith(infile2_analyze_value(), ".nc"))) {
-        analyze_file1_plot(nc_path_analyze())
+        # Set as the filename of the nc object if it is being used.
+        if (!is.null(nc_object_analyze())) analyze_file1_plot(nc_object_analyze()$filename)
+        else analyze_file1_plot(nc_path_analyze())
         analyze_file2_plot(infile2_analyze_value())
         
         temp_infile_one_sel <- file.path(tempdir(), "infile_one_tmp_sel.nc")
@@ -3607,7 +3685,8 @@ function(input, output, session) {
         cmsafops::selperiod(var = input$usedVariable, 
                             start = input$dateRange_compare_data[1], end = input$dateRange_compare_data[2], 
                             infile = nc_path_analyze(), outfile = temp_infile_one_sel, 
-                            nc34 = input$format, overwrite = TRUE)
+                            nc34 = input$format, overwrite = TRUE,
+                            nc = nc_object_analyze())
         cmsafops::selperiod(var = second_variable_analyze(), 
                             start = input$dateRange_compare_data[1], end = input$dateRange_compare_data[2], 
                             infile = infile2_analyze_value(), outfile = temp_infile_two_sel, 
@@ -3615,6 +3694,7 @@ function(input, output, session) {
         
         # set the new location of input files
         nc_path_analyze(temp_infile_one_sel)
+        nc_object_analyze(NULL)
         infile2_analyze_value(temp_infile_two_sel)
         
         if(operatorInput_value() == "cmsaf.diff.absolute"){
@@ -3635,7 +3715,8 @@ function(input, output, session) {
                                nc34 = input$format,
                                relative = FALSE,
                                overwrite = TRUE,
-                               toolbox = TRUE)
+                               toolbox = TRUE,
+                               nc1 = nc_object_analyze())
         } else if(operatorInput_value() == "cmsaf.diff.relative"){
           # set first operator of checkbox for dropdown visualize
           outfile_compare <- file.path(compare_temp_dir, paste0(input$usedVariable, "_", operatorInput_value(), time, ".nc"))
@@ -3654,7 +3735,8 @@ function(input, output, session) {
                                nc34 = input$format,
                                relative = TRUE,
                                overwrite = TRUE,
-                               toolbox = TRUE)
+                               toolbox = TRUE,
+                               nc1 = nc_object_analyze())
         } else {
           two_files_compare_data_vis(1)
           time <- as.numeric(format(Sys.time(), "%H%M%S"))
@@ -3680,7 +3762,8 @@ function(input, output, session) {
                                nc34 = input$format, 
                                overwrite= TRUE, 
                                verbose = FALSE,
-                               toolbox = TRUE)
+                               toolbox = TRUE,
+                               nc1 = nc_object_analyze())
         } 
   
         if(length(checkboxCompareData()) > 1) {
@@ -3704,7 +3787,8 @@ function(input, output, session) {
                                                nc34 = input$format,
                                                relative = FALSE,
                                                overwrite = TRUE,
-                                               toolbox = TRUE)
+                                               toolbox = TRUE,
+                                               nc1 = nc_object_analyze())
               fun <- get("cmsaf.diff", asNamespace("cmsafvis"))
             }
             else if(checkboxCompareData()[i] == "cmsaf.diff.relative"){
@@ -3723,7 +3807,8 @@ function(input, output, session) {
                                                nc34 = input$format,
                                                relative = TRUE,
                                                overwrite = TRUE,
-                                               toolbox = TRUE)
+                                               toolbox = TRUE,
+                                               nc1 = nc_object_analyze())
               fun <- get("cmsaf.diff", asNamespace("cmsafvis"))
             } else if(checkboxCompareData()[i] == "cmsaf.stats") {
               outfile_compare <- file.path(compare_temp_dir, paste0(input$usedVariable, "_", checkboxCompareData()[i], time, ".csv"))
@@ -3738,7 +3823,8 @@ function(input, output, session) {
                                                 infile2 = infile2_analyze_value(),
                                                 outfile = outfile_compare,
                                                 nc34 = input$format,
-                                                overwrite = TRUE)
+                                                overwrite = TRUE,
+                                                nc1 = nc_object_analyze())
               fun <- get("cmsaf.stats", asNamespace("cmsafops"))
               cmsaf_stats_enable(1)
             } else {
@@ -3765,14 +3851,16 @@ function(input, output, session) {
                                                 nc34 = input$format, 
                                                 overwrite= TRUE, 
                                                 verbose = FALSE,
-                                                toolbox = TRUE)
+                                                toolbox = TRUE,
+                                                nc1 = nc_object_analyze())
               fun <- get(checkboxCompareData()[i], asNamespace("cmsafvis"))
             } 
             try(do.call(fun, argumentList_compare_data))
           }
         }
       } else {
-        analyze_file1_plot(nc_path_analyze())
+        if (!is.null(nc_object_analyze())) analyze_file1_plot(nc_object_analyze()$filename)
+        else analyze_file1_plot(nc_path_analyze())
         analyze_file2_plot(infile2_analyze_value())
         
         if(operatorInput_value() %in% c("cmsaf.diff.absolute", "cmsaf.diff.relative")) {
@@ -3786,7 +3874,8 @@ function(input, output, session) {
           cmsafops::selperiod(var = input$usedVariable, 
                               start = input$dateRange_compare_data[1], end = input$dateRange_compare_data[2], 
                               infile = nc_path_analyze(), outfile = outfile_compare, 
-                              nc34 = input$format, overwrite = TRUE)
+                              nc34 = input$format, overwrite = TRUE,
+                              nc = nc_object_analyze())
         } else {
           two_files_compare_data_vis(1)
           time <- as.numeric(format(Sys.time(), "%H%M%S"))
@@ -3802,7 +3891,8 @@ function(input, output, session) {
           cmsafops::selperiod(var = input$usedVariable, 
                               start = input$dateRange_compare_data[1], end = input$dateRange_compare_data[2], 
                               infile = nc_path_analyze(), outfile = newOutfile1, 
-                              nc34 = input$format, overwrite = TRUE)
+                              nc34 = input$format, overwrite = TRUE,
+                              nc = nc_object_analyze())
         }
         
         if(length(checkboxCompareData()) > 1) {
@@ -3818,7 +3908,8 @@ function(input, output, session) {
               cmsafops::selperiod(var = input$usedVariable, 
                                   start = input$dateRange_compare_data[1], end = input$dateRange_compare_data[2], 
                                   infile = nc_path_analyze(), outfile = outfile_compare, 
-                                  nc34 = input$format, overwrite = TRUE)
+                                  nc34 = input$format, overwrite = TRUE,
+                                  nc = nc_object_analyze())
             } else if(checkboxCompareData()[i] == "cmsaf.diff.relative") {
               outfile_compare <- file.path(compare_temp_dir, paste0(input$usedVariable, "_", checkboxCompareData()[i], time, ".nc"))
               if (outfile_compare == nc_path_analyze()) {
@@ -3830,7 +3921,8 @@ function(input, output, session) {
               cmsafops::selperiod(var = input$usedVariable, 
                                   start = input$dateRange_compare_data[1], end = input$dateRange_compare_data[2], 
                                   infile = nc_path_analyze(), outfile = outfile_compare, 
-                                  nc34 = input$format, overwrite = TRUE)
+                                  nc34 = input$format, overwrite = TRUE,
+                                  nc = nc_object_analyze())
             } else if(checkboxCompareData()[i] == "cmsaf.stats") {
               outfile_compare <- file.path(compare_temp_dir, paste0(input$usedVariable, "_", checkboxCompareData()[i], time, ".csv"))
               if (outfile_compare == nc_path_analyze()) {
@@ -3844,7 +3936,8 @@ function(input, output, session) {
                 infile = nc_path_analyze(),
                 data_station = station_data_compare(),
                 outfile = outfile_compare,
-                overwrite = TRUE
+                overwrite = TRUE,
+                nc = nc_object_analyze()
               )
               cmsaf_stats_enable(1)
             } else {
@@ -3860,7 +3953,8 @@ function(input, output, session) {
               cmsafops::selperiod(var = input$usedVariable, 
                                   start = input$dateRange_compare_data[1], end = input$dateRange_compare_data[2], 
                                   infile = nc_path_analyze(), outfile = newOutfile1, 
-                                  nc34 = input$format, overwrite = TRUE)
+                                  nc34 = input$format, overwrite = TRUE,
+                                  nc = nc_object_analyze())
             }
           }
         }
@@ -4039,16 +4133,22 @@ function(input, output, session) {
         if(two_files_compare_data_vis() == 1){   # two files to visualize 
           operator_Input2 <- paste0(operatorInput_value(), "2")
           nc_path_analyze(list_compare_data[[operatorInput_value()]])
+          nc_object_analyze(NULL)
           infile2_analyze_value(list_compare_data[[operator_Input2]])
           nc_path_visualize(list_compare_data[[operatorInput_value()]])
+          nc_object_visualize(NULL)
           nc_path_visualize_2(list_compare_data[[operator_Input2]])
         } else {
           if((endsWith(infile2_analyze_value(), ".nc"))) {
             nc_path_analyze(newOutfile)
+            nc_object_analyze(NULL)
             nc_path_visualize(newOutfile)
+            nc_object_visualize(NULL)
           } else {
             nc_path_analyze(newOutfile)
+            nc_object_analyze(NULL)
             nc_path_visualize(newOutfile)
+            nc_object_visualize(NULL)
           }
         }
       }
@@ -4246,7 +4346,8 @@ function(input, output, session) {
       
       if(currentOperatorOption() == "compare_data") {
         list_date_range <- cmsafops::calc_overlapping_time(var1 = input$usedVariable, infile1 = nc_path_analyze(), 
-                                                           var2 = second_variable_analyze(), infile2 = infile2_analyze_value())
+                                                           var2 = second_variable_analyze(), infile2 = infile2_analyze_value(),
+                                                           nc1 = nc_object_analyze())
         
         # Show date range of second file
         start_date_reac(list_date_range[[1]])
@@ -4277,25 +4378,31 @@ function(input, output, session) {
   # A function to read all required information from nc file
   # that's needed for the visualize options.
   # Also sets the correct image width and height.
-  get_visualize_options <- function(infile, var, infile2 = NULL, var2 = NULL) {
+  get_visualize_options <- function(infile, var, infile2 = NULL, var2 = NULL,
+                                    nc1 = NULL, nc2 = NULL) {
     # Open file and get data
-    id <- ncdf4::nc_open(infile)
+    if (!is.null(nc1)) id <- nc1
+    else id <- ncdf4::nc_open(infile)
     
     # Remap to regGrid if necessary
     file_info <- cmsafops:::check_dims(id)
-    ncdf4::nc_close(id)
+    if (is.null(nc)) ncdf4::nc_close(id)
     if (!file_info$isRegGrid) {
       remap_timestamp <- format(Sys.time(), "%Y%m%d%H%M%S", tz = "UTC")
       remap_name <- paste0("remap_", remap_timestamp, ".nc")
       outfile <- file.path(userDir, remap_name)
       # grid_filepath can be  found in global.R
-      cmsafops::remap(var, infile, grid_filepath, outfile, overwrite = TRUE)
+      cmsafops::remap(var, infile, grid_filepath, outfile, overwrite = TRUE, nc1 = nc1)
       infile <- outfile
+      # To prevent nc1 being used in place of outfile.
+      nc1 <- NULL
       nc_path_visualize(infile)
+      nc_object_visualize(NULL)
     }
     
-    if(!(is.null(infile2)) && (endsWith(infile2_analyze_value(), ".nc"))) {
-      id2 <- ncdf4::nc_open(infile2)
+    if((!is.null(nc2) || !is.null(infile2)) && (endsWith(infile2_analyze_value(), ".nc"))) {
+      if (!is.null(nc2)) id2 <- nc2
+      else id2 <- ncdf4::nc_open(infile2)
       
       lon2 <- ncdf4::ncvar_get(id2, "lon")
       lat2 <- ncdf4::ncvar_get(id2, "lat")
@@ -4306,7 +4413,8 @@ function(input, output, session) {
       }
     }
     # Open file and get data
-    id <- ncdf4::nc_open(infile)
+    if (!is.null(nc1)) id <- nc1
+    else id <- ncdf4::nc_open(infile)
 
     lon <- ncdf4::ncvar_get(id, "lon")
     lat <- ncdf4::ncvar_get(id, "lat")
@@ -4343,7 +4451,7 @@ function(input, output, session) {
     creator <- ifelse(creator_att$hasatt, creator_att$value, "-")
     copyrightText <- paste0("Data Source: ", creator)
 
-    ncdf4::nc_close(id)
+    if (is.null(nc1)) ncdf4::nc_close(id)
 
     # In HOAPS files problems can occur due to different sorted values
     # check data dimensions
@@ -4394,7 +4502,7 @@ function(input, output, session) {
       }
     }
     
-    if(!(is.null(infile2))) {   # Returning compare data plots for two files
+    if(!is.null(nc2) || !is.null(infile2)) { # Returning compare data plots for two files
       #visualizeDataTimestep(getVariableData(1, id2, var2))
       if((endsWith(infile2_analyze_value(), ".nc"))) {
         date2 <- ncdf4::ncvar_get(id2, "time")
@@ -4420,7 +4528,7 @@ function(input, output, session) {
         
         ylabel <- paste0(varname2, " [", unit2, "]")
         
-        ncdf4::nc_close(id2)
+        if (is.null(nc2)) ncdf4::nc_close(id2)
       }
       visualizeDataMin(min(data, na.rm = TRUE))
       visualizeDataMax(max(data, na.rm = TRUE))
@@ -4494,7 +4602,9 @@ function(input, output, session) {
             lat = lat,
             lon = lon,
             fitted = fitted,
-            copyrightText = copyrightText
+            copyrightText = copyrightText,
+            nc = nc1,
+            nc2 = nc2
           )
         )
       } else {   # actual .RData and csv files
@@ -4532,7 +4642,9 @@ function(input, output, session) {
             lat = lat,
             lon = lon,
             fitted = fitted,
-            copyrightText = copyrightText
+            copyrightText = copyrightText,
+            nc = nc1,
+            nc2 = NULL
           )
         )
       }
@@ -4693,11 +4805,13 @@ function(input, output, session) {
         if(input$operatorInput_dropdown == "cmsaf.diff.absolute" || input$operatorInput_dropdown == "cmsaf.diff.relative") {
           nc_path_visualize_2("")   # reset path of second file
           nc_path_visualize(list_compare_data[[input$operatorInput_dropdown]])
+          nc_object_visualize(NULL)
         }
         else {
           operatorInput_file_2 <- paste0(input$operatorInput_dropdown, "2")
           nc_path_visualize_2(list_compare_data[[operatorInput_file_2]])
           nc_path_visualize(list_compare_data[[input$operatorInput_dropdown]])
+          nc_object_visualize(NULL)
         }
         actionVisualize(actionVisualize() + 1)
         shinyjs::show("spinner_visualize_compare_data", anim = TRUE, animType = "fade")
@@ -4775,10 +4889,11 @@ function(input, output, session) {
     } else
         shinyjs::hide("dropdown_compare_data")
 
-    id <- ncdf4::nc_open(nc_path_visualize())
+    if (!is.null(nc_object_visualize())) id <- nc_object_visualize()
+    else id <- ncdf4::nc_open(nc_path_visualize())
     vn <- names(id$var)
     dn <- names(id$dim)
-    ncdf4::nc_close(id)
+    if (is.null(nc_object_visualize())) ncdf4::nc_close(id)
 
     if (!("time" %in% dn)) {
       showModal(modalDialog(
@@ -4850,9 +4965,9 @@ function(input, output, session) {
       # Trying. If error go back to Visualize page.
       # Maybe visualizeVariables isn't loaded correctly second time?
       if(nc_path_visualize_2() != "") {
-        res <- try(visualizeVariables(get_visualize_options(nc_path_visualize(), vn, nc_path_visualize_2(), vn_2)))
+        res <- try(visualizeVariables(get_visualize_options(nc_path_visualize(), vn, nc_path_visualize_2(), vn_2, nc1 = nc_object_visualize())))
       } else {
-        res <- try(visualizeVariables(get_visualize_options(nc_path_visualize(), vn)))
+        res <- try(visualizeVariables(get_visualize_options(nc_path_visualize(), vn, nc1 = nc_object_visualize())))
       }
 
       if (class(res) == "try-error") {
@@ -4907,8 +5022,10 @@ function(input, output, session) {
                           value = visualizeVariables()$varname2)
               })
               
-              pattern <- "[^\\/]+(\\.nc)$" # regular exp. to extract filenames
-              regex1 <- regmatches( analyze_file1_plot(), regexpr(pattern, analyze_file1_plot()))
+              # pattern <- "[^\\/]+(\\.nc)$" # regular exp. to extract filenames
+              # regex1 <- regmatches( analyze_file1_plot(), regexpr(pattern, analyze_file1_plot()))
+              # Replace with cmsafops::get_basename() which also accounts for URLs
+              regex1 <- cmsafops::get_basename(analyze_file1_plot())
               value_text2 <- regex1
               regex2 <- regmatches(analyze_file2_plot(), regexpr(pattern, analyze_file2_plot()))
               output$subtitle_text2 <- renderUI({
@@ -5070,8 +5187,10 @@ function(input, output, session) {
               shinyjs::hide("dropdown_station_number")
             }
             
-            pattern <- "[^\\/]+(\\.nc)$" # regular exp. to extract filenames
-            regex1 <- regmatches( analyze_file1_plot(), regexpr(pattern, analyze_file1_plot()))
+            # pattern <- "[^\\/]+(\\.nc)$" # regular exp. to extract filenames
+            # regex1 <- regmatches( analyze_file1_plot(), regexpr(pattern, analyze_file1_plot()))
+            # Replace with cmsafops::get_basename() which also accounts for URLs
+            regex1 <- cmsafops::get_basename(analyze_file1_plot())
             
             if((endsWith(infile2_analyze_value(), ".csv"))){
               pattern <- "[^\\/]+(\\.csv)$" # regular exp. to extract filenames
@@ -5115,8 +5234,10 @@ function(input, output, session) {
             shinyjs::hide("date_dropdown_visualize")
             shinyjs::hide("dropdown_station_number")
             
-            pattern <- "[^\\/]+(\\.nc)$" # regular exp. to extract filenames
-            regex1 <- regmatches( analyze_file1_plot(), regexpr(pattern, analyze_file1_plot()))
+            # pattern <- "[^\\/]+(\\.nc)$" # regular exp. to extract filenames
+            # regex1 <- regmatches( analyze_file1_plot(), regexpr(pattern, analyze_file1_plot()))
+            # Replace with cmsafops::get_basename() which also accounts for URLs
+            regex1 <- cmsafops::get_basename(analyze_file1_plot())
             if((endsWith(infile2_analyze_value(), ".csv"))){
               pattern <- "[^\\/]+(\\.csv)$" # regular exp. to extract filenames
             }
@@ -5181,8 +5302,10 @@ function(input, output, session) {
             })
             
             if(checkboxCompareData_dropdown() == "cmsaf.scatter") {
-              pattern <- "[^\\/]+(\\.nc)$" # regular exp. to extract filenames
-              regex1 <- regmatches( analyze_file1_plot(), regexpr(pattern, analyze_file1_plot()))
+              # pattern <- "[^\\/]+(\\.nc)$" # regular exp. to extract filenames
+              # regex1 <- regmatches( analyze_file1_plot(), regexpr(pattern, analyze_file1_plot()))
+              # Replace with cmsafops::get_basename() which also accounts for URLs
+              regex1 <- cmsafops::get_basename(analyze_file1_plot())
               if((endsWith(infile2_analyze_value(), ".csv"))){
                 pattern <- "[^\\/]+(\\.csv)$" # regular exp. to extract filenames
               }
@@ -5207,8 +5330,11 @@ function(input, output, session) {
             } else if(checkboxCompareData_dropdown() == "cmsaf.hist"){
                 shinyjs::hide("dropdown_station_number")
               
-              pattern <- "[^\\/]+(\\.nc)$" # regular exp. to extract filenames
-              regex1 <- regmatches( analyze_file1_plot(), regexpr(pattern, analyze_file1_plot()))
+              # pattern <- "[^\\/]+(\\.nc)$" # regular exp. to extract filenames
+              # regex1 <- regmatches( analyze_file1_plot(), regexpr(pattern, analyze_file1_plot()))
+              # Replace with cmsafops::get_basename() which also accounts for URLs
+              regex1 <- cmsafops::get_basename(analyze_file1_plot())
+              
               if((endsWith(infile2_analyze_value(), ".csv"))){
                 pattern <- "[^\\/]+(\\.csv)$" # regular exp. to extract filenames
               }
@@ -6080,9 +6206,10 @@ function(input, output, session) {
   observeEvent(input$timestep, {
     req(is.element(input$timestep, visualizeVariables()$date.time))
     # Update the data according to the time step using the visualize nc file's id and previously calculated variable.
-    id <- ncdf4::nc_open(nc_path_visualize())
+    if (!is.null(nc_object_visualize())) id <- nc_object_visualize()
+    else id <- ncdf4::nc_open(nc_path_visualize())
     tmp <- getVariableData(which(visualizeVariables()$date.time == input$timestep), id, visualizeVariables()$vn)
-    ncdf4::nc_close(id)
+    if (is.null(nc_object_visualize())) ncdf4::nc_close(id)
 
     if (reversedDimensions$transpose) {
       tmp <- aperm(tmp, c(2, 1))
@@ -6449,7 +6576,8 @@ function(input, output, session) {
                                                       plot_grid = plot_grid,
                                                       grid_col = grid_col,
                                                       image_def = image_def,
-                                                      ihsf = ihsf()))
+                                                      ihsf = ihsf(),
+                                                      nc = nc_object_visualize()))
       } else {
         if(checkboxCompareData_dropdown() == "cmsaf.side.by.side"){
           req((visualizeVariables()$plot_type == "cmsaf.side.by.side"))
@@ -6691,7 +6819,8 @@ function(input, output, session) {
                                                                   plot_grid = plot_grid,
                                                                   grid_col = grid_col,
                                                                   image_def = image_def,
-                                                                  ihsf = ihsf())
+                                                                  ihsf = ihsf(),
+                                                                  nc = nc_object_visualize())
                          in_plot <- res_plot$src
                        } else {
                          res_plot <- cmsafvis::render_plot(plot_rinstat = input$plot_rinstat,
@@ -6815,12 +6944,12 @@ function(input, output, session) {
   # File summaries
   output$summary1 <- renderPrint({
     req(nc_path_visualize())
-    cmsafops::ncinfo(nc_path_visualize())
+    cmsafops::ncinfo(nc_path_visualize(), nc = nc_object_visualize())
   })
 
   output$summary2 <- renderPrint({
     req(nc_path_visualize())
-    cmsafops::ncinfo(nc_path_visualize(), "m")
+    cmsafops::ncinfo(nc_path_visualize(), "m", nc = nc_object_visualize())
   })
 
   # About part

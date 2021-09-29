@@ -4,10 +4,10 @@
 # (num_above, num_below, num_equal). Argument op is one of 1-3, depending on
 # the function used.
 num_wrapper <- function(op, var, thld, infile, outfile, nc34, overwrite,
-                           verbose) {
+                           verbose, nc = NULL) {
   check_variable(var)
   check_constant(thld)
-  check_infile(infile)
+  if (is.null(nc)) check_infile(infile)
   check_outfile(outfile)
   outfile <- correct_filename(outfile)
   check_overwrite(outfile, overwrite)
@@ -16,14 +16,15 @@ num_wrapper <- function(op, var, thld, infile, outfile, nc34, overwrite,
   calc_time_start <- Sys.time()
   
   ##### extract data from file #####
-  file_data <- read_file(infile, var)
+  file_data <- read_file(infile, var, nc = nc)
   
   time_bnds <- get_time_bounds_1(
     file_data$dimension_data$t
   )
 
   # calculate results
-  nc_in <- nc_open(infile)
+  if (!is.null(nc)) nc_in <- nc
+  else nc_in <- nc_open(infile)
   
   # initialize array with zeros
   result <- array(0, dim = c(length(file_data$dimension_data$x), 
@@ -44,7 +45,7 @@ num_wrapper <- function(op, var, thld, infile, outfile, nc34, overwrite,
 	
   }
 
-  nc_close(nc_in)
+  if (is.null(nc)) nc_close(nc_in)
   vars_data <- list(result = result, time_bounds = time_bnds)
 
   nc_format <- get_nc_version(nc34)

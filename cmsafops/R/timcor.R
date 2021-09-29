@@ -15,6 +15,10 @@
 #'  in NetCDFv3 format (numeric). Default output is NetCDFv4.
 #'@param overwrite logical; should existing output file be overwritten?
 #'@param verbose logical; if TRUE, progress messages are shown
+#'@param nc1 Alternatively to \code{infile1} you can specify the input as an
+#'  object of class `ncdf4` (as returned from \code{ncdf4::nc_open}).
+#'@param nc2 Alternatively to \code{infile2} you can specify the input as an
+#'  object of class `ncdf4` (as returned from \code{ncdf4::nc_open}).
 #'
 #'@return A NetCDF file including a time series of correlations over time is written.
 #'@export
@@ -68,6 +72,6 @@
 #'       file.path(tempdir(),"CMSAF_example_file_2.nc"),
 #'       file.path(tempdir(),"CMSAF_example_file_timcor.nc")))
 
-timcor <- function(var1, infile1, var2, infile2, outfile, nc34 = 4, overwrite = FALSE, verbose = FALSE) {
-  tim_cor_covar_wrapper("timcor", var1, infile1, var2, infile2, outfile, nc34, overwrite, verbose)
+timcor <- function(var1, infile1, var2, infile2, outfile, nc34 = 4, overwrite = FALSE, verbose = FALSE, nc1 = NULL, nc2 = NULL) {
+  tim_cor_covar_wrapper("timcor", var1, infile1, var2, infile2, outfile, nc34, overwrite, verbose, nc1 = nc1, nc2 = nc2)
 }

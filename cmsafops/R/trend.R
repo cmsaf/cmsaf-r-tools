@@ -21,6 +21,8 @@
 #'  in NetCDFv3 format (numeric). Default output is NetCDFv4.
 #'@param overwrite logical; should existing output file be overwritten?
 #'@param verbose logical; if TRUE, progress messages are shown
+#'@param nc Alternatively to \code{infile} you can specify the input as an
+#'  object of class `ncdf4` (as returned from \code{ncdf4::nc_open}).
 #'
 #'@return A NetCDF file including three data layers is written. One layer
 #'  (trend1) contains the linear trend multiplied by the number of time steps.
@@ -76,10 +78,10 @@
 #'unlink(c(file.path(tempdir(),"CMSAF_example_file.nc"), 
 #'  file.path(tempdir(),"CMSAF_example_file_trend.nc")))
 trend <- function(var, infile, outfile, option = 1, nc34 = 4,
-                  overwrite = FALSE, verbose = FALSE) {
+                  overwrite = FALSE, verbose = FALSE, nc = NULL) {
   check_variable(var)
 
-  check_infile(infile)
+  if (is.null(nc)) check_infile(infile)
   check_outfile(outfile)
 
   outfile <- correct_filename(outfile)
@@ -96,14 +98,14 @@ trend <- function(var, infile, outfile, option = 1, nc34 = 4,
               info = "1 = positive significant, 0 = not significant, -1 = negative significant")
 
   ##### extract data from file #####
-  file_data <- read_file(infile, var)
+  file_data <- read_file(infile, var, nc = nc)
   file_data$variable$prec <- "float"
 
   time_bnds <- get_time_bounds_1(
     file_data$dimension_data$t
   )
 
-  result <- calc_trend(infile, file_data, option)
+  result <- calc_trend(infile, file_data, option, nc = nc)
 
   vars_data <- list(result = result, time_bounds = time_bnds)
 

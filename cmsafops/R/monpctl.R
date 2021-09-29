@@ -15,6 +15,8 @@
 #'  in NetCDFv3 format (numeric). Default output is NetCDFv4.
 #'@param overwrite logical; should existing output file be overwritten?
 #'@param verbose logical; if TRUE, progress messages are shown
+#'@param nc Alternatively to \code{infile} you can specify the input as an
+#'  object of class `ncdf4` (as returned from \code{ncdf4::nc_open}).
 #'
 #'@return A NetCDF file including a time series of monthly variance is written.
 #'@export
@@ -60,6 +62,6 @@
 #'unlink(c(file.path(tempdir(),"CMSAF_example_file.nc"), 
 #'  file.path(tempdir(),"CMSAF_example_file_monpctl.nc")))
 monpctl <- function(var, infile, outfile, nc34 = 4, overwrite = FALSE, 
-                    verbose = FALSE, p = .95) {
-  monx_wrapper(7, var, infile, outfile, nc34, overwrite, p = p, verbose = verbose)
+                    verbose = FALSE, p = .95, nc = NULL) {
+  monx_wrapper(7, var, infile, outfile, nc34, overwrite, p = p, verbose = verbose, nc = nc)
 }

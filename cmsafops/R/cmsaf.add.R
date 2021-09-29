@@ -18,6 +18,10 @@
 #'  in NetCDFv3 format (numeric). Default output is NetCDFv4.
 #'@param overwrite logical; should existing output file be overwritten?
 #'@param verbose logical; if TRUE, progress messages are shown
+#'@param nc1 Alternatively to \code{infile1} you can specify the input as an
+#'  object of class `ncdf4` (as returned from \code{ncdf4::nc_open}).
+#'@param nc2 Alternatively to \code{infile2} you can specify the input as an
+#'  object of class `ncdf4` (as returned from \code{ncdf4::nc_open}).
 #'
 #'@return A NetCDF file including the added fields of infile1 and infile2 is
 #'  written.
@@ -75,6 +79,6 @@
 #'  file.path(tempdir(),"CMSAF_example_file_2.nc"),
 #'  file.path(tempdir(),"CMSAF_example_file_add.nc")))
 cmsaf.add <- function(var1, var2, infile1, infile2, outfile, nc34 = 4,
-                      overwrite = FALSE, verbose = FALSE) {
-  arith_wrapper(1, var1, var2, infile1, infile2, outfile, nc34, overwrite, verbose)
+                      overwrite = FALSE, verbose = FALSE, nc1 = NULL, nc2 = NULL) {
+  arith_wrapper(1, var1, var2, infile1, infile2, outfile, nc34, overwrite, verbose, nc1 = nc1, nc2 = nc2)
 }

@@ -1,14 +1,14 @@
 tim_cor_covar_wrapper <- local({
   result <- c()
-  function(op, var1, infile1, var2, infile2, outfile, nc34 = 4, overwrite = FALSE, verbose = FALSE) {
+  function(op, var1, infile1, var2, infile2, outfile, nc34 = 4, overwrite = FALSE, verbose = FALSE, nc1 = NULL, nc2 = NULL) {
     result <<- c()
     calc_time_start <- Sys.time()
     
     check_variable(var1)
     check_variable(var2)
     
-    check_infile(infile1)
-    check_infile(infile2)
+    if (is.null(nc1)) check_infile(infile1)
+    if (is.null(nc2)) check_infile(infile2)
     
     check_outfile(outfile)
     
@@ -17,8 +17,8 @@ tim_cor_covar_wrapper <- local({
     check_nc_version(nc34)
     
     ##### extract data from two files #####
-    file_data_one <- read_file(infile1, var1)
-    file_data_two <- read_file(infile2, var2)
+    file_data_one <- read_file(infile1, var1, nc = nc1)
+    file_data_two <- read_file(infile2, var2, nc = nc2)
     
     file_data_one$variable$prec <- "float"
     file_data_two$variable$prec <- "float"
@@ -35,8 +35,10 @@ tim_cor_covar_wrapper <- local({
        & length(dimension_data_1$y) == length(dimension_data_2$y) 
        & length(dimension_data_1$t) == length(dimension_data_2$t)){
       
-      nc_in_1 <- nc_open(infile1)
-      nc_in_2 <- nc_open(infile2)
+      if (!is.null(nc1)) nc_in_1 <- nc1
+      else nc_in_1 <- nc_open(infile1)
+      if (!is.null(nc2)) nc_in_2 <- nc2
+      else nc_in_2 <- nc_open(infile2)
       
       limit <- 2601 * 2601 * 31 # limit to avoid vector memory exhaustion, Can be adjust
       dimensionality <- as.double(length(dimension_data_1$x)) *
@@ -71,8 +73,8 @@ tim_cor_covar_wrapper <- local({
         dum_dat_1 <- ncvar_get(nc_in_1, var_name_1, collapse_degen = FALSE)
         dum_dat_2 <- ncvar_get(nc_in_2, var_name_2, collapse_degen = FALSE)
       }
-      nc_close(nc_in_1)
-      nc_close(nc_in_2)
+      if (is.null(nc1)) nc_close(nc_in_1)
+      if (is.null(nc2)) nc_close(nc_in_2)
       
       if (verbose) {
         pb <- progress::progress_bar$new(

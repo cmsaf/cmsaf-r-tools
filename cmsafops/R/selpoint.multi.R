@@ -28,6 +28,8 @@
 #'@param nc34 NetCDF version of output file. If \code{nc34 = 3} the output file will be
 #'  in NetCDFv3 format (numeric). Default output is NetCDFv4.
 #'@param verbose logical; if TRUE, progress messages are shown
+#'@param nc Alternatively to \code{infile} you can specify the input as an
+#'  object of class `ncdf4` (as returned from \code{ncdf4::nc_open}).
 #'
 #'@return For each pair of longitude and latitude coordinates one separate
 #'  NetCDF or csv file including the selected data is written. The csv files are
@@ -81,15 +83,16 @@
 #'unlink(c(file.path(tempdir(),"CMSAF_example_file.nc"), file.path(tempdir(),"A.csv"), 
 #'  file.path(tempdir(),"B.csv")))
 selpoint.multi <- function(var, infile, path, pattern, outpath, lon1, lat1,
-                           station_names, format = "nc", nc34 = 4, verbose = FALSE) {
+                           station_names, format = "nc", nc34 = 4, verbose = FALSE,
+                           nc = NULL) {
   check_variable(var)
 
-  if (missing(infile) && (missing(path) || missing(pattern))) {
-    stop(paste0("Missing input: Please provide either infile or path and pattern.",
+  if (missing(infile) && missing(nc) && (missing(path) || missing(pattern))) {
+    stop(paste0("Missing input: Please provide either infile, nc or path and pattern.",
                 collapse = " "))
   }
-  if (!missing(infile)) {
-    check_infile(infile)
+  if (!missing(infile) || !is.null(nc)) {
+    if (is.null(nc)) check_infile(infile)
     case <- 1
     if (!missing(path) || !missing(pattern)) {
       if (verbose) message("infile defined, path and pattern will not be used")
@@ -104,9 +107,9 @@ selpoint.multi <- function(var, infile, path, pattern, outpath, lon1, lat1,
   calc_time_start <- Sys.time()
 
   if (case == 1) {
-    file_data <- read_file(infile, var)
+    file_data <- read_file(infile, var, nc = nc)
     if (file_data$time_info$has_time_bnds) {
-      time_bnds <- get_time_bounds_from_file(infile)
+      time_bnds <- get_time_bounds_from_file(infile, nc = nc)
     }
   }else{
     filelist <- list.files(path = path, pattern = pattern, full.names = TRUE)
@@ -174,9 +177,10 @@ selpoint.multi <- function(var, infile, path, pattern, outpath, lon1, lat1,
       target_y <- append(target_y, lat_limit)
 
       if (case == 1) {
-        id <- nc_open(infile)
+        if (!is.null(nc)) id <- nc
+        else id <- nc_open(infile)
         result <- ncvar_get(id, file_data$variable$name, start = c(lon_limit, lat_limit, 1), count = c(1, 1, -1))
-        nc_close(id)
+        if (is.null(nc)) nc_close(id)
         result_data <- rbind(result_data, result)
         }
 
@@ -217,9 +221,10 @@ selpoint.multi <- function(var, infile, path, pattern, outpath, lon1, lat1,
       target_lat <- append(target_lat, file_data$grid$vars_data[[LAT_NAMES$DEFAULT]][x_nearest, y_nearest])
 
       if (case == 1) {
-        id <- nc_open(infile)
+        if (!is.null(nc)) id <- nc
+        else id <- nc_open(infile)
         result <- ncvar_get(id, file_data$variable$name, start = c(x_nearest, y_nearest, 1), count = c(1, 1, -1))
-        nc_close(id)
+        if (is.null(nc)) nc_close(id)
         result_data <- rbind(result_data, result)
       }
 
@@ -245,7 +250,7 @@ selpoint.multi <- function(var, infile, path, pattern, outpath, lon1, lat1,
   if (case == 1) {
 
     if (file_data$time_info$has_time_bnds) {
-      time_bnds <- get_time_bounds_from_file(infile)
+      time_bnds <- get_time_bounds_from_file(infile, nc = nc)
     }
 
   }else{
