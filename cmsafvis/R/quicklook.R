@@ -242,23 +242,33 @@ quicklook <- function(config,
     units <- c(units, ncdf4::ncatt_get(nc, vars[k], "units")$value)
   }
   
-  if ("lon" %in% names(nc$dim)) {
-    lon_min <- min(ncdf4::ncvar_get(nc, "lon"), na.rm = TRUE)
-    lon_max <- max(ncdf4::ncvar_get(nc, "lon"), na.rm = TRUE)
-    lat_min <- min(ncdf4::ncvar_get(nc, "lat"), na.rm = TRUE)
-    lat_max <- max(ncdf4::ncvar_get(nc, "lat"), na.rm = TRUE)
+  # check lon lat names (not elegant, but should work for now)
+  lonvar <- "lon"
+  latvar <- "lat"
+  if ("lon" %in% names(nc$dim)) lonvar <- "lon" 
+  if ("longitude" %in% names(nc$dim)) lonvar <- "longitude"
+  if ("Longitude" %in% names(nc$dim)) lonvar <- "Longitude"
+  if ("lat" %in% names(nc$dim)) latvar <- "lat"
+  if ("latitude" %in% names(nc$dim)) latvar <- "latitude"
+  if ("Latitude" %in% names(nc$dim)) latvar <- "Latitude"
+  
+  if (lonvar %in% names(nc$dim)) {
+    lon_min <- min(ncdf4::ncvar_get(nc, lonvar), na.rm = TRUE)
+    lon_max <- max(ncdf4::ncvar_get(nc, lonvar), na.rm = TRUE)
+    lat_min <- min(ncdf4::ncvar_get(nc, latvar), na.rm = TRUE)
+    lat_max <- max(ncdf4::ncvar_get(nc, latvar), na.rm = TRUE)
   } else if (ncdf4::ncatt_get(nc, 0, "geospatial_lon_max")$hasatt) {
     lon_min <- ncdf4::ncatt_get(nc, 0, "geospatial_lon_min")$value
     lon_max <- ncdf4::ncatt_get(nc, 0, "geospatial_lon_max")$value
     lat_min <- ncdf4::ncatt_get(nc, 0, "geospatial_lat_min")$value
     lat_max <- ncdf4::ncatt_get(nc, 0, "geospatial_lat_max")$value
   } else {
-    stop("unable to get a lon/lat reference")
+    stop("unable to get a lon / lat reference")
   }
   
   if (area == "NP" | area == "SP") {
-    lond <- ncdf4::ncvar_get(nc, "lon")
-    latd <- ncdf4::ncvar_get(nc, "lat")
+    lond <- ncdf4::ncvar_get(nc, lonvar)
+    latd <- ncdf4::ncvar_get(nc, latvar)
   }
   
   # get time info for all slots
@@ -679,11 +689,21 @@ quicklook <- function(config,
             maps::map("world", projection = "orthographic", interior = FALSE, orientation = c(0,0,0), add = TRUE)
           )
         } else if (area == "GL") {
-            maps::map("world", interior = FALSE, xlim = c(lon_min, lon_max), 
-                    ylim = c(lat_min, lat_max), wrap = c(lon_min, lon_max), add = TRUE)
+            if (lon_max >= 359) {
+              maps::map("world2", interior = FALSE, xlim = c(lon_min, lon_max), 
+                ylim = c(lat_min, lat_max), wrap = c(lon_min, lon_max), add = TRUE)
+            } else {
+                maps::map("world", interior = FALSE, xlim = c(lon_min, lon_max), 
+                  ylim = c(lat_min, lat_max), wrap = c(lon_min, lon_max), add = TRUE)
+            }
         } else {
-            maps::map("world", interior = FALSE, xlim = c(lon_min, lon_max), 
-                    ylim = c(lat_min, lat_max), add = TRUE)
+            if (lon_max >= 359) {
+              maps::map("world2", interior = FALSE, xlim = c(lon_min, lon_max), 
+                        ylim = c(lat_min, lat_max), add = TRUE)
+            } else {
+                maps::map("world", interior = FALSE, xlim = c(lon_min, lon_max), 
+                        ylim = c(lat_min, lat_max), add = TRUE)
+            }
         }
        }
       } # end if polar projection 
