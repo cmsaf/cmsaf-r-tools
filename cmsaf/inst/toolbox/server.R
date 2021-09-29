@@ -341,6 +341,9 @@ function(input, output, session) {
 
   # Reactive values for biggest possible spatial range
   spatialRange <- reactiveValues()
+  
+  # Similar to spatialRange but for NCSS URL subset.
+  spatialRange_ncss <- reactiveValues()
 
   # Reactive value for timestep
   timestep <- reactiveVal()
@@ -896,6 +899,11 @@ function(input, output, session) {
     grid_east <- as.numeric(unlist(ncss_url_data_desc()$gridDataset$LatLonBox$east))
     grid_north <- as.numeric(unlist(ncss_url_data_desc()$gridDataset$LatLonBox$north))
     grid_south <- as.numeric(unlist(ncss_url_data_desc()$gridDataset$LatLonBox$south))
+    
+    # Set spatial range for dynamic plot
+    spatialRange_ncss$lat_range <- c(grid_south, grid_north)
+    spatialRange_ncss$lon_range  <- c(grid_west, grid_east)
+    
     #TODO Determine this from data description
     lon_step <- 0.05
     lat_step <- 0.05
@@ -912,27 +920,48 @@ function(input, output, session) {
         vars <- c(vars, attributes(grid_set[[i]])$name)
       }
     }
+    vars <- vars[!vars %in% "crs"]
     output$ncss_url_print <- renderText({paste(tags$b(ncss_url()))})
     output$ncss_var_list_ui <- renderUI({
       selectInput(inputId = "ncss_var_list",
                   label = "Select a variable",
                   vars)
     })
-    output$ncss_lon_range_ui <- renderUI({
-      sliderInput(inputId = "ncss_lon_range",
-                  label = "Please select a longitude range.",
-                  min = grid_west,
-                  max = grid_east,
-                  value = c(grid_west, grid_east),
-                  step = lon_step)
-    })
-    output$ncss_lat_range_ui <- renderUI({
-      sliderInput(inputId = "ncss_lat_range",
-                  label = "Please select a latitude range.",
-                  min = grid_south,
-                  max = grid_north,
-                  value = c(grid_south, grid_north),
-                  step = lat_step)
+    output$ncss_select_region_ui <- renderUI({
+      tags$div(id = "ncss_region",
+               fluidRow(
+                 column(width = 5,
+                        numericInput("ncss_lon_min",
+                                     label = "Longitude min",
+                                     min = grid_west,
+                                     max = grid_east,
+                                     value = grid_west)
+                 ),
+                 column(width = 5,
+                        numericInput("ncss_lon_max",
+                                     label = "Longitude max",
+                                     min = grid_west,
+                                     max = grid_east,
+                                     value = grid_east
+                        ))),
+               fluidRow(
+                 column(width = 5,
+                        numericInput("ncss_lat_min",
+                                     label = "Latitude min",
+                                     min = grid_south,
+                                     max = grid_north,
+                                     value = grid_south)
+                        ),
+                 column(width = 5,
+                        numericInput("ncss_lat_max",
+                                     label = "Latitude max",
+                                     min = grid_south,
+                                     max = grid_north,
+                                     value = grid_north)
+                        )
+                 
+               )
+      )
     })
     output$ncss_date_range_ui <- renderUI({
       dateRangeInput(inputId = "ncss_date_range",
@@ -943,17 +972,38 @@ function(input, output, session) {
                   max = time_max)
     })
     output$ncss_year_range_ui <- renderUI({
-      sliderInput(inputId = "ncss_year_range",
-                  label = "Please select a year range.",
-                  min = year_min,
-                  max = year_max,
-                  value = c(year_min, year_max),
-                  step = 1,
-                  sep = "")
-    })
+      fluidRow(
+        column(width = 5,
+               numericInput("ncss_year_min",
+                            label = "Year min",
+                            min = year_min,
+                            max = year_max,
+                            value = year_min)
+        ),
+        column(width = 5,
+               numericInput("ncss_lon_max",
+                            label = "Year max",
+                            min = year_min,
+                            max = year_max,
+                            value = year_max
+               )))
+      })
   },
   ignoreInit = TRUE
   )
+  
+  # Creating a preview plot for the NCSS URL subset.
+  output$preview_ncss_subset <- renderPlot({
+    req(input$ncss_lon_min)
+    req(input$ncss_lon_max)
+    req(input$ncss_lat_min)
+    req(input$ncss_lat_max)
+    
+    cmsafvis::render_preview_plot(spatial_lon_range = isolate(spatialRange_ncss$lon_range),
+                                  spatial_lat_range = isolate(spatialRange_ncss$lat_range),
+                                  lonRange = c(input$ncss_lon_min, input$ncss_lon_max),
+                                  latRange = c(input$ncss_lat_min, input$ncss_lat_max))
+  })
   
   # Radio buttons for time selection type for subsetting
   observeEvent(input$ncss_time_type, {
@@ -972,13 +1022,13 @@ function(input, output, session) {
   observeEvent(input$ncss_subset_download, {
     if (input$ncss_time_type == "date_range") {
       subset_url <- construct_ncss_url(base_url = ncss_url(), var = input$ncss_var_list, 
-                                       north = input$ncss_lat_range[2], west = input$ncss_lon_range[1], 
-                                       east = input$ncss_lon_range[2], south = input$ncss_lat_range[1], 
+                                       north = input$ncss_lat_max, west = input$ncss_lon_min, 
+                                       east = input$ncss_lon_max, south = input$ncss_lat_min, 
                                        time_start = input$ncss_date_range[1], time_end = input$ncss_date_range[2])
     } else {
       subset_url <- construct_ncss_url_month_extract(base_url = ncss_url(), var = input$ncss_var_list,
-                                                     north = input$ncss_lat_range[2], west = input$ncss_lon_range[1],
-                                                     east = input$ncss_lon_range[2], south = input$ncss_lat_range[1],
+                                                     north = input$ncss_lat_max, west = input$ncss_lon_min,
+                                                     east = input$ncss_lon_max, south = input$ncss_lat_min,
                                                      month_start = input$ncss_month_from, month_end = input$ncss_month_to, 
                                                      year_start = input$ncss_year_range[1], year_end = input$ncss_year_range[2])
     }
@@ -1031,8 +1081,8 @@ function(input, output, session) {
       output$ncssShortInfo <- renderPrint({
         cmsafops::ncinfo(url_file_final)
       })
-      shinyjs::show(id = "ncss_file_info")
-      shinyjs::show(id = "ncss_download_analyze_or_visualise")
+      shinyjs::hide(id = "panel_prepare_ncss_url_subset")
+      shinyjs::show(id = "panel_prepare_ncss_download_info")
     } else {
       showModal(modalDialog(
         h4("Something went wrong while downloading the file. Please try again or choose another URL."),
@@ -1052,9 +1102,9 @@ function(input, output, session) {
       isolate(nc_path_analyze(""))
       wrong_file_modal(".nc")
     } else {
+      shinyjs::hide("panel_prepare_nc_url")
       nc_path_analyze_action(nc_path_analyze_action() + 1)
     }
-    resetToAnalyzePanel()
   },
   ignoreInit = TRUE
   )
@@ -1067,37 +1117,77 @@ function(input, output, session) {
       isolate(nc_path_visualize(""))
       wrong_file_modal(".nc")
     } else {
+      shinyjs::hide("panel_prepare_nc_url")
       actionVisualize(actionVisualize() + 1)
     }
-    resetToVisualizePanel()
   },
   ignoreInit = TRUE
   )
   
   # Prepare downloaded .nc URL for analyze
   observeEvent(input$nc_url_download_analyze, {
-    resetToAnalyzePanel()
+    nc_path_analyze(outputFilepath())
+    isolate(nc_object_analyze(NULL))
+    if (!endsWith(nc_path_analyze(), ".nc")) {
+      isolate(nc_path_analyze(""))
+      wrong_file_modal(".nc")
+    } else {
+      shinyjs::hide("panel_prepare_nc_url")
+      nc_path_analyze_action(nc_path_analyze_action() + 1)
+    }
   },
   ignoreInit = TRUE
   )
   
   # Prepare downloaded .nc URL for visualize
   observeEvent(input$nc_url_download_visualize, {
-    resetToVisualizePanel()
+    nc_path_visualize(outputFilepath())
+    nc_object_visualize(NULL)
+    if (!endsWith(nc_path_visualize(), ".nc") && is.null(nc_object_visualize())) {
+      isolate(nc_path_visualize(""))
+      wrong_file_modal(".nc")
+    } else {
+      shinyjs::hide("panel_prepare_nc_url")
+      actionVisualize(actionVisualize() + 1)
+    }
   },
   ignoreInit = TRUE
   )
   
   # Prepare downloaded .nc URL for analyze
   observeEvent(input$ncss_download_analyze, {
-    resetToAnalyzePanel()
+    nc_path_analyze(outputFilepath())
+    isolate(nc_object_analyze(NULL))
+    if (!endsWith(nc_path_analyze(), ".nc")) {
+      isolate(nc_path_analyze(""))
+      wrong_file_modal(".nc")
+    } else {
+      shinyjs::hide("panel_prepare_ncss_download_info")
+      nc_path_analyze_action(nc_path_analyze_action() + 1)
+    }
   },
   ignoreInit = TRUE
   )
   
   # Prepare downloaded .nc URL for visualize
   observeEvent(input$ncss_download_visualize, {
-    resetToVisualizePanel()
+    nc_path_visualize(outputFilepath())
+    nc_object_visualize(NULL)
+    if (!endsWith(nc_path_visualize(), ".nc") && is.null(nc_object_visualize())) {
+      isolate(nc_path_visualize(""))
+      wrong_file_modal(".nc")
+    } else {
+      shinyjs::hide("panel_prepare_ncss_download_info")
+      actionVisualize(actionVisualize() + 1)
+    }
+  },
+  ignoreInit = TRUE
+  )
+  
+  # Prepare downloaded .nc URL for visualize
+  observeEvent(input$ncss_info_back, {
+    shinyjs::show(id = "panel_prepare_ncss_url_subset")
+    shinyjs::hide(id = "panel_prepare_ncss_download_info")
   },
   ignoreInit = TRUE
   )
@@ -1301,11 +1391,13 @@ function(input, output, session) {
     shinyjs::hide("panel_prepareInput1")
     shinyjs::hide("panel_prepare_nc_url")
     shinyjs::hide("panel_prepare_ncss_url_subset")
+    shinyjs::hide("panel_prepare_ncss_download_info")
     shinyjs::hide("panel_prepareInput1Nc")
     shinyjs::hide("panel_prepareInput2")
     shinyjs::reset("panel_prepareInput1")
     shinyjs::reset("panel_prepare_nc_url")
     shinyjs::reset("panel_prepare_ncss_url_subset")
+    shinyjs::reset("panel_prepare_ncss_download_info")
     shinyjs::reset("panel_prepareInput1Nc")
     shinyjs::reset("panel_prepareInput2")
     shinyjs::hide("spinner_prepare1")
@@ -1336,11 +1428,13 @@ function(input, output, session) {
     shinyjs::hide("panel_prepareInput1")
     shinyjs::hide("panel_prepare_nc_url")
     shinyjs::hide("panel_prepare_ncss_url_subset")
+    shinyjs::hide("panel_prepare_ncss_download_info")
     shinyjs::hide("panel_prepareInput1Nc")
     shinyjs::hide("panel_prepareInput2")
     shinyjs::reset("panel_prepareInput1")
     shinyjs::reset("panel_prepare_nc_url")
     shinyjs::reset("panel_prepare_ncss_url_subset")
+    shinyjs::reset("panel_prepare_ncss_download_info")
     shinyjs::reset("panel_prepareInput1Nc")
     shinyjs::reset("panel_prepareInput2")
     shinyjs::hide("spinner_visualize")
@@ -1371,11 +1465,13 @@ function(input, output, session) {
     shinyjs::hide("panel_prepareInput1")
     shinyjs::hide("panel_prepare_nc_url")
     shinyjs::hide("panel_prepare_ncss_url_subset")
+    shinyjs::hide("panel_prepare_ncss_download_info")
     shinyjs::hide("panel_prepareInput1Nc")
     shinyjs::hide("panel_prepareInput2")
     shinyjs::reset("panel_prepareInput1")
     shinyjs::reset("panel_prepare_nc_url")
     shinyjs::reset("panel_prepare_ncss_url_subset")
+    shinyjs::reset("panel_prepare_ncss_download_info")
     shinyjs::reset("panel_prepareInput1Nc")
     shinyjs::reset("panel_prepareInput2")
     shinyjs::hide("panel_analyze")
@@ -4386,7 +4482,7 @@ function(input, output, session) {
     
     # Remap to regGrid if necessary
     file_info <- cmsafops:::check_dims(id)
-    if (is.null(nc)) ncdf4::nc_close(id)
+    if (is.null(nc1)) ncdf4::nc_close(id)
     if (!file_info$isRegGrid) {
       remap_timestamp <- format(Sys.time(), "%Y%m%d%H%M%S", tz = "UTC")
       remap_name <- paste0("remap_", remap_timestamp, ".nc")
