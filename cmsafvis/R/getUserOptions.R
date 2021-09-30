@@ -1,5 +1,6 @@
-getUserOptions <- function(infile) {
-  id <- ncdf4::nc_open(infile)
+getUserOptions <- function(infile, nc = NULL) {
+  if (!is.null(nc)) id <- nc
+  else id <- ncdf4::nc_open(infile)
 
   vn <- names(id$var)
   dn <- names(id$dim)
@@ -29,7 +30,7 @@ getUserOptions <- function(infile) {
   }
 
   # close nc file
-  ncdf4::nc_close(id)
+  if (is.null(nc)) ncdf4::nc_close(id)
 
   return(list(
     variables = vn,

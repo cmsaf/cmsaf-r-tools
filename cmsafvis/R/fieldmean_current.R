@@ -10,7 +10,8 @@ fieldmean_current <- function(variable,
                               climate_year_start,
                               climate_year_end,
                               start_date,
-                              end_date) {
+                              end_date,
+                              nc = NULL) {
   tmpfile <- add_ncdf_ext(construct_filename(variable,
                                           format(end_date, "%Y"),
                                           country_code))
@@ -24,7 +25,8 @@ fieldmean_current <- function(variable,
     lon2 = lon_max,
     lat1 = lat_min,
     lat2 = lat_max,
-    overwrite = TRUE
+    overwrite = TRUE,
+    nc = nc
   )
 
   tmpfile2 <- add_ncdf_ext(construct_filename(variable,

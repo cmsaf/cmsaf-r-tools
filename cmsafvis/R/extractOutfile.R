@@ -5,23 +5,24 @@ extractOutfile <- function(variable,
                            selected_number,
                            analyze_method,
                            temp_dir,
-                           verbose) {
+                           verbose,
+                           nc = NULL) {
   if (verbose) {
     message("Prepare infile")
   }
     
-  outfile <- file.path(temp_dir, basename(infile))
+  outfile <- file.path(temp_dir, cmsafops::get_basename(infile = infile, nc = nc))
   
   if(analyze_method == "accumulate"){
     tryCatch({
-      cmsafops::monsum(var = variable, infile = infile, outfile = outfile, overwrite = TRUE)
+      cmsafops::monsum(var = variable, infile = infile, outfile = outfile, overwrite = TRUE, nc = nc)
     }, error = function(e) {
       stop(paste0("An error occured while extracting data. ","cmsafops::monsum"))
     })
 
   }else if(analyze_method == "mean"){
     tryCatch({
-      cmsafops::monmean(var = variable, infile = infile, outfile = outfile, overwrite = TRUE)
+      cmsafops::monmean(var = variable, infile = infile, outfile = outfile, overwrite = TRUE, nc = nc)
     }, error = function(e) {
       stop(paste0("An error occured while extracting data. ","cmsafops::monmean"))
     })

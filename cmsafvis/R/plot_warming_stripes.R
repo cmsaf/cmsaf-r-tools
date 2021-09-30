@@ -13,10 +13,11 @@ plot_warming_stripes <- function(variable,
                                  pointsTF,
                                  lineTF, 
                                  title,
-                                 verbose)
+                                 verbose,
+                                 nc = NULL)
 {
   # use wfldmean for warming stripes plot
-  cmsafops::wfldmean(variable,infile, outfile = file.path(tempdir(),"tmp_warming_stripes_plot.nc"), overwrite = TRUE)
+  cmsafops::wfldmean(variable, infile, outfile = file.path(tempdir(),"tmp_warming_stripes_plot.nc"), overwrite = TRUE, nc = nc)
   
   temp_file <- file.path(tempdir(),"tmp_warming_stripes_plot.nc")
   

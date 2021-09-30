@@ -55,6 +55,8 @@
 #' @param selected_number Timesteps of the same selected time range (Warming Stripes Plots, Time Series Plots, Trend Plots)
 #' @param dwd_logo Whether to add the DWD logo (logical).
 #' @param verbose Whether to display progress messages (logical).
+#' @param nc Alternatively to \code{infile} you can specify the input as an
+#' object of class `ncdf4` (as returned from \code{ncdf4::nc_open}).
 #'
 #' @export
 #' @importFrom assertthat assert_that is.dir is.readable is.string
@@ -93,7 +95,8 @@ monitor_climate <- function(plot_type = "absolute_map",
                             analyze_method = TRUE,
                             selected_number = 1,
                             dwd_logo = FALSE,
-                            verbose = TRUE
+                            verbose = TRUE,
+                            nc = NULL
 ) {
   #### Deal with config ####
   if (is.null(config)) {

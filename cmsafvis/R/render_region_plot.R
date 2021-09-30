@@ -10,6 +10,8 @@
 #' @param timestep Timestep to visualize at (character).
 #' @param image_def Default size (positive numeric).
 #' @param ihsf Image height scaling factor (positive numeric).
+#' @param nc Alternatively to \code{infile} you can specify the input as an
+#'  object of class `ncdf4` (as returned from \code{ncdf4::nc_open}).
 #'
 #' @export
 render_region_plot <- function(infile,
@@ -42,7 +44,9 @@ render_region_plot <- function(infile,
                                plot_grid,
                                grid_col,
                                image_def,
-                               ihsf) {
+                               ihsf,
+                               nc = NULL) {
+  if (!is.null(nc)) infile <- nc$filename
   if (is.null(outfile)) {
     outfile <- tempfile(fileext = fileExtension)
   }

@@ -6,9 +6,12 @@ compare_grid <- function(
   lon_min,
   lon_max,
   lat_min,
-  lat_max
+  lat_max,
+  nc1 = NULL,
+  nc2 = NULL
 ) {
-  nc <- ncdf4::nc_open(infile1)
+  if (!is.null(nc1)) nc <- nc1
+  else nc <- ncdf4::nc_open(infile1)
 
   # Retrieve the grid and the dimensions of the existing outfile
   lon <- ncdf4::ncvar_get(nc, "lon")
@@ -19,9 +22,10 @@ compare_grid <- function(
   dy <- lat[2] - lat[1]
 
   # Close the file
-  ncdf4::nc_close(nc)
+  if (is.null(nc1)) ncdf4::nc_close(nc)
 
-  nc_dims <- ncdf4::nc_open(infile2)
+  if (!is.null(nc2)) nc_dims <- nc2
+  else nc_dims <- ncdf4::nc_open(infile2)
   # Retrieve the grid and the dimensions of the existing outfile
   lon_steps <- ncdf4::ncvar_get(nc_dims, "lon")
   lat_steps <- ncdf4::ncvar_get(nc_dims, "lat")
@@ -29,7 +33,7 @@ compare_grid <- function(
   dy_steps <- lat_steps[2] - lat_steps[1]
 
   # Close the file
-  ncdf4::nc_close(nc_dims)
+  if (is.null(nc2)) ncdf4::nc_close(nc_dims)
 
   # Check area and step lengths
   return(

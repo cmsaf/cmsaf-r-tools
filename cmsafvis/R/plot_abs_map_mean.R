@@ -20,7 +20,8 @@ plot_abs_map_mean <- function(variable,
                          mean_value,
                          states,
                          dwd_logo,
-                         verbose) {
+                         verbose,
+                         nc = NULL) {
 
   countriesHigh <- numeric(0)  # Hack to prevent IDE warning in second next line (see https://stackoverflow.com/questions/62091444/how-to-load-data-from-other-package-in-my-package)
   utils::data("countriesHigh", package = "rworldxtra", envir = environment())
@@ -68,12 +69,13 @@ plot_abs_map_mean <- function(variable,
   date_format_string_short <- ifelse(language == "deu", "%d.%m.", "%m-%d")
 
   # input
-  opennc <- ncdf4::nc_open(infile)
+  if (!is.null(nc)) opennc <- nc
+  else opennc <- ncdf4::nc_open(infile)
   field_source <- ncdf4::ncvar_get(opennc, variable)
   lon <- ncdf4::ncvar_get(opennc, "lon")
   lat <- ncdf4::ncvar_get(opennc, "lat")
   time <- ncdf4::ncvar_get(opennc, "time")
-  ncdf4::nc_close(opennc)
+  if (is.null(nc)) ncdf4::nc_close(opennc)
 
   nx <- length(lon)
   ny <- length(lat)

@@ -11,7 +11,8 @@ calculate_climatology_outfile <- function(variable,
                                           lat_max,
                                           selected_number,
                                           analyze_method,
-                                          verbose
+                                          verbose,
+                                          nc = NULL
 )
 {
   if (verbose) {
@@ -20,12 +21,12 @@ calculate_climatology_outfile <- function(variable,
   climate_year_start = paste0(climate_year_start, "-01-01")
   climate_year_end = paste0(climate_year_end, "-12-01")
   
-  selperiod_tmp <- file.path(tempdir(), basename(infile))
+  selperiod_tmp <- file.path(tempdir(), cmsafops::get_basename(infile, nc =nc))
   if(file.exists(selperiod_tmp)){
     unlink(selperiod_tmp)
   }
   tryCatch({
-    cmsafops::selperiod(var = variable, start = climate_year_start, end = climate_year_end, infile = infile, outfile = selperiod_tmp, overwrite = TRUE)
+    cmsafops::selperiod(var = variable, start = climate_year_start, end = climate_year_end, infile = infile, outfile = selperiod_tmp, overwrite = TRUE, nc = nc)
   }, error = function(e) {
     stop(paste0("An error occured while extracting data. ","cmsafops::selperiod"))
   })

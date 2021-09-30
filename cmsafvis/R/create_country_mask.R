@@ -7,11 +7,12 @@ create_country_mask <- function(infile,
                         temp_dir,
                         country_code,
                         states,
-                        verbose) {
+                        verbose,
+                        nc = NULL) {
 
   # This function extracts a region defined by a polygon from a gridded data set
-  if (missing(infile)) {
-    stop("Please specify an infile.")
+  if (missing(infile) && is.null(nc)) {
+    stop("Please specify an infile or nc object.")
   }
 
   if (missing(country_code)) {
@@ -26,7 +27,8 @@ create_country_mask <- function(infile,
   if (file.exists(outfile)) {
     reuse_mask <- compare_spatial_range(
       outfile,
-      infile
+      infile,
+      nc_file2 = nc
     )
 
     # Check area and step lengths
@@ -51,19 +53,20 @@ create_country_mask <- function(infile,
   poly <- methods::as(poly, "SpatialPolygons")
 
   # Open the netcdf-file
-  nc <- ncdf4::nc_open(infile)
+  if (!is.null(nc)) nc_in <- nc
+  else nc_in <- ncdf4::nc_open(infile)
 
   # Retrieve the grid and the dimensions
-  lon <- ncdf4::ncvar_get(nc, "lon")
-  lat <- ncdf4::ncvar_get(nc, "lat")
-  nx <- nc$dim$lon$len
-  ny <- nc$dim$lat$len
+  lon <- ncdf4::ncvar_get(nc_in, "lon")
+  lat <- ncdf4::ncvar_get(nc_in, "lat")
+  nx <- nc_in$dim$lon$len
+  ny <- nc_in$dim$lat$len
 
-  londim <- nc$dim[["lon"]]
-  latdim <- nc$dim[["lat"]]
+  londim <- nc_in$dim[["lon"]]
+  latdim <- nc_in$dim[["lat"]]
 
   # Close the file
-  ncdf4::nc_close(nc)
+  if (is.null(nc)) ncdf4::nc_close(nc_in)
 
   # Define the grid
   lonmin <- lon[1]
