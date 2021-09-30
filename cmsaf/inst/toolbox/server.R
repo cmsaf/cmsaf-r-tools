@@ -981,7 +981,7 @@ function(input, output, session) {
                             value = year_min)
         ),
         column(width = 5,
-               numericInput("ncss_lon_max",
+               numericInput("ncss_year_max",
                             label = "Year max",
                             min = year_min,
                             max = year_max,
@@ -1030,7 +1030,7 @@ function(input, output, session) {
                                                      north = input$ncss_lat_max, west = input$ncss_lon_min,
                                                      east = input$ncss_lon_max, south = input$ncss_lat_min,
                                                      month_start = input$ncss_month_from, month_end = input$ncss_month_to, 
-                                                     year_start = input$ncss_year_range[1], year_end = input$ncss_year_range[2])
+                                                     year_start = input$ncss_year_min, year_end = input$ncss_year_max)
     }
     
     # Try to get the base name from the URL
