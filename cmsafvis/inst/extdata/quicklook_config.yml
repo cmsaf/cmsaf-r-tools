@@ -2,6 +2,79 @@
   BTR:
   CAL:
   CFC:
+    CFCmm002AVPOS01:
+      Dataset: CLARA-2
+      CFC:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: Blues
+        logo: color
+    CFCmm221AVPOS01:
+      Dataset: CLARA-2
+      CFC:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: Blues
+        logo: color
+        polar: TRUE
+    CFCmm219AVPOS01:
+      Dataset: CLARA-2
+      CFC:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: Blues
+        logo: color
+    CFCmm400AVPOS01:
+      Dataset: ICDR AVHRR
+      CFC:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: Blues
+        logo: color
+    CFCdm410SVMSG01:
+      Dataset: ICDR Seviri Clouds
+      CFC:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: Blues
+        logo: color
+    CFCmd410SVMSG01:
+      Dataset: ICDR Seviri Clouds
+      CFC_MMDC:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: Blues
+        logo: color
+    CFCmm410SVMSG01:
+      Dataset: ICDR Seviri Clouds
+      CFC:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: Blues
+        logo: color
+    CFCdm400AVPOS01:
+      Dataset: ICDR AVHRR
+      CFC:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: Blues
+        logo: color
   CFL:
   CFS:
   CMA:
@@ -13,13 +86,187 @@
           max: 3
         legend: FALSE
         colorscale: clouds
-        logo: black
+        logo: color
+    CMAin003SVMSGE1:
+      Dataset: CLAAS-2
+      CMA:
+        limits:
+          min: 0
+          max: 3
+        legend: FALSE
+        colorscale: clouds
+        logo: color
   COT:
   CPH:
+    CPHmm400AVPOS01:
+      Dataset: ICDR AVHRR
+      CPH:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: Blues
+        logo: color
+    CPHdm400AVPOS01:
+      Dataset: ICDR AVHRR
+      CPH:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: Blues
+        logo: color
   CPP:
 # CTH:
   CTO:
-# CTP:
+    CTOdm003SVMSG01:
+      Dataset: CLAAS-2.1
+      CTT:
+        limits:
+          min: 150
+          max: 340
+        legend: TRUE
+        colorscale: PinkYl
+        logo: color
+      CTH:
+        limits:
+          min: 1
+          max: 18600
+        legend: TRUE
+        colorscale: Greens
+        logo: color
+        invert_col: TRUE
+      CTP:
+        limits:
+          min: 100
+          max: 1000
+        legend: TRUE
+        colorscale: Purples
+        logo: color 
+    CTOdm410SVMSG01:
+      Dataset: ICDR Seviri Clouds
+      CTT:
+        limits:
+          min: 190
+          max: 300
+        legend: TRUE
+        colorscale: terrain.colors
+        logo: color
+      CTH:
+        limits:
+          min: 1
+          max: 18600
+        legend: TRUE
+        colorscale: terrain.colors
+        logo: color
+        invert_col: TRUE
+      CTP:
+        limits:
+          min: 100
+          max: 1000
+        legend: TRUE
+        colorscale: terrain.colors
+        logo: color 
+    CTOdm400AVPOS01:
+      Dataset: ICDR AVHRR
+      CTT:
+        limits:
+          min: 190
+          max: 300
+        legend: TRUE
+        colorscale: terrain.colors
+        logo: color
+      CTH:
+        limits:
+          min: 1
+          max: 18600
+        legend: TRUE
+        colorscale: terrain.colors
+        logo: color
+        invert_col: TRUE
+      CTP:
+        limits:
+          min: 100
+          max: 1000
+        legend: TRUE
+        colorscale: terrain.colors
+        logo: color
+    CTOmd410SVMSG01:
+      Dataset: ICDR Seviri Clouds
+      CTT_MMDC:
+        limits:
+          min: 190
+          max: 300
+        legend: TRUE
+        colorscale: terrain.colors
+        logo: color
+        slot: 13
+      CTH_MMDC:
+        limits:
+          min: 1
+          max: 18600
+        legend: TRUE
+        colorscale: terrain.colors
+        logo: color
+        slot: 13
+        invert_col: TRUE
+      CTP_MMDC:
+        limits:
+          min: 100
+          max: 1000
+        legend: TRUE
+        colorscale: terrain.colors
+        logo: color
+        slot: 13
+    CTOmm410SVMSG01:
+      Dataset: ICDR Seviri Clouds
+      CTT:
+        limits:
+          min: 190
+          max: 300
+        legend: TRUE
+        colorscale: terrain.colors
+        logo: color
+      CTH:
+        limits:
+          min: 1
+          max: 18600
+        legend: TRUE
+        colorscale: terrain.colors
+        logo: color
+        invert_col: TRUE
+      CTP:
+        limits:
+          min: 100
+          max: 1000
+        legend: TRUE
+        colorscale: terrain.colors
+        logo: color
+    CTOmm400AVPOS01:
+      Dataset: ICDR AVHRR
+      CTT:
+        limits:
+          min: 190
+          max: 300
+        legend: TRUE
+        colorscale: terrain.colors
+        logo: color
+      CTH:
+        limits:
+          min: 1
+          max: 18600
+        legend: TRUE
+        colorscale: terrain.colors
+        logo: color
+        invert_col: TRUE
+      CTP:
+        limits:
+          min: 100
+          max: 1000
+        legend: TRUE
+        colorscale: terrain.colors
+        logo: color
+# CTP:      
 # CTT:
   CTX:
     CTXin003SVMSGE1:
@@ -30,12 +277,12 @@
           max: 10000
         legend: TRUE
         colorscale: Purples
-        logo: black
+        logo: color
       CTT:
         limits:
           min: 150
           max: 340
-        legend: FALSE
+        legend: TRUE
         colorscale: PinkYl
         logo: color
       CTH:
@@ -49,21 +296,168 @@
   CWP:
   DAL:
   DNI:
+    DNIdm4101000101:
+      Dataset: ICDR Seviri Radiation
+      DNI:
+        limits:
+          min: 0
+          max: 750
+        legend: TRUE
+        colorscale: YlOrRd
+        logo: color
+    DNIin4101000101:
+      Dataset: ICDR Seviri Radiation
+      DNI:
+        limits:
+          min: 0
+          max: 1200
+        legend: TRUE
+        colorscale: YlOrRd
+        logo: color
+        slot: 25
+    DNImm4101000101:
+      Dataset: ICDR Seviri Radiation
+      DNI:
+        limits:
+          min: 0
+          max: 500
+        legend: TRUE
+        colorscale: YlOrRd
+        logo: color
   EMP:
+    EMPmm002SCPOS01:
+      Dataset: HOAPS, version 4.0
+      BUDG:
+        limits:
+          min: -7
+          max: 7
+        legend: TRUE
+        colorscale: Reds
+        logo: color
   EVA:
+    EVAmm002SCPOS01:
+      Dataset: HOAPS, version 4.0
+      EVAP:
+        limits:
+          min: 0
+          max: 17.5
+        legend: TRUE
+        colorscale: Reds
+        logo: color
   FTH:
+    FTHmm0010044801:
+      Dataset: CM SAF FTH
+      FTH:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: Blues
+        logo: color
   HLW:
   HSH:
   HTW:
+    HTWmm002SCPOS01:
+      Dataset: HOAPS, version 4.0
+      WVPA:
+        limits:
+          min: 0
+          max: 70
+        legend: TRUE
+        colorscale: Blues
+        logo: color
   IWP:
+    IWPmm400AVPOS01:
+      Dataset: ICDR AVHRR
+      IWP:
+        limits:
+          min: 0
+          max: 0.4
+        legend: TRUE
+        colorscale: Plasma
+        logo: color
+    IWPdm400AVPOS01:
+      Dataset: ICDR AVHRR
+      IWP:
+        limits:
+          min: 0
+          max: 0.5
+        legend: TRUE
+        colorscale: Plasma
+        logo: color
   JCH:
   LHF:
+    LHFmm002SCPOS01:
+      Dataset: HOAPS, version 4.0
+      LATE:
+        limits:
+          min: 0
+          max: 350
+        legend: TRUE
+        colorscale: Reds
+        logo: color
   LTP:
   LTS:
   LWP:
+    LWPmm400AVPOS01:
+      Dataset: ICDR AVHRR
+      LWP:
+        limits:
+          min: 0
+          max: 0.4
+        legend: TRUE
+        colorscale: Plasma
+        logo: color
+    LWPdm400AVPOS01:
+      Dataset: ICDR AVHRR
+      LWP:
+        limits:
+          min: 0
+          max: 0.5
+        legend: TRUE
+        colorscale: Plasma
+        logo: color
   NSH:
+    NSHmm002SCPOS01:
+      Dataset: HOAPS, version 4.0
+      HAIR:
+        limits:
+          min: 0
+          max: 25
+        legend: TRUE
+        colorscale: Blues
+        logo: color
+    
   PRE:
+    PREmm002SCPOS01:
+      Dataset: HOAPS, version 4.0
+      RAIN:
+        limits:
+          min: 0
+          max: 60
+        legend: TRUE
+        colorscale: Blues
+        invert_col: TRUE
+        logo: color
   SAL:
+    SALmm400AVPOS01:
+      Dataset: ICDR AVHRR
+      SAL:
+        limits:
+          min: 0
+          max: 120
+        legend: TRUE
+        colorscale: topo.colors
+        logo: color
+    SALpm400AVPOS01:
+      Dataset: ICDR AVHRR
+      SAL:
+        limits:
+          min: 0
+          max: 120
+        legend: TRUE
+        colorscale: topo.colors
+        logo: color
   SDL:
   SDU:
     SDUds4001000101:
@@ -71,29 +465,103 @@
       SDU:
         limits:
           min: 0
-          max: 24
+          max: 20
         legend: TRUE
-        colorscale: sunny
+        colorscale: Plasma
         logo: color
     SDUds4011000101:
-      Dataset: SARAH-2.1
+      Dataset: ICDR Seviri Radiation
       SDU:
         limits:
           min: 0
-          max: 24
+          max: 20
         legend: TRUE
-        colorscale: sunny
+        colorscale: Plasma
+        logo: color
+    SDUms4011000101:
+      Dataset: ICDR Seviri Radiation
+      SDU:
+        limits:
+          min: 0
+          max: 400
+        legend: TRUE
+        colorscale: Plasma
         logo: color
   SID:
+    SIDdm4101000101:
+      Dataset: ICDR Seviri Radiation
+      SID:
+        limits:
+          min: 0
+          max: 450
+        legend: TRUE
+        colorscale: YlOrRd
+        logo: color
+    SIDin4101000101:
+      Dataset: ICDR Seviri Radiation
+      SID:
+        limits:
+          min: 0
+          max: 1200
+        legend: TRUE
+        colorscale: YlOrRd
+        logo: color
+        slot: 25
+    SIDmm4101000101:
+      Dataset: ICDR Seviri Radiation
+      SID:
+        limits:
+          min: 0
+          max: 450
+        legend: TRUE
+        colorscale: YlOrRd
+        logo: color
   SIS:
-    SISmm0031000101:
-      Dataset: SARAH-2.1
+    SISdm4101000101:
+      Dataset: ICDR Seviri Radiation
       SIS:
         limits:
           min: 0
-          max: 1000
+          max: 450
         legend: TRUE
-        colorscale: Purples
+        colorscale: Viridis
+        logo: color
+    SISin4101000101:
+      Dataset: ICDR Seviri Radiation
+      SIS:
+        limits:
+          min: 0
+          max: 1200
+        legend: TRUE
+        colorscale: Viridis
+        logo: color
+        slot: 25
+    SISmm4101000101:
+      Dataset: ICDR Seviri Radiation
+      SIS:
+        limits:
+          min: 0
+          max: 450
+        legend: TRUE
+        colorscale: Viridis
+        logo: color
+    SISmm400AVPOS01:
+      Dataset: ICDR AVHRR
+      SIS:
+        limits:
+          min: 0
+          max: 450
+        legend: TRUE
+        colorscale: Viridis
+        logo: color
+    SISdm400AVPOS01:
+      Dataset: ICDR AVHRR
+      SIS:
+        limits:
+          min: 0
+          max: 450
+        legend: TRUE
+        colorscale: Viridis
         logo: color
   SNL:
   SNS:
@@ -101,7 +569,39 @@
   SRB:
   SRI:
   SWS:
+    SWSmm002SCPOS01:
+      Dataset: HOAPS, version 4.0
+      WIND:
+        limits:
+          min: 0
+          max: 17.5
+        legend: TRUE
+        colorscale: Blue-Red
+        logo: color
   TET:
 # TIS:
   TRS:
   UTH:
+    UTHdm001MHMEB01:
+      Dataset: CM SAF UTH
+      UTH_MEAN_ASCEND:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: Blues
+        logo: color
+      UTH_MEAN_ASCEND_DESCEND:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: Blues
+        logo: color
+      UTH_MEAN_DESCEND:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: Blues
+        logo: color

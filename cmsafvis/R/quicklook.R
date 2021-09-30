@@ -154,6 +154,8 @@ quicklook <- function(config,
     lsb <- logo.scale_black
     lsc <- logo.scale_color
   }
+  
+  ind360 <- FALSE # indicator for longitude 0 to 360
  
   ### Read config file ###
   configParams <- yaml::read_yaml(config)
@@ -264,6 +266,14 @@ quicklook <- function(config,
     lat_max <- ncdf4::ncatt_get(nc, 0, "geospatial_lat_max")$value
   } else {
     stop("unable to get a lon / lat reference")
+  }
+  
+  if (lon_max > 350) {
+    ind360      <- TRUE  
+    lon_max_org <- lon_max
+    lon_min_org <- lon_min
+    lon_max     <- 180 - lon_min_org
+    lon_min     <- 180 - lon_max_org
   }
   
   if (area == "NP" | area == "SP") {
@@ -668,19 +678,36 @@ quicklook <- function(config,
         }
         
         # plot image
-        raster::image(stacks[[j]], y = slot_i,
-                      main = "",
-                      xlim = c(lon_min, lon_max),
-                      ylim = c(lat_min, lat_max),
-                      axes = FALSE,
-                      xlab = "",
-                      ylab = "",
-                      zlim = plot_lim[j,],
-                      col = col,
-                      colNA = "cornsilk2",
-                      asp = 1,
-                      add = TRUE
-        )
+        if (ind360) {
+          raster::image(raster::rotate(stacks[[j]]),
+                        main = "",
+                        xlim = c(lon_min, lon_max),
+                        ylim = c(lat_min, lat_max),
+                        axes = FALSE,
+                        xlab = "",
+                        ylab = "",
+                        zlim = plot_lim[j,],
+                        col = col,
+                        colNA = "cornsilk2",
+                        asp = 1,
+                        add = TRUE
+          )
+        } else {
+            raster::image(stacks[[j]], y = slot_i,
+                          main = "",
+                          xlim = c(lon_min, lon_max),
+                          ylim = c(lat_min, lat_max),
+                          axes = FALSE,
+                          xlab = "",
+                          ylab = "",
+                          zlim = plot_lim[j,],
+                          col = col,
+                          colNA = "cornsilk2",
+                          asp = 1,
+                          add = TRUE
+            )
+        }
+        
         
         # borderline plot
         if (file_info$grid == "Satellite projection MSG/Seviri") {
