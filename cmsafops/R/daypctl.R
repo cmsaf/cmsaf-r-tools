@@ -14,6 +14,8 @@
 #'  in NetCDFv3 format (numeric). Default output is NetCDFv4.
 #'@param overwrite logical; should existing output file be overwritten?
 #'@param verbose logical; if TRUE, progress messages are shown
+#'@param nc Alternatively to \code{infile} you can specify the input as an
+#'  object of class `ncdf4` (as returned from \code{ncdf4::nc_open}).
 #'
 #'@return A NetCDF file including a time series of daily percentiles is written.
 #'@export
@@ -58,6 +60,6 @@
 #'unlink(c(file.path(tempdir(),"CMSAF_example_file.nc"), 
 #'  file.path(tempdir(),"CMSAF_example_file_daypctl.nc")))
 daypctl <- function(var, p = .95, infile, outfile, nc34 = 4, overwrite = FALSE, 
-                    verbose = FALSE) {
-  dayx_wrapper(7, var, infile, outfile, nc34, overwrite, p = p, verbose = verbose)
+                    verbose = FALSE, nc = NULL) {
+  dayx_wrapper(7, var, infile, outfile, nc34, overwrite, p = p, verbose = verbose, nc = nc)
 }

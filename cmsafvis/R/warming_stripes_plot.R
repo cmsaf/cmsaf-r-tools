@@ -38,7 +38,8 @@ warming_stripes_plot <- function(variable = NULL,
                                  pointsTF = FALSE,
                                  lineTF = FALSE, 
                                  title = "",
-                                 verbose = TRUE)
+                                 verbose = TRUE,
+                                 nc = NULL)
 {
   # Call central argument parser
   arguments_necessary <- methods::formalArgs(parse_arguments)
@@ -70,6 +71,7 @@ warming_stripes_plot <- function(variable = NULL,
   infile_attach <- parsedArguments$infile_attach
   new_infile <- parsedArguments$new_infile
   verbose <- parsedArguments$verbose
+  nc <- parsedArguments$nc
   
   # convert, because we need another data type
   if(analyze_method == FALSE)
@@ -94,7 +96,8 @@ warming_stripes_plot <- function(variable = NULL,
       selected_number = selected_number,
       analyze_method = analyze_method,
       temp_dir = temp_dir,
-      verbose = verbose
+      verbose = verbose,
+      nc = nc
   )
 
   climatology_file <- calculate_climatology_outfile(
@@ -110,7 +113,8 @@ warming_stripes_plot <- function(variable = NULL,
     lat_max = lat_max,
     selected_number = selected_number,
     analyze_method = analyze_method,
-    verbose = verbose
+    verbose = verbose,
+    nc = nc
   )
 
   if (is_country(country_code)) {

@@ -19,6 +19,8 @@
 #'  in NetCDFv3 format (numeric). Default output is NetCDFv4.
 #'@param overwrite logical; should existing output file be overwritten?
 #'@param verbose logical; if TRUE, progress messages are shown
+#'@param nc Alternatively to \code{infile} you can specify the input as an
+#'  object of class `ncdf4` (as returned from \code{ncdf4::nc_open}).
 #'
 #'@return A NetCDF or csv file including the selected point is written. The
 #'  csv file is tested for use in Excel and includes two columns (Time and
@@ -66,10 +68,10 @@
 #'unlink(c(file.path(tempdir(),"CMSAF_example_file.nc"), 
 #'  file.path(tempdir(),"CMSAF_example_file_selpoint.nc.csv")))
 selpoint <- function(var, infile, outfile, lon1 = 0, lat1 = 0, format = "nc",
-                     nc34 = 4, overwrite = FALSE, verbose = FALSE) {
+                     nc34 = 4, overwrite = FALSE, verbose = FALSE, nc = NULL) {
   check_variable(var)
 
-  check_infile(infile)
+  if (is.null(nc)) check_infile(infile)
 
   check_overwrite(outfile, overwrite)
 
@@ -78,9 +80,9 @@ selpoint <- function(var, infile, outfile, lon1 = 0, lat1 = 0, format = "nc",
   calc_time_start <- Sys.time()
 
   # get information about dimensions and attributes
-  file_data <- read_file(infile, var)
+  file_data <- read_file(infile, var, nc = nc)
   if (file_data$time_info$has_time_bnds) {
-    time_bnds <- get_time_bounds_from_file(infile)
+    time_bnds <- get_time_bounds_from_file(infile, nc = nc)
   }
 
   if (!(file_data$grid$is_regular || length(file_data$grid$vars))) {
@@ -129,10 +131,11 @@ selpoint <- function(var, infile, outfile, lon1 = 0, lat1 = 0, format = "nc",
     file_data$dimension_data$x <- file_data$dimension_data$x[lon_limit]
     file_data$dimension_data$y <- file_data$dimension_data$y[lat_limit]
 
-    id <- nc_open(infile)
+    if (!is.null(nc)) id <- nc
+    else id <- nc_open(infile)
     result <- ncvar_get(id, file_data$variable$name,
                         start = c(lon_limit, lat_limit, 1), count = c(1, 1, -1))
-    nc_close(id)
+    if (is.null(nc)) nc_close(id)
   } else {
     # sets range in which to look for a nearest neighbour, can be set in constants.R
     dlon <- LON_RANGE
@@ -171,10 +174,11 @@ selpoint <- function(var, infile, outfile, lon1 = 0, lat1 = 0, format = "nc",
     file_data$grid$vars_data[[LON_NAMES$DEFAULT]] <- file_data$grid$vars_data[[LON_NAMES$DEFAULT]][x_nearest, y_nearest]
     file_data$grid$vars_data[[LAT_NAMES$DEFAULT]] <- file_data$grid$vars_data[[LAT_NAMES$DEFAULT]][x_nearest, y_nearest]
 
-    id <- nc_open(infile)
+    if (!is.null(nc)) id <- nc
+    else id <- nc_open(infile)
     result <- ncvar_get(id, file_data$variable$name,
                         start = c(x_nearest, y_nearest, 1), count = c(1, 1, -1))
-    nc_close(id)
+    if (is.null(nc)) nc_close(id)
   }
 
   if (length(file_data$dimension_data$t) == 1) {

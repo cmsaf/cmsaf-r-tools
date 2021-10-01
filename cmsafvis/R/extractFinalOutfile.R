@@ -6,16 +6,18 @@ extractFinalOutfile <- function(variable,
                                end_date,
                                accumulate,
                                temp_dir,
-                               verbose) {
+                               verbose,
+                               nc = NULL) {
   if (verbose) {
     message("Prepare infile")
   }
 
   year_to_analyze <- format(start_date, "%Y")
 
+  infile_basename <- cmsafops::get_basename(infile = infile, nc = nc)
   selyearInfile <- add_ncdf_ext(
     construct_filename(
-      tools::file_path_sans_ext(basename(infile)),
+      tools::file_path_sans_ext(infile_basename),
       year_to_analyze
     )
   )
@@ -27,10 +29,15 @@ extractFinalOutfile <- function(variable,
       year = year_to_analyze,
       infile = infile,
       outfile = selyearInfile,
-      overwrite = TRUE
+      overwrite = TRUE,
+      nc = nc
     )
   }, error = function(e) {
-    stop(paste0("An error occured while extracting data for the year ", year_to_analyze, ".\nPlease make sure that the input file ", infile, " contains the required data."))
+    if (!is.null(nc)) {
+      stop(paste0("An error occured while extracting data for the year ", year_to_analyze, ".\nPlease make sure that the input nc object contains the required data."))
+    } else {
+      stop(paste0("An error occured while extracting data for the year ", year_to_analyze, ".\nPlease make sure that the input file ", infile, " contains the required data."))
+    }
   })
 
   # Remove leap date if included in selected period
@@ -63,7 +70,7 @@ extractFinalOutfile <- function(variable,
   if (accumulate) {
     outfile <- add_ncdf_ext(
       construct_filename(
-        tools::file_path_sans_ext(basename(infile)),
+        tools::file_path_sans_ext(infile_basename),
         year_to_analyze,
         "timsum"
       )

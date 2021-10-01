@@ -1,5 +1,6 @@
-calc_trend <- function(infile, file_data, option) {
-  nc_in <- nc_open(infile)
+calc_trend <- function(infile, file_data, option, nc = NULL) {
+  if (!is.null(nc)) nc_in <- nc
+  else nc_in <- nc_open(infile)
 
   length.dimension.x <- length(file_data$dimension_data$x)
   length.dimension.y <- length(file_data$dimension_data$y)
@@ -64,7 +65,7 @@ calc_trend <- function(infile, file_data, option) {
   target2[is.na(target2)] <- file_data$variable$attributes$missing_value
   target_p[is.na(target_p)] <- file_data$variable$attributes$missing_value
 
-  nc_close(nc_in)
+  if (is.null(nc)) nc_close(nc_in)
 
   return(list(target = target, target_p = target_p, target2 = target2))
 }

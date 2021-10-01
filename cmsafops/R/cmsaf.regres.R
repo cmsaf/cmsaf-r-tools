@@ -12,6 +12,8 @@
 #'  in NetCDFv3 format (numeric). Default output is NetCDFv4.
 #'@param overwrite logical; should existing output file be overwritten?
 #'@param verbose logical; if TRUE, progress messages are shown
+#'@param nc Alternatively to \code{infile} you can specify the input as an
+#'  object of class `ncdf4` (as returned from \code{ncdf4::nc_open}).
 #'
 #'@return A NetCDF file including the regression parameters b is written.
 #'@export
@@ -56,18 +58,19 @@
 #'unlink(c(file.path(tempdir(),"CMSAF_example_file.nc"), 
 #'  file.path(tempdir(),"CMSAF_example_file_regres.nc")))
 
-cmsaf.regres <- function(var, infile, outfile, nc34 = 4, overwrite = FALSE, verbose = FALSE) {
+cmsaf.regres <- function(var, infile, outfile, nc34 = 4, overwrite = FALSE, verbose = FALSE,
+                         nc = NULL) {
   calc_time_start <- Sys.time()
   gc()
   check_variable(var)
-  check_infile(infile)
+  if (is.null(nc)) check_infile(infile)
   check_outfile(outfile)
   outfile <- correct_filename(outfile)
   check_overwrite(outfile, overwrite)
   check_nc_version(nc34)
 
   ##### extract data from file #####
-  file_data <- read_file(infile, var)
+  file_data <- read_file(infile, var, nc = nc)
   file_data$variable$prec <- "float"
 
   # Use placeholder for result so that it can be calculated later without the
@@ -127,7 +130,8 @@ cmsaf.regres <- function(var, infile, outfile, nc34 = 4, overwrite = FALSE, verb
   ##### calculate and write result #####
   nc_out <- nc_open(outfile, write = TRUE)
 
-  nc_in <- nc_open(infile)
+  if (!is.null(nc)) nc_in <- nc
+  else nc_in <- nc_open(infile)
   
   dum_dat <- array(NA, dim = c(length.dimension.x,
                                length.dimension.y,
@@ -156,7 +160,7 @@ cmsaf.regres <- function(var, infile, outfile, nc34 = 4, overwrite = FALSE, verb
       collapse_degen = FALSE
     )
   }
-  nc_close(nc_in)
+  if (is.null(nc)) nc_close(nc_in)
 
   if (verbose) message(paste0("apply regression "))
   

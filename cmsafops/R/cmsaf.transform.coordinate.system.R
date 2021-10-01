@@ -5,6 +5,8 @@
 #'@param var Name of NetCDF variable (character).
 #'@param outfile Filename of output NetCDF file. This may include the directory
 #'  (character).
+#'@param nc Alternatively to \code{infile} you can specify the input as an
+#'  object of class `ncdf4` (as returned from \code{ncdf4::nc_open}).
 #'
 #'@return A NetCDF file including the coordinate system (-180 to 180 longitude) is
 #'  written.
@@ -12,10 +14,11 @@
 #'
 #'@family data manipulation functions
 
-cmsaf.transform.coordinate.system <- function(infile, var, outfile){
+cmsaf.transform.coordinate.system <- function(infile, var, outfile, nc = NULL){
   # read .nc-file 
-  file_data <- read_file(infile, var)
-  nc_in <- nc_open(infile)
+  file_data <- read_file(infile, var, nc = nc)
+  if (!is.null(nc)) nc_in <- nc
+  else nc_in <- nc_open(infile)
 
   # read data from infile
   dum_dat <- ncvar_get(
@@ -24,7 +27,7 @@ cmsaf.transform.coordinate.system <- function(infile, var, outfile){
     collapse_degen = FALSE
   )
   
-  nc_close(nc_in)
+  if (is.null(nc)) nc_close(nc_in)
 
   # convert coordinate system
   temp_file <- file.path(tempdir(),"temp_file.nc")

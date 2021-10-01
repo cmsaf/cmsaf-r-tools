@@ -19,13 +19,17 @@
 #'@param verbose logical; if TRUE, progress messages are shown
 #'@param toolbox logical; if TRUE, toolbox mode enabled. The two files are adjusted in space 
 #'  and time so that they can be plotted.
+#'@param nc1 Alternatively to \code{infile1} you can specify the input as an
+#'  object of class `ncdf4` (as returned from \code{ncdf4::nc_open}).
+#'@param nc2 Alternatively to \code{infile2} you can specify the input as an
+#'  object of class `ncdf4` (as returned from \code{ncdf4::nc_open}).
 #'
 #'@return A NetCDF file is written.
 #'@export
 #'
 #'@family 2d visualization 
 #'
-cmsaf.diff <- function(var1, infile1, var2, infile2, outfile, plot.out = FALSE, relative = FALSE, nc34 = 4, overwrite = FALSE, verbose = FALSE, toolbox = FALSE) {
+cmsaf.diff <- function(var1, infile1, var2, infile2, outfile, plot.out = FALSE, relative = FALSE, nc34 = 4, overwrite = FALSE, verbose = FALSE, toolbox = FALSE, nc1 = NULL, nc2 = NULL) {
   gc()
   calc_time_start <- Sys.time()
   
@@ -48,7 +52,8 @@ cmsaf.diff <- function(var1, infile1, var2, infile2, outfile, plot.out = FALSE, 
   cmsafops::cmsaf.adjust.two.files(var1 = var1, infile1 = infile1, 
                          var2 = var2, infile2 = infile2, 
                          outfile1 = temp_outfile_one, outfile2 = temp_outfile_two, 
-                         nc34 = nc34, overwrite = overwrite, verbose = verbose)
+                         nc34 = nc34, overwrite = overwrite, verbose = verbose,
+                         nc1 = nc1, nc2 = nc2)
 
   infile1 <- temp_outfile_one
   infile2 <-  temp_outfile_two

@@ -19,7 +19,8 @@ plot_abs_map <- function(variable,
                          accumulate,
                          states,
                          dwd_logo,
-                         verbose) {
+                         verbose,
+                         nc = NULL) {
   # Make sure that any user settings are reset when the function exits
   # This is a requirement by CRAN
   oldpar <- graphics::par(no.readonly = TRUE)
@@ -72,12 +73,13 @@ plot_abs_map <- function(variable,
   date_format_string_short <- ifelse(language == "deu", "%d.%m.", "%m-%d")
 
   # input
-  opennc <- ncdf4::nc_open(infile)
+  if (!is.null(nc)) opennc <- nc
+  else opennc <- ncdf4::nc_open(infile)
   field_source <- ncdf4::ncvar_get(opennc, variable)
   lon <- ncdf4::ncvar_get(opennc, "lon")
   lat <- ncdf4::ncvar_get(opennc, "lat")
-  ncdf4::nc_close(opennc)
-
+  if (is.null(nc)) ncdf4::nc_close(opennc)
+  
   nx <- length(lon)
   ny <- length(lat)
 

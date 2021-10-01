@@ -12,7 +12,8 @@ calculate_climatology_mean <- function(
   lat_min,
   lat_max,
   mean_value,
-  verbose
+  verbose,
+  nc = NULL
 )
 {
   if (mean_value) {
@@ -53,7 +54,8 @@ calculate_climatology_mean <- function(
     var = variable,
     infile = infile,
     outfile = climate_tmp_file,
-    overwrite = TRUE
+    overwrite = TRUE,
+    nc = nc
   )
   
   cmsafops::sellonlatbox(

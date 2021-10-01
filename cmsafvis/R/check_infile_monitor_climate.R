@@ -1,10 +1,12 @@
 # This function checks whether monthly or daily data is available
 check_infile_monitor_climate <- function(infile,
-                                         accumulate)
+                                         accumulate,
+                                         nc = NULL)
 {
-  opennc <- ncdf4::nc_open(infile)
+  if (!is.null(nc)) opennc <- nc
+  else opennc <- ncdf4::nc_open(infile)
   time <- ncdf4::ncvar_get(opennc, "time")
-  ncdf4::nc_close(opennc)
+  if (is.null(nc)) ncdf4::nc_close(opennc)
   
   # check monthly data
   diff_time <- time[2] - time[1]

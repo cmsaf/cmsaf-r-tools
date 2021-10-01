@@ -8,6 +8,8 @@
 #'  (character). Default is short ('s'). The option 'l' additionally returns a
 #'  list object with file information.
 #'@param verbose logical; if TRUE, progress messages are shown
+#'@param nc Alternatively to \code{infile} you can specify the input as an
+#'  object of class `ncdf4` (as returned from \code{ncdf4::nc_open}).
 #'
 #'@return prints the content of the infile NetCDF.
 #'@export
@@ -47,7 +49,7 @@
 #'ncinfo(infile = file.path(tempdir(),"CMSAF_example_file.nc"), info = "m")
 #'
 #'unlink(file.path(tempdir(),"CMSAF_example_file.nc"))
-ncinfo <- function(infile, info = "s", verbose = FALSE) {
+ncinfo <- function(infile, info = "s", verbose = FALSE, nc = NULL) {
   # define standard names of variables and dimensions
 
   t_name <- TIME_NAMES$DEFAULT
@@ -55,7 +57,8 @@ ncinfo <- function(infile, info = "s", verbose = FALSE) {
 
   # get file information
 
-  nc_in <- nc_open(infile)
+  if (!is.null(nc)) nc_in <- nc
+  else nc_in <- nc_open(infile)
 
   dimnames <- names(nc_in$dim)
   varnames <- names(nc_in$var)
@@ -110,5 +113,5 @@ ncinfo <- function(infile, info = "s", verbose = FALSE) {
     }
   }
 
-  nc_close(nc_in)
+  if (is.null(nc)) nc_close(nc_in)
 }

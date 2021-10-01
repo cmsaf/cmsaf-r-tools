@@ -14,6 +14,8 @@
 #'  in NetCDFv3 format (numeric). Default output is NetCDFv4.
 #'@param overwrite logical; should existing output file be overwritten?
 #'@param verbose logical; if TRUE, progress messages are shown
+#'@param nc Alternatively to \code{infile} you can specify the input as an
+#'  object of class `ncdf4` (as returned from \code{ncdf4::nc_open}).
 #'
 #'@return A NetCDF file including a time series of running means is written.
 #'@export
@@ -56,6 +58,6 @@
 #'  "CMSAF_example_file_runmean.nc")
 #'
 #'unlink(c("CMSAF_example_file.nc", "CMSAF_example_file_runmean.nc"))
-runmean <- function(var, nts = 6, infile, outfile, nc34 = 4, overwrite = FALSE, verbose = FALSE) {
-  runx_wrapper(5, var, infile, outfile, nc34, overwrite, nts = nts, verbose = verbose)
+runmean <- function(var, nts = 6, infile, outfile, nc34 = 4, overwrite = FALSE, verbose = FALSE, nc = NULL) {
+  runx_wrapper(5, var, infile, outfile, nc34, overwrite, nts = nts, verbose = verbose, nc = nc)
 }

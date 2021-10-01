@@ -12,6 +12,10 @@
 #'@param nc34 NetCDF version of input file. Default output is NetCDFv4.
 #'@param overwrite logical; should existing output file be overwritten?; Default: FALSE
 #'@param verbose logical; if TRUE, progress messages are shown
+#'@param nc1 Alternatively to \code{infile1} you can specify the input as an
+#'  object of class `ncdf4` (as returned from \code{ncdf4::nc_open}).
+#'@param nc2 Alternatively to \code{infile2} you can specify the input as an
+#'  object of class `ncdf4` (as returned from \code{ncdf4::nc_open}).
 #'
 #'@return A csv file including the rmse, mae, bias and correlation in grid space 
 #'  is written. 
@@ -19,7 +23,7 @@
 #'
 #'@family metrics
 
-cmsaf.stats <- function(var1, var2, infile1, infile2, outfile, nc34 = 4, overwrite = FALSE, verbose = FALSE){
+cmsaf.stats <- function(var1, var2, infile1, infile2, outfile, nc34 = 4, overwrite = FALSE, verbose = FALSE, nc1 = NULL, nc2 = NULL){
   gc()
   calc_time_start <- Sys.time()
   
@@ -32,8 +36,8 @@ cmsaf.stats <- function(var1, var2, infile1, infile2, outfile, nc34 = 4, overwri
   check_variable(var1)
   check_variable(var2)
   
-  check_infile(infile1)
-  check_infile(infile2)
+  if (is.null(nc1)) check_infile(infile1)
+  if (is.null(nc2)) check_infile(infile2)
   
   check_nc_version(nc34)
   
@@ -51,7 +55,8 @@ cmsaf.stats <- function(var1, var2, infile1, infile2, outfile, nc34 = 4, overwri
   cmsafops::cmsaf.adjust.two.files(var1 = var1, infile1 = infile1, 
                                    var2 = var2, infile2 = infile2, 
                                    outfile1 = temp_outfile_one, outfile2 = temp_outfile_two, 
-                                   nc34 = nc34, overwrite = overwrite, verbose = verbose)
+                                   nc34 = nc34, overwrite = overwrite, verbose = verbose,
+                                   nc1 = nc1, nc2 = nc2)
   
   temp_outfile_cor <- file.path(tempdir(), "outfile_tmp_cor.nc")
   if(file.exists(temp_outfile_cor)){

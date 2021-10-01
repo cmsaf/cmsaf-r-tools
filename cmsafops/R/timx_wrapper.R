@@ -1,16 +1,16 @@
 timx_wrapper <- function(op, var, infile, outfile, nc34, overwrite,
-                         na.rm = TRUE, p = NULL, verbose) {
+                         na.rm = TRUE, p = NULL, verbose, nc = NULL) {
   calc_time_start <- Sys.time()
 
   check_variable(var)
-  check_infile(infile)
+  if (is.null(nc)) check_infile(infile)
   check_outfile(outfile)
   outfile <- correct_filename(outfile)
   check_overwrite(outfile, overwrite)
   check_nc_version(nc34)
 
   ##### extract data from file #####
-  file_data <- read_file(infile, var)
+  file_data <- read_file(infile, var, nc = nc)
   if (op %in% c("mean", "sum", "sd", "pctl","avg")) {
     file_data$variable$prec <- "float"
   }
@@ -30,7 +30,7 @@ timx_wrapper <- function(op, var, infile, outfile, nc34, overwrite,
   }
 
   result <- calc_timx_result(op, infile, file_data$dimension_data,
-                            file_data$variable$name, na.rm, p)
+                            file_data$variable$name, na.rm, p, nc = nc)
   result[is.na(result)] <- file_data$variable$attributes$missing_value
 
   vars_data <- list(result = result, time_bounds = time_bnds)

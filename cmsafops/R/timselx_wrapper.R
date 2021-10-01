@@ -1,15 +1,15 @@
-timselx_wrapper <- function(op, var, nts, infile, outfile, nc34, overwrite, verbose) {
+timselx_wrapper <- function(op, var, nts, infile, outfile, nc34, overwrite, verbose, nc = NULL) {
   calc_time_start <- Sys.time()
   gc()
   check_variable(var)
-  check_infile(infile)
+  if (is.null(nc)) check_infile(infile)
   check_outfile(outfile)
   outfile <- correct_filename(outfile)
   check_overwrite(outfile, overwrite)
   check_nc_version(nc34)
 
   ##### extract data from file #####
-  file_data <- read_file(infile, var)
+  file_data <- read_file(infile, var, nc = nc)
   if(nts <= length(file_data$dimension_data$t))
   {
     file_data$variable$prec <- "float"
@@ -61,7 +61,8 @@ timselx_wrapper <- function(op, var, nts, infile, outfile, nc34, overwrite, verb
   
     ##### calculate and write result #####
     nc_out <- nc_open(outfile, write = TRUE)
-    nc_in <- nc_open(infile)
+    if (!is.null(nc)) nc_in <- nc
+    else nc_in <- nc_open(infile)
   
     startt <- 1
     countt <- nts
@@ -107,7 +108,7 @@ timselx_wrapper <- function(op, var, nts, infile, outfile, nc34, overwrite, verb
       ncvar_put(nc_out, vars[[1]], data, start = c(1, 1, i), count = c(-1, -1, 1))
     }
     
-    nc_close(nc_in)
+    if (is.null(nc)) nc_close(nc_in)
     nc_close(nc_out)
   }
   else{

@@ -20,13 +20,17 @@
 #'@param verbose logical; if TRUE, progress messages are shown
 #'@param toolbox logical; if TRUE, toolbox mode enabled. The two files are adjusted in space 
 #'  and time so that they can be plotted.
+#'@param nc1 Alternatively to \code{infile1} you can specify the input as an
+#'  object of class `ncdf4` (as returned from \code{ncdf4::nc_open}).
+#'@param nc2 Alternatively to \code{infile2} you can specify the input as an
+#'  object of class `ncdf4` (as returned from \code{ncdf4::nc_open}).
 #'
 #'@return Two NetCDF files are written.
 #'@export
 #'
 #'@family 1d visualization 
 #'
-cmsaf.hovmoller <- function(var1, infile1, var2, infile2, outfile1, outfile2, plot.out = FALSE, nc34 = 4, overwrite = FALSE, verbose = FALSE, toolbox = FALSE) {
+cmsaf.hovmoller <- function(var1, infile1, var2, infile2, outfile1, outfile2, plot.out = FALSE, nc34 = 4, overwrite = FALSE, verbose = FALSE, toolbox = FALSE, nc1 = NULL, nc2 = NULL) {
   gc()
   calc_time_start <- Sys.time()
   
@@ -39,7 +43,7 @@ cmsaf.hovmoller <- function(var1, infile1, var2, infile2, outfile1, outfile2, pl
     }
   }
   
-  cmsafops::cmsaf.adjust.two.files(var1, infile1, var2, infile2, outfile1, outfile2, nc34, overwrite, FALSE)
+  cmsafops::cmsaf.adjust.two.files(var1, infile1, var2, infile2, outfile1, outfile2, nc34, overwrite, FALSE, nc1 = nc1, nc2 = nc2)
   
   if(!toolbox) {
     id1 <- ncdf4::nc_open(outfile1)
@@ -61,9 +65,12 @@ cmsaf.hovmoller <- function(var1, infile1, var2, infile2, outfile1, outfile2, pl
       grDevices::png(paste0(plot_filepath, "/", plot_filename), width = 2048, height = 1024)
     }
     
-    pattern <- "[^\\/]+(\\.nc)$" # regular exp. to extract filenames
-    regex1 <- regmatches(infile1, regexpr(pattern, infile1))
-    regex2 <- regmatches(infile2, regexpr(pattern, infile2))
+    # pattern <- "[^\\/]+(\\.nc)$" # regular exp. to extract filenames
+    # regex1 <- regmatches(infile1, regexpr(pattern, infile1))
+    # regex2 <- regmatches(infile2, regexpr(pattern, infile2))
+    # Same as above and works for URLs
+    regex1 <- cmsafops::get_basename(infile1, nc = nc1)
+    regex2 <- cmsafops::get_basename(infile2, nc = nc2)
     
     graphics::par(cex = 1.2)
     

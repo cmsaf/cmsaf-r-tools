@@ -1,15 +1,15 @@
-hourx_wrapper <- function(op, var, infile, outfile, nc34, overwrite, verbose) {
+hourx_wrapper <- function(op, var, infile, outfile, nc34, overwrite, verbose, nc = NULL) {
   calc_time_start <- Sys.time()
   gc()
   check_variable(var)
-  check_infile(infile)
+  if (is.null(nc)) check_infile(infile)
   check_outfile(outfile)
   outfile <- correct_filename(outfile)
   check_overwrite(outfile, overwrite)
   check_nc_version(nc34)
 
   ##### extract data from file #####
-  file_data <- read_file(infile, var)
+  file_data <- read_file(infile, var, nc = nc)
   
   file_data$variable$prec <- "float"
   
@@ -75,7 +75,8 @@ hourx_wrapper <- function(op, var, infile, outfile, nc34, overwrite, verbose) {
   
     ##### calculate and write result #####
     nc_out <- nc_open(outfile, write = TRUE)
-    nc_in <- nc_open(infile)
+    if (!is.null(nc)) nc_in <- nc
+    else nc_in <- nc_open(infile)
     dummy_vec <- seq_along(hours_all)
   
     count <- 1
@@ -108,7 +109,7 @@ hourx_wrapper <- function(op, var, infile, outfile, nc34, overwrite, verbose) {
       count <- count + 1
     }
   
-    nc_close(nc_in)
+    if (is.null(nc)) nc_close(nc_in)
     nc_close(nc_out)
   }
   else{

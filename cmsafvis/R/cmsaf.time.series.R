@@ -20,13 +20,17 @@
 #'@param verbose logical; if TRUE, progress messages are shown
 #'@param toolbox logical; if TRUE, toolbox mode enabled. The two files are adjusted in space 
 #'  and time so that they can be plotted.
+#'@param nc1 Alternatively to \code{infile1} you can specify the input as an
+#'  object of class `ncdf4` (as returned from \code{ncdf4::nc_open}).
+#'@param nc2 Alternatively to \code{infile2} you can specify the input as an
+#'  object of class `ncdf4` (as returned from \code{ncdf4::nc_open}).
 #'
 #'@return Two NetCDF files are written.
 #'@export
 #'
 #'@family 1d visualization 
 #'
-cmsaf.time.series <- function(var1, infile1, var2, infile2, outfile1, outfile2, plot.out = FALSE, nc34 = 4, overwrite = FALSE, verbose = FALSE, toolbox = FALSE) {
+cmsaf.time.series <- function(var1, infile1, var2, infile2, outfile1, outfile2, plot.out = FALSE, nc34 = 4, overwrite = FALSE, verbose = FALSE, toolbox = FALSE, nc1 = NULL, nc2 = NULL) {
   gc()
   calc_time_start <- Sys.time()
   
@@ -50,7 +54,7 @@ cmsaf.time.series <- function(var1, infile1, var2, infile2, outfile1, outfile2, 
     unlink(temp_time_series_two)
   }
   
-  cmsafops::cmsaf.adjust.two.files(var1, infile1, var2, infile2, temp_time_series_one, temp_time_series_two, nc34, overwrite, FALSE)
+  cmsafops::cmsaf.adjust.two.files(var1, infile1, var2, infile2, temp_time_series_one, temp_time_series_two, nc34, overwrite, FALSE, nc1 = nc1, nc2 = nc2)
   
   cmsafops::fldmean(var1, temp_time_series_one, outfile1, nc34, overwrite, FALSE)
   cmsafops::fldmean(var2, temp_time_series_two, outfile2, nc34, overwrite, FALSE)

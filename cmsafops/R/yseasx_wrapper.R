@@ -1,15 +1,15 @@
-yseasx_wrapper <- function(op, var, infile, outfile, nc34, overwrite, verbose) {
+yseasx_wrapper <- function(op, var, infile, outfile, nc34, overwrite, verbose, nc = NULL) {
   calc_time_start <- Sys.time()
 
   check_variable(var)
-  check_infile(infile)
+  if (is.null(nc)) check_infile(infile)
   check_outfile(outfile)
   outfile <- correct_filename(outfile)
   check_overwrite(outfile, overwrite)
   check_nc_version(nc34)
 
   ##### extract data from file #####
-  file_data <- read_file(infile, var)
+  file_data <- read_file(infile, var, nc = nc)
   if (op > 2) {
     file_data$variable$prec <- "float"
   }
@@ -71,7 +71,8 @@ yseasx_wrapper <- function(op, var, infile, outfile, nc34, overwrite, verbose) {
   )
 
   ##### calculate and write result #####
-  nc_in <- nc_open(infile)
+  if (!is.null(nc)) nc_in <- nc
+  else nc_in <- nc_open(infile)
   nc_out <- nc_open(outfile, write = TRUE)
   dummy_vec <- seq_along(months_all)
 
@@ -120,8 +121,7 @@ yseasx_wrapper <- function(op, var, infile, outfile, nc34, overwrite, verbose) {
     count <- count + 1
   }
 
-  nc_close(nc_out)
-  nc_close(nc_in)
+  if (is.null(nc)) nc_close(nc_in)
 
   calc_time_end <- Sys.time()
   if (verbose) message(get_processing_time_string(calc_time_start, calc_time_end))

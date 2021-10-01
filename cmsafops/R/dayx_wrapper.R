@@ -1,15 +1,16 @@
-dayx_wrapper <- function(op, var, infile, outfile, nc34, overwrite, p = NULL, verbose) {
+dayx_wrapper <- function(op, var, infile, outfile, nc34, overwrite, p = NULL, verbose,
+                         nc = NULL) {
   calc_time_start <- Sys.time()
   gc()
   check_variable(var)
-  check_infile(infile)
+  if (is.null(nc)) check_infile(infile)
   check_outfile(outfile)
   outfile <- correct_filename(outfile)
   check_overwrite(outfile, overwrite)
   check_nc_version(nc34)
   
   ##### extract data from file #####
-  file_data <- read_file(infile, var)
+  file_data <- read_file(infile, var, nc = nc)
   
   if (op > 2) {
     file_data$variable$prec <- "float"
@@ -87,7 +88,8 @@ dayx_wrapper <- function(op, var, infile, outfile, nc34, overwrite, p = NULL, ve
   nc_out <- nc_open(outfile, write = TRUE)
   dummy_vec <- seq_along(dateID)
   
-  nc_in <- nc_open(infile)
+  if (!is.null(nc)) nc_in <- nc
+  else nc_in <- nc_open(infile)
   file_data_missing_value <- file_data$variable$attributes$missing_value
   count <- 1
   for (j in sort(unique(dateID))) {
@@ -142,7 +144,7 @@ dayx_wrapper <- function(op, var, infile, outfile, nc34, overwrite, p = NULL, ve
     ncvar_put(nc_out, vars[[1]], data, start = c(1, 1, count), count = c(-1, -1, 1))
     count <- count + 1
   }
-  nc_close(nc_in)
+  if (is.null(nc)) nc_close(nc_in)
   nc_close(nc_out)
   
   calc_time_end <- Sys.time()

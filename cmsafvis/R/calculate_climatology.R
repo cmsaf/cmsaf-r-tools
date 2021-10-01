@@ -17,7 +17,8 @@ calculate_climatology <- function(
   lat_min,
   lat_max,
   accumulate,
-  verbose
+  verbose,
+  nc = NULL
 ) {
 
   acc_str <- ""
@@ -42,7 +43,8 @@ calculate_climatology <- function(
     start_date = start_date,
     end_date = end_date,
     accumulate = accumulate,
-    verbose = verbose
+    verbose = verbose,
+    nc = nc
   )
 
   # outfile: [variable]_climatology_[climate_year_start-climate_year_end]_[acc_str]_[country_code]
@@ -60,7 +62,8 @@ calculate_climatology <- function(
     lat_min = lat_min,
     lat_max = lat_max,
     accumulate = accumulate,
-    verbose = verbose
+    verbose = verbose,
+    nc = nc
   )
 
   return(climatology_file)
@@ -75,7 +78,8 @@ merge_climatology <- function(
   start_date,
   end_date,
   accumulate,
-  verbose
+  verbose,
+  nc = NULL
 ) {
   acc_str <- ""
   if (accumulate) {
@@ -93,7 +97,8 @@ merge_climatology <- function(
   if (file.exists(outfile)) {
     reuse_tot_climatology <- compare_spatial_range(
       file1 = outfile,
-      file2 = infile
+      file2 = infile,
+      nc_file2 = nc
     )
 
     if (reuse_tot_climatology) {
@@ -114,7 +119,8 @@ merge_climatology <- function(
     climate_year_start = climate_year_start,
     climate_year_end = climate_year_end,
     accumulate = accumulate,
-    verbose = verbose
+    verbose = verbose,
+    nc = nc
   )
 
   for (climate_year in climate_year_start:climate_year_end) {
@@ -216,7 +222,8 @@ cut_climate <- function(
   lat_min,
   lat_max,
   accumulate,
-  verbose
+  verbose,
+  nc = NULL
   ) {
   acc_str <- ""
   if (accumulate) {
@@ -245,7 +252,8 @@ cut_climate <- function(
       lon_min = lon_min,
       lon_max = lon_max,
       lat_min = lat_min,
-      lat_max = lat_max
+      lat_max = lat_max,
+      nc2 = nc
     )
 
     if (reuse_climatology) {

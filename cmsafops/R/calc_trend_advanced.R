@@ -1,4 +1,5 @@
-calc_trend_advanced <- function(var1, infile1, var2, infile2, file_data, file_data2) {
+calc_trend_advanced <- function(var1, infile1, var2, infile2, file_data, file_data2,
+                                nc1 = NULL, nc2 = NULL) {
   
   length.dimension.x <- length(file_data$dimension_data$x)
   length.dimension.y <- length(file_data$dimension_data$y)
@@ -12,8 +13,10 @@ calc_trend_advanced <- function(var1, infile1, var2, infile2, file_data, file_da
      & length(file_data$dimension_data$y) == length(file_data2$dimension_data$y) 
      & length(file_data$dimension_data$t) == length(file_data2$dimension_data$t)){
 
-    nc_in_1 <- nc_open(infile1)
-    nc_in_2 <- nc_open(infile2)
+    if (!is.null(nc1)) nc_in_1 <- nc1
+    else nc_in_1 <- nc_open(infile1)
+    if (!is.null(nc2)) nc_in_2 <- nc2
+    else nc_in_2 <- nc_open(infile2)
     
     dum_dat_1 <- array(NA, dim = c(length.dimension.x,
                                  length.dimension.y,
@@ -62,8 +65,8 @@ calc_trend_advanced <- function(var1, infile1, var2, infile2, file_data, file_da
       )
     }
     
-    nc_close(nc_in_1)
-    nc_close(nc_in_2)
+    if (is.null(nc1)) nc_close(nc_in_1)
+    if (is.null(nc2)) nc_close(nc_in_2)
 
     target <- array(NA, dim = c(length(file_data$dimension_data$x),
                                 length(file_data$dimension_data$y), 1))

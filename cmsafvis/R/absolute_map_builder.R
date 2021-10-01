@@ -8,7 +8,8 @@ absolute_map_builder <- function(variable,
                                  lat_min,
                                  lat_max,
                                  start_date,
-                                 end_date) {
+                                 end_date,
+                                 nc = NULL) {
 
   # outfile name
   outfile <- add_ncdf_ext(construct_filename(variable,
@@ -39,7 +40,8 @@ absolute_map_builder <- function(variable,
       lon2 = lon_max,
       lat1 = lat_min,
       lat2 = lat_max,
-      overwrite = TRUE
+      overwrite = TRUE,
+      nc = nc
     )}, error = function(cond) {
       stop(paste0("An error occured while selecting the given spatial range."))
     })

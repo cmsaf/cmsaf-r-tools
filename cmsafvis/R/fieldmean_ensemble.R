@@ -13,7 +13,8 @@ fieldmean_ensemble <-
            climate_year_end,
            accumulate,
            verbose,
-           keep_files) {
+           keep_files,
+           nc = NULL) {
 
     if (verbose) {
       pb <- progress::progress_bar$new(
@@ -49,7 +50,8 @@ fieldmean_ensemble <-
           lon_min = lon_min,
           lon_max = lon_max,
           lat_min = lat_min,
-          lat_max = lat_max
+          lat_max = lat_max,
+          nc2 = nc
         )
       } else {
         reuse_file <- FALSE
@@ -81,6 +83,7 @@ fieldmean_ensemble <-
         # Need to extract yearly files if climate files do not exist
         if (!file.exists(infile)) {
           extract_climate_files(
+            # Question: How does this work if infile doesn't exist?
             variable = variable,
             infile = infile,
             climate_dir = climate_dir,
@@ -107,7 +110,8 @@ fieldmean_ensemble <-
           lon2 = lon_max,
           lat1 = lat_min,
           lat2 = lat_max,
-          overwrite = TRUE
+          overwrite = TRUE,
+          nc = nc
         )
 
         adjust_location(
@@ -142,7 +146,7 @@ fieldmean_ensemble <-
         file.remove(tmpfile)
       }
     }
-    pb$update(1)  # Finishes the progress bar
+    if (verbose) pb$update(1)  # Finishes the progress bar
 
     # Will return the outfile from the latest year... Not sure if this is what we want...
     # These files are only used in the plotting process (and the return value of this function call is never caught).

@@ -69,6 +69,9 @@ renderString <-
     }
 }'
 
+months_list <- c("January", "February", "March", "April", "May", "June",
+                 "July", "August", "September", "October", "November", "December")
+
 fluidPage(
   theme = shinythemes::shinytheme("flatly"),
   tags$head(tags$link(rel = "stylesheet", type = "text/css", href = "style.css")),
@@ -116,14 +119,18 @@ fluidPage(
                                                                                          label = "Choose a .tar-file...",
                                                                                          multiple = FALSE,
                                                                                          title = "Please select a .tar-file.")),
-                                            shinyjs::hidden(span(id = "or_prepare", "or")),
+                                            shinyjs::hidden(span(id = "or_prepare", "or", class = "or")),
                                             shinyjs::hidden(actionButton("ncFileLocal",
                                                                          label = "Choose .nc-files...")),
                                             shinyjs::hidden(shinyFiles::shinyFilesButton(
                                                                                          id = "ncFileRemote",
                                                                                          label = "Choose .nc-files...",
                                                                                          multiple = FALSE,
-                                                                                         title = "Please select .nc-files.")))
+                                                                                         title = "Please select .nc-files.")),
+                                            shinyjs::hidden(span(id = "or_prepare2", "or", class = "or")),
+                                            shinyjs::hidden(actionButton("ncURL",
+                                                                         label = "Enter .nc file URL..."))
+                                            )
                                     )),
                                    
                          shinyjs::hidden(
@@ -132,7 +139,96 @@ fluidPage(
                                     shinyjs::disabled(actionButton("untarAndUnzip",
                                                                    "Untar and unzip files.")),
                                     )),
-                         
+                         shinyjs::hidden(
+                           tags$div(id = "panel_prepare_nc_url",
+                                    textInput("nc_url_text",
+                                              label = "Please enter a URL to a NetCDF (.nc) file",
+                                              placeholder = "Enter URL...",
+                                              width = "100%"),
+                                    shinyjs::disabled(actionButton("nc_url_connect", "Connect to URL")),
+                                    tags$br(),
+                                    tags$br(),
+                                    htmlOutput("nc_url_valid_message"),
+                                    shinyjs::hidden(
+                                      tags$div(id = "nc_url_file_info",
+                                               h3("Short File Information"),
+                                               verbatimTextOutput("ncurlShortInfo"))
+                                      ),
+                                    shinyjs::hidden(actionButton("nc_url_download", "")),
+                                    shinyjs::hidden(actionButton("nc_url_subset", "Subset this file")),
+                                    shinyjs::hidden(span(id = "or_prepare3", "or", class = "or")),
+                                    shinyjs::hidden(actionButton("nc_url_analyze", "Analyze this file")),
+                                    shinyjs::hidden(span(id = "or_prepare4", "or", class = "or")),
+                                    shinyjs::hidden(actionButton("nc_url_visualize", "Visualize this file")),
+                                    tags$br(),
+                                    tags$br(),
+                                    shinyjs::hidden(
+                                      tags$div(id = "nc_url_download_analyze_or_visualise",
+                                               actionButton("nc_url_download_analyze", "Analyze this file"),
+                                               span(id = "or_prepare5", "or", class = "or"),
+                                               actionButton("nc_url_download_visualize", "Visualize this file"),
+                                               )
+                                      ),
+                                    shinyjs::hidden(tags$div(id = "spinner_prepare_nc_url_connect",
+                                                             class = "spinner",
+                                                             tags$div(class = "spinner-title", h4("Connecting to URL...")),
+                                                             tags$div(class = "double-bounce1"),
+                                                             tags$div(class = "double-bounce2"))),
+                                    shinyjs::hidden(tags$div(id = "spinner_prepare_nc_url_download",
+                                                             class = "spinner",
+                                                             tags$div(class = "spinner-title", h4("Downloading NetCDF (.nc) file...")),
+                                                             tags$div(class = "double-bounce1"),
+                                                             tags$div(class = "double-bounce2")))
+                           )),
+                         # NetCDF Subset Selection (NCSS) URL options
+                         shinyjs::hidden(
+                           tags$div(id = "panel_prepare_ncss_url_subset",
+                                    htmlOutput("ncss_url_print"),
+                                    fluidRow(column(5, 
+                                                    uiOutput("ncss_var_list_ui"),
+                                                    uiOutput("ncss_select_region_ui"),
+                                                    radioButtons("ncss_time_type",
+                                                                 "Time Selection",
+                                                                 choices = c("Date Range" = "date_range",
+                                                                             "Extract Months" = "extract_months"),
+                                                                 inline = TRUE),
+                                                    shinyjs::hidden(uiOutput("ncss_date_range_ui")),
+                                                    shinyjs::hidden(
+                                                      tags$div(id = "ncss_month_range",
+                                                               tags$div(tags$b("Please select a month range")),
+                                                               tags$div(style = "display:inline-block", selectInput("ncss_month_from", "From", months_list, selected = months_list[1], width = "130px")),
+                                                               tags$div(style = "display:inline-block", selectInput("ncss_month_to", "To", months_list, selected = months_list[12], width = "130px"))
+                                                      )
+                                                    ),
+                                                    shinyjs::hidden(uiOutput("ncss_year_range_ui")),
+                                                    actionButton("ncss_subset_download", ""),
+                                                    shinyjs::hidden(tags$div(id = "spinner_prepare_ncss_download",
+                                                                             class = "spinner",
+                                                                             tags$div(class = "spinner-title", h4("Downloading NetCDF (.nc) file...")),
+                                                                             tags$div(class = "double-bounce1"),
+                                                                             tags$div(class = "double-bounce2")))
+                                    ),
+                                             column(7,
+                                                    plotOutput("preview_ncss_subset")
+                                                    )
+                                             )
+                                    )),
+                         # Downloaded NetCDF Subset Selection (NCSS) URL info
+                         shinyjs::hidden(
+                           tags$div(id = "panel_prepare_ncss_download_info",
+                             tags$div(id = "ncss_file_info",
+                                      h3("File Successfully Downloaded"),
+                                      verbatimTextOutput("ncssShortInfo")),
+                             tags$div(id = "ncss_download_analyze_or_visualise",
+                                      actionButton("ncss_download_analyze", "Analyze this file"),
+                                      span(id = "or_prepare6", "or", class = "or"),
+                                      actionButton("ncss_download_visualize", "Visualise this file"),
+                                      ),
+                             tags$br(),
+                             tags$br(),
+                             actionButton("ncss_info_back", "Back to Selection", class = "exit-button")
+                           )
+                         ),
                          # date range .nc-files selection
                          shinyjs::hidden(
                            tags$div(id = "panel_prepareInput1Nc",

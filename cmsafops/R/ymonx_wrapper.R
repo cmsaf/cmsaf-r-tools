@@ -1,15 +1,16 @@
-ymonx_wrapper <- function(op, var, infile, outfile, nc34, overwrite, verbose) {
+ymonx_wrapper <- function(op, var, infile, outfile, nc34, overwrite, verbose,
+                          nc = NULL) {
   calc_time_start <- Sys.time()
 
   check_variable(var)
-  check_infile(infile)
+  if (is.null(nc)) check_infile(infile)
   check_outfile(outfile)
   outfile <- correct_filename(outfile)
   check_overwrite(outfile, overwrite)
   check_nc_version(nc34)
 
   ##### extract data from file #####
-  file_data <- read_file(infile, var)
+  file_data <- read_file(infile, var, nc = nc)
   if (op > 2) {
     file_data$variable$prec <- "float"
   }
@@ -82,7 +83,8 @@ ymonx_wrapper <- function(op, var, infile, outfile, nc34, overwrite, verbose) {
               length(file_data$dimension_data$y),
               length(startt))
     )
-    nc_in <- nc_open(infile)
+    if (!is.null(nc)) nc_in <- nc
+    else nc_in <- nc_open(infile)
     for (i in seq_along(startt)) {
       dum_dat[, , i] <- ncvar_get(
         nc_in,
@@ -92,7 +94,7 @@ ymonx_wrapper <- function(op, var, infile, outfile, nc34, overwrite, verbose) {
         collapse_degen = FALSE
       )
     }
-    nc_close(nc_in)
+    if (is.null(nc)) nc_close(nc_in)
 
     switch(op,
            {

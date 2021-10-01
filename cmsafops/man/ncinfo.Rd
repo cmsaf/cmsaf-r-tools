@@ -4,7 +4,7 @@
 \alias{ncinfo}
 \title{Get information about the content of a NetCDF file.}
 \usage{
-ncinfo(infile, info = "s", verbose = FALSE)
+ncinfo(infile, info = "s", verbose = FALSE, nc = NULL)
 }
 \arguments{
 \item{infile}{Filename of input NetCDF file. This may include the directory
@@ -15,6 +15,9 @@ ncinfo(infile, info = "s", verbose = FALSE)
 list object with file information.}
 
 \item{verbose}{logical; if TRUE, progress messages are shown}
+
+\item{nc}{Alternatively to \code{infile} you can specify the input as an
+object of class \code{ncdf4} (as returned from \code{ncdf4::nc_open}).}
 }
 \value{
 prints the content of the infile NetCDF.

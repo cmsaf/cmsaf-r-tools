@@ -1,5 +1,6 @@
-calc_field <- function(infile, file_data, op, weights = NULL) {
-  nc_in <- nc_open(infile)
+calc_field <- function(infile, file_data, op, weights = NULL, nc = NULL) {
+  if(!is.null(nc)) nc_in <- nc
+  else nc_in <- nc_open(infile)
   result <- array(NA, dim = c(length(file_data$dimension_data$t)))
 
   for (i in seq_along(file_data$dimension_data$t)) {
@@ -20,7 +21,7 @@ calc_field <- function(infile, file_data, op, weights = NULL) {
     }
   }
 
-  nc_close(nc_in)
+  if (is.null(nc)) nc_close(nc_in)
 
   if (length(file_data$dimension_data$t) == 1) {
     if (op == 4) {

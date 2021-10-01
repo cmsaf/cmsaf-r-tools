@@ -14,6 +14,8 @@
 #' @param na_replace Replacing NA values with either 'mean' or 'previous' 
 #'   for monthly mean or previous value, respectively (character).
 #' @param verbose logical; if TRUE, progress messages are shown
+#'@param nc Alternatively to \code{infile} you can specify the input as an
+#'  object of class `ncdf4` (as returned from \code{ncdf4::nc_open}).
 #'
 #' @export
 timcumsum <- function(var,
@@ -22,23 +24,24 @@ timcumsum <- function(var,
                  nc34 = 4,
                  overwrite = FALSE,
                  na_replace = "mean",
-                 verbose = FALSE) {
+                 verbose = FALSE,
+                 nc = NULL) {
   calc_time_start <- Sys.time()
 
   check_variable(var)
-  check_infile(infile)
+  if (is.null(nc)) check_infile(infile)
   check_outfile(outfile)
   outfile <- correct_filename(outfile)
   check_overwrite(outfile, overwrite)
   check_nc_version(nc34)
   stopifnot(na_replace %in% c("mean", "previous"))
   ##### extract data from file #####
-  file_data <- read_file(infile, var)
+  file_data <- read_file(infile, var, nc = nc)
 
   stopifnot(length(file_data$dimension_data$t) > 1)
 
   if (file_data$time_info$has_time_bnds) {
-    time_bnds <- get_time_bounds_from_file(infile)
+    time_bnds <- get_time_bounds_from_file(infile, nc = nc)
   }
   if (file_data$time_info$has_time_bnds) {
     vars_data <- list(result = NA, time_bounds = time_bnds)
@@ -105,7 +108,8 @@ timcumsum <- function(var,
 
   if (dimensionality < limit) {
     # Result can directly be calculated.
-    nc_in <- nc_open(infile)
+    if (!is.null(nc)) nc_in <- nc
+    else nc_in <- nc_open(infile)
     dum_dat <-
       ncvar_get(nc_in, file_data$variable$name, collapse_degen = FALSE)
     dum_times <-
@@ -121,7 +125,8 @@ timcumsum <- function(var,
           file_data$variable$name,
           infile = infile,
           outfile = of,
-          overwrite = TRUE
+          overwrite = TRUE,
+          nc = nc
         )
 
         nc_of <- nc_open(of)
@@ -180,7 +185,8 @@ timcumsum <- function(var,
       dimsteps_count[length(dimsteps_start)] - cor
 
     for (i in seq_along(dimsteps_start)) {
-      nc_in <- nc_open(infile)
+      if (!is.null(nc)) nc_in <- nc
+      else nc_in <- nc_open(infile)
       dum_dat <- ncvar_get(
         nc_in,
         file_data$variable$name,
@@ -190,7 +196,7 @@ timcumsum <- function(var,
       )
       dum_times <-
         get_date_time(ncvar_get(nc_in, "time"), file_data$time_info$units)
-      nc_close(nc_in)
+      if (is.null(nc)) nc_close(nc_in)
 
       ##### replace NAs by monthly mean #####
       dum_na <- which(is.na(dum_dat), arr.ind = TRUE)
@@ -202,7 +208,8 @@ timcumsum <- function(var,
             file_data$variable$name,
             infile = infile,
             outfile = of,
-            overwrite = TRUE
+            overwrite = TRUE,
+            nc = nc
           )
 
           nc_of <- nc_open(of)

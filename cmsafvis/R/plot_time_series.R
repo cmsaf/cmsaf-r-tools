@@ -12,10 +12,11 @@ plot_time_series <- function(variable,
                              language,
                              title,
                              subtitle,
-                             verbose)
+                             verbose,
+                             nc = NULL)
 {
   # use wfldmean for time series plot
-  cmsafops::wfldmean(variable,infile, outfile = file.path(tempdir(),"tmp_time_series_plot.nc"), overwrite = TRUE)
+  cmsafops::wfldmean(variable,infile, outfile = file.path(tempdir(),"tmp_time_series_plot.nc"), overwrite = TRUE, nc = nc)
   
   temp_file <- file.path(tempdir(),"tmp_time_series_plot.nc")
   

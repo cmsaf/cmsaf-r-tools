@@ -12,6 +12,8 @@
 #'  will be in NetCDFv3 format (numeric). Default output is NetCDFv4.
 #'@param overwrite logical; should existing output file be overwritten?
 #'@param verbose logical; if TRUE, progress messages are shown
+#'@param nc Alternatively to \code{infile} you can specify the input as an
+#'  object of class `ncdf4` (as returned from \code{ncdf4::nc_open}).
 #'
 #'@return A NetCDF file including a time series of multi-year daily range is written.
 #'@export
@@ -56,6 +58,6 @@
 #'unlink(c(file.path(tempdir(),"CMSAF_example_file.nc"), file.path(tempdir(),
 #'"CMSAF_example_file_ydayrange.nc")))
 ydayrange <- function(var, infile, outfile, nc34 = 4, overwrite = FALSE, 
-                      verbose = FALSE) {
-  ydayx_wrapper(5, var, infile, outfile, nc34, overwrite, verbose)
+                      verbose = FALSE, nc = NULL) {
+  ydayx_wrapper(5, var, infile, outfile, nc34, overwrite, verbose, nc = nc)
 }
