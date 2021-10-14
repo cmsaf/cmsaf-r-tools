@@ -1,5 +1,9 @@
 # Release notes for cmsaf
 
+## 3.3.0
+
+- Add new option in Prepare panel to open data via URL
+
 ## 3.2.0
 
 - Add new operators timavg, num_above, num_below, num_equal,

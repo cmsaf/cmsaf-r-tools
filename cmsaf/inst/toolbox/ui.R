@@ -3,13 +3,13 @@
 # You should not use this R-script on its own!
 #
 # Have fun with the CM SAF R TOOLBOX!
-#                                              (Steffen Kothe / CM SAF 2021-08-23)
+#                                              (Steffen Kothe / CM SAF 2021-10-14)
 #__________________________________________________________________________________
 
 descriptionString <-
   "
 
-The CM SAF R TOOLBOX 3.2.0 -- 'This must be Thursday'
+The CM SAF R TOOLBOX 3.3.0 -- 'Oh no, not again!'
 
 The intention of the CM SAF R Toolbox is to help you using
 CM SAF NetCDF formatted data
@@ -25,7 +25,7 @@ right in and analyze or visualize a .nc file.
 Suggestions for improvements and praise for the developers
 can be sent to contact.cmsaf@dwd.de.
 
-- Steffen Kothe - 2021-08-26 -"
+- Steffen Kothe - 2021-10-14 -"
 
 # Variable can be found in global.R
 if (isRunningLocally) {

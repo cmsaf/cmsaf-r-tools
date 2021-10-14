@@ -13,7 +13,9 @@ cmsaf.stats(
   outfile,
   nc34 = 4,
   overwrite = FALSE,
-  verbose = FALSE
+  verbose = FALSE,
+  nc1 = NULL,
+  nc2 = NULL
 )
 }
 \arguments{
@@ -35,6 +37,12 @@ the directory (character).}
 \item{overwrite}{logical; should existing output file be overwritten?; Default: FALSE}
 
 \item{verbose}{logical; if TRUE, progress messages are shown}
+
+\item{nc1}{Alternatively to \code{infile1} you can specify the input as an
+object of class \code{ncdf4} (as returned from \code{ncdf4::nc_open}).}
+
+\item{nc2}{Alternatively to \code{infile2} you can specify the input as an
+object of class \code{ncdf4} (as returned from \code{ncdf4::nc_open}).}
 }
 \value{
 A csv file including the rmse, mae, bias and correlation in grid space

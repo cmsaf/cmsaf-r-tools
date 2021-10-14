@@ -1,5 +1,9 @@
 # Changelog for cmsafops package
 
+## 1.2.1
+
+- Modification of operators to work with data via URL
+
 ## 1.2.0
 - Add new operators: timavg, num_above, num_below, num_equal,
   mon_num_above, mon_num_below, mon_num_equal

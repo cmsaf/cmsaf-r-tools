@@ -15,7 +15,8 @@ selpoint.multi(
   station_names,
   format = "nc",
   nc34 = 4,
-  verbose = FALSE
+  verbose = FALSE,
+  nc = NULL
 )
 }
 \arguments{
@@ -49,6 +50,9 @@ output files (character vector). Must have the same length as
 in NetCDFv3 format (numeric). Default output is NetCDFv4.}
 
 \item{verbose}{logical; if TRUE, progress messages are shown}
+
+\item{nc}{Alternatively to \code{infile} you can specify the input as an
+object of class \code{ncdf4} (as returned from \code{ncdf4::nc_open}).}
 }
 \value{
 For each pair of longitude and latitude coordinates one separate

@@ -11,7 +11,8 @@ timcumsum(
   nc34 = 4,
   overwrite = FALSE,
   na_replace = "mean",
-  verbose = FALSE
+  verbose = FALSE,
+  nc = NULL
 )
 }
 \arguments{
@@ -32,6 +33,9 @@ If outfile is NULL, this parameter is ignored.}
 for monthly mean or previous value, respectively (character).}
 
 \item{verbose}{logical; if TRUE, progress messages are shown}
+
+\item{nc}{Alternatively to \code{infile} you can specify the input as an
+object of class \code{ncdf4} (as returned from \code{ncdf4::nc_open}).}
 }
 \description{
 Computes the accumulation of the given variable over time.

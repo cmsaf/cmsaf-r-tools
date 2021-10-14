@@ -33,5 +33,5 @@ reset_par <- function(){
                              "omd", "omi", "pch", "pin", "plt", "ps", "pty", "smo", 
                              "srt", "tck", "tcl", "usr", "xaxp", "xaxs", "xaxt", "xpd", 
                              "yaxp", "yaxs", "yaxt", "ylbias"))
-  par(op)
+  graphics::par(op)
 }

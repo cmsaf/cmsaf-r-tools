@@ -741,10 +741,10 @@ quicklook <- function(config,
       # plot logo and copyright text
       if (logo || copyright) {
         # check figure min and max and calculate a correction
-        xmin <- par("usr")[1]
-        xmax <- par("usr")[2]
-        ymin <- par("usr")[3]
-        ymax <- par("usr")[4]
+        xmin <- graphics::par("usr")[1]
+        xmax <- graphics::par("usr")[2]
+        ymin <- graphics::par("usr")[3]
+        ymax <- graphics::par("usr")[4]
         
         xoff <- (1 / (abs(xmin) + abs(xmax))) * (abs(xmin - lon_min) + 1)
         yoff <- (1 / (abs(ymin) + abs(ymax))) * (abs(ymin - lat_min) + 1)

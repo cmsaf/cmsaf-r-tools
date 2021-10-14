@@ -3,7 +3,7 @@
 # You should not use this R-script on its own!
 #
 # Have fun with the CM SAF R TOOLBOX!
-#                                              (Steffen Kothe / CM SAF 2021-08-23)
+#                                              (Steffen Kothe / CM SAF 2021-10-14)
 #__________________________________________________________________________________
 
 # Function to compute first of month
@@ -7053,13 +7053,13 @@ function(input, output, session) {
     cat("The CMSAF Visualizer is part of the CM SAF R Toolbox.", "\n")
     cat("This tool helps you to visualize 1D-timeseries and 2D-maps.", "\n")
     cat("\n")
-    cat("This version ('This must be Thursday') was tested with the cmsaf", "\n")
-    cat("R-package in version 3.2.0.", "\n")
+    cat("This version ('Oh no, not again!') was tested with the cmsaf", "\n")
+    cat("R-package in version 3.3.0.", "\n")
     cat("\n")
     cat("Suggestions for improvements and praise for the developers", "\n")
     cat("can be send to contact.cmsaf@dwd.de.", "\n")
     cat("\n")
-    cat("                              - Steffen Kothe - 2021-08-26 -", "\n")
+    cat("                              - Steffen Kothe - 2021-10-14 -", "\n")
     cat("\n")
     cat("\n")
   })

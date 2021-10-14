@@ -4,7 +4,7 @@
 \alias{read_ncvar}
 \title{Read NetCDF variable.}
 \usage{
-read_ncvar(var, infile, verbose = FALSE)
+read_ncvar(var, infile, verbose = FALSE, nc = NULL)
 }
 \arguments{
 \item{var}{Name of NetCDF variable (character).}
@@ -13,6 +13,9 @@ read_ncvar(var, infile, verbose = FALSE)
 (character).}
 
 \item{verbose}{logical; if TRUE, progress messages are shown}
+
+\item{nc}{Alternatively to \code{infile} you can specify the input as an
+object of class \code{ncdf4} (as returned from \code{ncdf4::nc_open}).}
 }
 \value{
 The output is a list object including the variable and the

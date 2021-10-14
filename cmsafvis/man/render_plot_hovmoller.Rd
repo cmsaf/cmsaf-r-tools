@@ -13,7 +13,9 @@ render_plot_hovmoller(
   textsize,
   linesize,
   title_data1,
-  title_data2
+  title_data2,
+  nc = NULL,
+  nc2 = NULL
 )
 }
 \arguments{
@@ -35,6 +37,12 @@ If NULL is passed a file is created in the R session temporary directory.}
 \item{title_data1}{Title of the first data set}
 
 \item{title_data2}{Title of the second data set}
+
+\item{nc}{Alternatively to \code{infile1} you can specify the input as an
+object of class \code{ncdf4} (as returned from \code{ncdf4::nc_open}).}
+
+\item{nc2}{Alternatively to \code{infile2} you can specify the input as an
+object of class \code{ncdf4} (as returned from \code{ncdf4::nc_open}).}
 }
 \description{
 This function renders a hovmoller plot of two variables.

@@ -4,7 +4,15 @@
 \alias{hoursum}
 \title{Determine hourly sums}
 \usage{
-hoursum(var, infile, outfile, nc34 = 4, overwrite = FALSE, verbose = FALSE)
+hoursum(
+  var,
+  infile,
+  outfile,
+  nc34 = 4,
+  overwrite = FALSE,
+  verbose = FALSE,
+  nc = NULL
+)
 }
 \arguments{
 \item{var}{Name of NetCDF variable (character).}
@@ -21,6 +29,9 @@ in NetCDFv3 format (numeric). Default output is NetCDFv4.}
 \item{overwrite}{logical; should existing output file be overwritten?}
 
 \item{verbose}{logical; if TRUE, progress messages are shown}
+
+\item{nc}{Alternatively to \code{infile} you can specify the input as an
+object of class \code{ncdf4} (as returned from \code{ncdf4::nc_open}).}
 }
 \value{
 A NetCDF file including a time series of hourly sums is written.

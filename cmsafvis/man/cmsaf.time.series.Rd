@@ -15,7 +15,9 @@ cmsaf.time.series(
   nc34 = 4,
   overwrite = FALSE,
   verbose = FALSE,
-  toolbox = FALSE
+  toolbox = FALSE,
+  nc1 = NULL,
+  nc2 = NULL
 )
 }
 \arguments{
@@ -47,6 +49,12 @@ in NetCDFv3 format (numeric). Default output is NetCDFv4.}
 
 \item{toolbox}{logical; if TRUE, toolbox mode enabled. The two files are adjusted in space
 and time so that they can be plotted.}
+
+\item{nc1}{Alternatively to \code{infile1} you can specify the input as an
+object of class \code{ncdf4} (as returned from \code{ncdf4::nc_open}).}
+
+\item{nc2}{Alternatively to \code{infile2} you can specify the input as an
+object of class \code{ncdf4} (as returned from \code{ncdf4::nc_open}).}
 }
 \value{
 Two NetCDF files are written.

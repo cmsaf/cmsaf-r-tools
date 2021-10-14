@@ -31,7 +31,8 @@ warming_stripes_plot(
   pointsTF = FALSE,
   lineTF = FALSE,
   title = "",
-  verbose = TRUE
+  verbose = TRUE,
+  nc = NULL
 )
 }
 \arguments{
@@ -94,6 +95,9 @@ If attach is false, this will be ignored(character).}
 \item{title}{Set title (character).}
 
 \item{verbose}{Whether to display progress messages (logical).}
+
+\item{nc}{Alternatively to \code{infile} you can specify the input as an
+object of class \code{ncdf4} (as returned from \code{ncdf4::nc_open}).}
 }
 \description{
 This plotting routine generates graphical output for

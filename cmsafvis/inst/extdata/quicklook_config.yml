@@ -3,7 +3,7 @@
   CAL:
   CFC:
     CFCmm002AVPOS01:
-      Dataset: CLARA-2
+      Dataset: CLARA-2, AVHRR on polar orbiting satellites
       CFC:
         limits:
           min: 0
@@ -12,7 +12,7 @@
         colorscale: Blues
         logo: color
     CFCmm221AVPOS01:
-      Dataset: CLARA-2
+      Dataset: CLARA-2, AVHRR on polar orbiting satellites
       CFC:
         limits:
           min: 0
@@ -22,7 +22,7 @@
         logo: color
         polar: TRUE
     CFCmm219AVPOS01:
-      Dataset: CLARA-2
+      Dataset: CLARA-2, AVHRR on polar orbiting satellites
       CFC:
         limits:
           min: 0
@@ -68,6 +68,303 @@
         logo: color
     CFCdm400AVPOS01:
       Dataset: ICDR AVHRR
+      CFC:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: Blues
+        logo: color
+    CFCmd0011000101:
+      Dataset: CM SAF COMET
+      CFC:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: Blues
+        logo: color
+    CFCmm0011000101:
+      Dataset: CM SAF COMET
+      CFC:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: Blues
+        logo: color
+    CFCdm0011000101:
+      Dataset: CM SAF COMET
+      CFC_MMDC:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: Blues
+        logo: color
+    CFCmm002AVN0701:
+      Dataset: CLARA-A2, AVHRR on NOAA-07
+      CFC:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: Blues
+        logo: color
+    CFCdm002AVN0701:
+      Dataset: CLARA-A2, AVHRR on NOAA-07
+      CFC:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: Blues
+        logo: color
+    CFCmm002AVN0901:
+      Dataset: CLARA-A2, AVHRR on NOAA-09
+      CFC:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: Blues
+        logo: color
+    CFCdm002AVN0901:
+      Dataset: CLARA-A2, AVHRR on NOAA-09
+      CFC:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: Blues
+        logo: color
+    CFCmm002AVN1101:
+      Dataset: CLARA-A2, AVHRR on NOAA-11
+      CFC:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: Blues
+        logo: color
+    CFCdm002AVN1101:
+      Dataset: CLARA-A2, AVHRR on NOAA-11
+      CFC:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: Blues
+        logo: color
+    CFCmm002AVN1201:
+      Dataset: CLARA-A2, AVHRR on NOAA-12
+      CFC:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: Blues
+        logo: color
+    CFCdm002AVN1201:
+      Dataset: CLARA-A2, AVHRR on NOAA-12
+      CFC:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: Blues
+        logo: color
+    CFCmm002AVN1401:
+      Dataset: CLARA-A2, AVHRR on NOAA-14
+      CFC:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: Blues
+        logo: color
+    CFCdm002AVN1401:
+      Dataset: CLARA-A2, AVHRR on NOAA-14
+      CFC:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: Blues
+        logo: color
+    CFCmm002AVN1501:
+      Dataset: CLARA-A2, AVHRR on NOAA-15
+      CFC:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: Blues
+        logo: color
+    CFCdm002AVN1501:
+      Dataset: CLARA-A2, AVHRR on NOAA-15
+      CFC:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: Blues
+        logo: color
+    CFCmm002AVN1601:
+      Dataset: CLARA-A2, AVHRR on NOAA-16
+      CFC:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: Blues
+        logo: color
+    CFCdm002AVN1601:
+      Dataset: CLARA-A2, AVHRR on NOAA-16
+      CFC:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: Blues
+        logo: color
+    CFCmm002AVN1701:
+      Dataset: CLARA-A2, AVHRR on NOAA-17
+      CFC:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: Blues
+        logo: color
+    CFCdm002AVN1701:
+      Dataset: CLARA-A2, AVHRR on NOAA-17
+      CFC:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: Blues
+        logo: color
+    CFCmm002AVN1801:
+      Dataset: CLARA-A2, AVHRR on NOAA-18
+      CFC:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: Blues
+        logo: color
+    CFCdm002AVN1801:
+      Dataset: CLARA-A2, AVHRR on NOAA-18
+      CFC:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: Blues
+        logo: color
+    CFCmm002AVN1901:
+      Dataset: CLARA-A2, AVHRR on NOAA-19
+      CFC:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: Blues
+        logo: color
+    CFCdm002AVN1901:
+      Dataset: CLARA-A2, AVHRR on NOAA-19
+      CFC:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: Blues
+        logo: color
+    CFCmm002AVMEA01:
+      Dataset: CLARA-A2, AVHRR on METOP-A
+      CFC:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: Blues
+        logo: color
+    CFCdm002AVMEA01:
+      Dataset: CLARA-A2, AVHRR on METOP-A
+      CFC:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: Blues
+        logo: color
+    CFCmm002AVMEB01:
+      Dataset: CLARA-A2, AVHRR on METOP-B
+      CFC:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: Blues
+        logo: color
+    CFCdm002AVMEB01:
+      Dataset: CLARA-A2, AVHRR on METOP-B
+      CFC:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: Blues
+        logo: color    
+    CFCmm0010016001:
+      Dataset: CLAAS-1
+      CFC:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: Blues
+        logo: color
+    CFCdm0010016001:
+      Dataset: CLAAS-1
+      CFC:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: Blues
+        logo: color
+    CFCmm003SVMSG01:
+      Dataset: CLAAS-2
+      CFC:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: Blues
+        logo: color
+    CFCdm003SVMSG01:
+      Dataset: CLAAS-2
+      CFC:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: Blues
+        logo: color
+    CFCmm002AVPOSE1:
+      Dataset: CLARA-A2.1, AVHRR on polar orbiting satellites
+      CFC:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: Blues
+        logo: color
+    CFCdm002AVPOSE1:
+      Dataset: CLARA-A2.1, AVHRR on polar orbiting satellites
       CFC:
         limits:
           min: 0
@@ -332,7 +629,7 @@
           min: -7
           max: 7
         legend: TRUE
-        colorscale: Reds
+        colorscale: Blue-Red 3
         logo: color
   EVA:
     EVAmm002SCPOS01:
@@ -342,7 +639,7 @@
           min: 0
           max: 17.5
         legend: TRUE
-        colorscale: Reds
+        colorscale: Blues 3
         logo: color
   FTH:
     FTHmm0010044801:
@@ -352,7 +649,7 @@
           min: 0
           max: 100
         legend: TRUE
-        colorscale: Blues
+        colorscale: Blues 3
         logo: color
   HLW:
   HSH:
@@ -386,6 +683,15 @@
         colorscale: Plasma
         logo: color
   JCH:
+    JCHmh002AVPOS01:
+      Dataset: CLARA-A2.1, AVHRR on polar orbiting satellites
+      CFC:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: Blues
+        logo: color
   LHF:
     LHFmm002SCPOS01:
       Dataset: HOAPS, version 4.0
@@ -394,7 +700,7 @@
           min: 0
           max: 350
         legend: TRUE
-        colorscale: Reds
+        colorscale: Blues 
         logo: color
   LTP:
   LTS:
@@ -410,6 +716,24 @@
         logo: color
     LWPdm400AVPOS01:
       Dataset: ICDR AVHRR
+      LWP:
+        limits:
+          min: 0
+          max: 0.5
+        legend: TRUE
+        colorscale: Plasma
+        logo: color
+    LWPmm002AVPOS01:
+      Dataset: CLARA-A2, AVHRR on polar orbiting satellites
+      LWP:
+        limits:
+          min: 0
+          max: 0.4
+        legend: TRUE
+        colorscale: Plasma
+        logo: color
+    LWPdm002AVPOS01:
+      Dataset: CLARA-A2, AVHRR on polar orbiting satellites
       LWP:
         limits:
           min: 0
@@ -436,8 +760,7 @@
           min: 0
           max: 60
         legend: TRUE
-        colorscale: Blues
-        invert_col: TRUE
+        colorscale: Oslo
         logo: color
   SAL:
     SALmm400AVPOS01:
@@ -566,6 +889,24 @@
   SNL:
   SNS:
   SOL:
+    SOLmm002AVPOS01:
+      Dataset: CLARA-A2, AVHRR on polar orbiting satellites
+      SOL:
+        limits:
+          min: 0
+          max: 700
+        legend: TRUE
+        colorscale: Viridis
+        logo: color
+    SOLdm002AVPOS01:
+      Dataset: CLARA-A2, AVHRR on polar orbiting satellites
+      SOL:
+        limits:
+          min: 0
+          max: 800
+        legend: TRUE
+        colorscale: Viridis
+        logo: color
   SRB:
   SRI:
   SWS:
@@ -579,7 +920,7 @@
         colorscale: Blue-Red
         logo: color
   TET:
-# TIS:
+  TIS:
   TRS:
   UTH:
     UTHdm001MHMEB01:

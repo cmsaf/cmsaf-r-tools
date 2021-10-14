@@ -32,7 +32,8 @@ absolute_map(
   attach = FALSE,
   infile_attach = "auto",
   dwd_logo = FALSE,
-  verbose = TRUE
+  verbose = TRUE,
+  nc = NULL
 )
 }
 \arguments{
@@ -98,6 +99,9 @@ If attach is false, this will be ignored(character).}
 \item{dwd_logo}{Whether to add the DWD logo (logical).}
 
 \item{verbose}{Whether to display progress messages (logical).}
+
+\item{nc}{Alternatively to \code{infile} you can specify the input as an
+object of class \code{ncdf4} (as returned from \code{ncdf4::nc_open}).}
 }
 \description{
 This plotting routine generates graphical output for

@@ -12,7 +12,9 @@ remap(
   method = "nearest",
   nc34 = 4,
   overwrite = FALSE,
-  verbose = FALSE
+  verbose = FALSE,
+  nc1 = NULL,
+  nc2 = NULL
 )
 }
 \arguments{
@@ -41,6 +43,12 @@ in NetCDFv3 format (numeric). Default output is NetCDFv4.}
 \item{overwrite}{logical; should existing output file be overwritten?}
 
 \item{verbose}{logical; if TRUE, progress messages are shown}
+
+\item{nc1}{Alternatively to \code{infile1} you can specify the input as an
+object of class \code{ncdf4} (as returned from \code{ncdf4::nc_open}).}
+
+\item{nc2}{Alternatively to \code{infile2} you can specify the input as an
+object of class \code{ncdf4} (as returned from \code{ncdf4::nc_open}).}
 }
 \value{
 A NetCDF file including the interpolated data of infile1 on the grid of

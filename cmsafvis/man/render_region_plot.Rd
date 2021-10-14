@@ -35,7 +35,8 @@ render_region_plot(
   plot_grid,
   grid_col,
   image_def,
-  ihsf
+  ihsf,
+  nc = NULL
 )
 }
 \arguments{
@@ -101,6 +102,9 @@ If NULL is passed a file is created in the R session temporary directory.}
 \item{image_def}{Default size (positive numeric).}
 
 \item{ihsf}{Image height scaling factor (positive numeric).}
+
+\item{nc}{Alternatively to \code{infile} you can specify the input as an
+object of class \code{ncdf4} (as returned from \code{ncdf4::nc_open}).}
 }
 \description{
 This function generates a plot of within a certain region (e.g. a country).

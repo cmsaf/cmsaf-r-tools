@@ -11,7 +11,8 @@ monpctl(
   nc34 = 4,
   overwrite = FALSE,
   verbose = FALSE,
-  p = 0.95
+  p = 0.95,
+  nc = NULL
 )
 }
 \arguments{
@@ -32,6 +33,9 @@ in NetCDFv3 format (numeric). Default output is NetCDFv4.}
 
 \item{p}{Percentile number given as probability within [0, 1] (numeric).
 Default is 0.95.}
+
+\item{nc}{Alternatively to \code{infile} you can specify the input as an
+object of class \code{ncdf4} (as returned from \code{ncdf4::nc_open}).}
 }
 \value{
 A NetCDF file including a time series of monthly variance is written.

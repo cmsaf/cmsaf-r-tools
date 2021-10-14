@@ -4,7 +4,7 @@
 \alias{cmsaf.transform.coordinate.system}
 \title{Transform the coordinate system to -180 to 180 longitude of an infile}
 \usage{
-cmsaf.transform.coordinate.system(infile, var, outfile)
+cmsaf.transform.coordinate.system(infile, var, outfile, nc = NULL)
 }
 \arguments{
 \item{infile}{Filename of input NetCDF file. This may include the directory
@@ -14,6 +14,9 @@ cmsaf.transform.coordinate.system(infile, var, outfile)
 
 \item{outfile}{Filename of output NetCDF file. This may include the directory
 (character).}
+
+\item{nc}{Alternatively to \code{infile} you can specify the input as an
+object of class \code{ncdf4} (as returned from \code{ncdf4::nc_open}).}
 }
 \value{
 A NetCDF file including the coordinate system (-180 to 180 longitude) is
