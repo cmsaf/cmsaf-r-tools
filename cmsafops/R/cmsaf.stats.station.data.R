@@ -10,6 +10,8 @@
 #'@param outfile Filename of output csv file. This may include the directory
 #'  (character).
 #'@param overwrite logical; should existing output file be overwritten?; Default: FALSE
+#'@param nc Alternatively to \code{infile} you can specify the input as an
+#'  object of class `ncdf4` (as returned from \code{ncdf4::nc_open}).
 #'
 #'@return A csv file including the rmse, mae, bias and correlation over time 
 #'  is written. 
@@ -17,7 +19,8 @@
 #'
 #'@family metrics
 
-cmsaf.stats.station.data <- function(var, infile, data_station, outfile, overwrite = FALSE) {
+cmsaf.stats.station.data <- function(var, infile, data_station, outfile, overwrite = FALSE, 
+                                     nc = NULL) {
   gc()
   calc_time_start <- Sys.time()
   
@@ -28,20 +31,25 @@ cmsaf.stats.station.data <- function(var, infile, data_station, outfile, overwri
   }
   
   check_variable(var)
-  check_infile(infile)
+  if (is.null(nc)) check_infile(infile)
   
-  nc_in <- nc_open(infile)
-  file_data <- cmsafops::read_file(infile, var)
+  if (!is.null(nc)) nc_in <- nc
+  else nc_in <- nc_open(infile)
+  file_data <- cmsafops::read_file(infile, var, nc = nc)
   lon <- file_data$dimension_data$x
   lat <- file_data$dimension_data$y
   
-  id <- ncdf4::nc_open(infile)
+  if (!is.null(nc)) id <- nc
+  else id <- ncdf4::nc_open(infile)
   data_nc <- ncdf4::ncvar_get(id, var, collapse_degen = FALSE)
   
   date <- ncdf4::ncvar_get(id, "time")
   t_unit <- ncdf4::ncatt_get(id, "time", "units")$value
   date.time <- as.character(cmsafops::get_time(t_unit, date))
   data2 <- data_station
+  
+  # Assume this needs to be added as id wasn't closed
+  if (is.null(nc)) ncdf4::nc_close(id)
   
   list_data_station <- list()
   

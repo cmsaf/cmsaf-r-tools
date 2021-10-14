@@ -1,7 +1,8 @@
-get_climatology <- function(infile, file_data) {
+get_climatology <- function(infile, file_data, nc = NULL) {
   limit <- 2601 * 2601 * 31	  # This value can be ajusted to avoid RAM overflow
 
-  nc_in <- nc_open(infile)
+  if (!is.null(nc)) nc_in <- nc
+  else nc_in <- nc_open(infile)
   if ((length(file_data$dimension_data$x) * length(file_data$dimension_data$y) * length(file_data$dimension_data$t)) < limit) {
     dum_dat <- ncvar_get(nc_in, file_data$variable$name, collapse_degen = FALSE)
     clim <- rowMeans(dum_dat, dims = 2, na.rm = TRUE)
@@ -23,6 +24,6 @@ get_climatology <- function(infile, file_data) {
     }
     clim <- rowSums(sum_data, dims = 2, na.rm = TRUE) / num
   }
-  nc_close(nc_in)
+  if (is.null(nc)) nc_close(nc_in)
   return(clim)
 }

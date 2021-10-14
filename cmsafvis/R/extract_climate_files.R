@@ -7,7 +7,8 @@ extract_climate_files <- function(
   climate_year_end,
   accumulate,
   #mean_value = FALSE,
-  verbose) {
+  verbose,
+  nc = NULL) {
   if (verbose) {
     pb <- progress::progress_bar$new(
       format = "Extracting climate file for :year [:bar] :percent eta: :eta",
@@ -57,7 +58,7 @@ extract_climate_files <- function(
     }
 
     if (file.exists(outfile)) {
-      if (compare_spatial_range(outfile, infile)) {
+      if (compare_spatial_range(outfile, infile, nc_file2 = nc)) {
         next()
       }
     }
@@ -77,13 +78,22 @@ extract_climate_files <- function(
           year = year,
           infile = infile,
           outfile = yearlyFileRaw_with_leap,
-          overwrite = TRUE
+          overwrite = TRUE,
+          nc = nc
         )
       }, error = function(e) {
         if (startsWith(deparse(sys.calls()[[sys.nframe() - 5]])[[1]], "merge_climatology")) {
-          stop(paste0("An error occured while extracting data for the year ", year, ".\nPlease make sure that the input file ", infile, " contains the required data or provide a climatology file for the selected region."))
+          if (!is.null(nc)) {
+            stop(paste0("An error occured while extracting data for the year ", year, ".\nPlease make sure that the input nc object contains the required data or provide a climatology file for the selected region."))
+          } else {
+            stop(paste0("An error occured while extracting data for the year ", year, ".\nPlease make sure that the input file ", infile, " contains the required data or provide a climatology file for the selected region."))
+          }
         } else {
-          stop(paste0("An error occured while extracting data for the year ", year, ".\nPlease make sure that the input file ", infile, " contains the required data."))
+          if (!is.null(nc)) {
+            stop(paste0("An error occured while extracting data for the year ", year, ".\nPlease make sure that the input nc object contains the required data."))
+          } else {
+            stop(paste0("An error occured while extracting data for the year ", year, ".\nPlease make sure that the input file ", infile, " contains the required data."))
+          }
         }
       })
 
@@ -153,5 +163,5 @@ extract_climate_files <- function(
     #   # TODO
     # }
   }
-  pb$update(1)  # Finishes the progress bar
+  if (verbose) pb$update(1)  # Finishes the progress bar
 }

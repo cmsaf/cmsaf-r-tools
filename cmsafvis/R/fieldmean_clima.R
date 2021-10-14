@@ -6,7 +6,8 @@ fieldmean_climate <- function(
   climate_year_start,
   climate_year_end,
   country_code,
-  accumulate) {
+  accumulate,
+  nc = NULL) {
 
   acc_string <- ""
   #mean_string <- ""
@@ -47,7 +48,8 @@ fieldmean_climate <- function(
     var = variable,
     infile = climate_infile,
     outfile = outfile,
-    overwrite = TRUE)
+    overwrite = TRUE,
+    nc = nc)
 
   return(outfile)
 }

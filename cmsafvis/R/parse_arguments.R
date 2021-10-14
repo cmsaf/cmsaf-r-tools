@@ -36,7 +36,8 @@ parse_arguments <- function(plot_type,
                             attach = FALSE,
                             infile_attach = "auto",
                             dwd_logo = FALSE,
-                            verbose = TRUE) {
+                            verbose = TRUE,
+                            nc = NULL) {
   #### Deal with config ####
   if (is.null(config)) {
     configRead <- FALSE
@@ -52,7 +53,7 @@ parse_arguments <- function(plot_type,
   }
   #### All non optional parameters (either direct argument pass or via config file) ####
   #### infile ####
-  if (missing(infile)) {
+  if (missing(infile) && missing(nc)) {
     if (configRead) {
       infile <- tryCatch(
         configParams$infile,
@@ -69,18 +70,21 @@ parse_arguments <- function(plot_type,
     if (!configRead || is.null(infile)) {
       stop(c(
         "Required argument 'infile' is missing.\n",
-        "Specify it directly or in a config file."
+        "Specify it directly or as 'nc' or in a config file."
       ))
     }
   }
 
-  assert_that(is.string(infile))
-  assert_that(file.exists(normalizePath(infile, mustWork = FALSE)))
-  assert_that(!is.dir(infile))
-  assert_that(is.readable(infile))
-
-  # Evaluate all default user values extractable from infile
-  defaultValues <- getUserOptions(infile = infile)
+  if (is.null(nc)) {
+    assert_that(is.string(infile))
+    assert_that(file.exists(normalizePath(infile, mustWork = FALSE)))
+    assert_that(!is.dir(infile))
+    assert_that(is.readable(infile))
+  }
+  #TODO Add check on nc object too.
+  
+  # Evaluate all default user values extractable from infile or nc
+  defaultValues <- getUserOptions(infile = infile, nc = nc)
 
   #### Check all optional parameters ####
   #### temp_dir ####
@@ -387,7 +391,8 @@ parse_arguments <- function(plot_type,
 
   assert_that(is.string(variable))
   if (!(variable %in% defaultValues$variables)) {
-    stop(paste0("The given infile ", infile, " does not contain the variable ", variable, "."))
+    if (!is.null(nc)) stop(paste0("The given nc object does not contain the variable ", variable, "."))
+    else stop(paste0("The given infile ", infile, " does not contain the variable ", variable, "."))
   }
 
   #### keep_files ####
@@ -783,6 +788,8 @@ parse_arguments <- function(plot_type,
 
   if (attach) {
       tryCatch({
+      #TODO Is it possible to get attach to work with an nc input as well?
+      if (!is.null(nc)) stop("'infile' must be provided instead of 'nc' to use the attach option")
       first_day_in <- substr(basename(infile), 5, 14)
       last_day_in <- substr(basename(infile), 16, 25)
 
@@ -850,7 +857,8 @@ parse_arguments <- function(plot_type,
     infile_attach = infile_attach,
     new_infile = new_infile,
     dwd_logo = dwd_logo,
-    verbose = verbose
+    verbose = verbose,
+    nc = nc
   )
 
   if (verbose) {

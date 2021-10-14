@@ -4,9 +4,9 @@
 # cmsaf.mul, cmsaf.sub). Argument op is one of 1-4, depending on the arithmetic
 # function used.
 arith_wrapper <- function(op, var1, var2, infile1, infile2, outfile, nc34,
-                          overwrite, verbose) {
-  check_variable(var1)
-  check_variable(var2)
+                          overwrite, verbose, nc1 = NULL, nc2 = NULL) {
+  if (is.null(nc1)) check_variable(var1)
+  if (is.null(nc2)) check_variable(var2)
 
   check_infile(infile1)
   check_infile(infile2)
@@ -20,8 +20,8 @@ arith_wrapper <- function(op, var1, var2, infile1, infile2, outfile, nc34,
   calc_time_start <- Sys.time()
 
   # get information about dimensions and attributes
-  file_data1 <- read_file(infile1, var1)
-  file_data2 <- read_file(infile2, var2)
+  file_data1 <- read_file(infile1, var1, nc = nc1)
+  file_data2 <- read_file(infile2, var2, nc = nc2)
 
   # define variable precision
   if (!op == 4 && exists(file_data1$variable$prec) && exists(file_data2$variable$prec)) {
@@ -116,8 +116,10 @@ arith_wrapper <- function(op, var1, var2, infile1, infile2, outfile, nc34,
   )
 
   # get data of infile1 and infile2 and calculate corresponding fields
-  nc_in1 <- nc_open(infile1)
-  nc_in2 <- nc_open(infile2)
+  if (!is.null(nc1)) nc_in1 <- nc1
+  else nc_in1 <- nc_open(infile1)
+  if (!is.null(nc2)) nc_in2 <- nc2
+  else nc_in2 <- nc_open(infile2)
   nc_out <- nc_open(outfile, write = TRUE)
 
   switch(case,
@@ -212,8 +214,8 @@ arith_wrapper <- function(op, var1, var2, infile1, infile2, outfile, nc34,
          }
   )
 
-  nc_close(nc_in1)
-  nc_close(nc_in2)
+  if (is.null(nc1)) nc_close(nc_in1)
+  if (is.null(nc2)) nc_close(nc_in2)
   nc_close(nc_out)
 
   calc_time_end <- Sys.time()

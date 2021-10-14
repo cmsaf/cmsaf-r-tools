@@ -14,6 +14,8 @@
 #'  in NetCDFv3 format (numeric). Default output is NetCDFv4.
 #'@param overwrite logical; should existing output file be overwritten?
 #'@param verbose logical; if TRUE, progress messages are shown
+#'@param nc Alternatively to \code{infile} you can specify the input as an
+#'  object of class `ncdf4` (as returned from \code{ncdf4::nc_open}).
 #'
 #'@return A NetCDF file including a time series of the length of infile is
 #'  written.
@@ -59,6 +61,6 @@
 #'unlink(c(file.path(tempdir(),"CMSAF_example_file.nc"), 
 #'  file.path(tempdir(),"CMSAF_example_file_divdpm.nc")))
 divdpm <- function(var, infile, outfile, nc34 = 4, overwrite = FALSE,
-                   verbose = FALSE) {
-  xdpm_wrapper("div", var, infile, outfile, nc34, overwrite, verbose)
+                   verbose = FALSE, nc = NULL) {
+  xdpm_wrapper("div", var, infile, outfile, nc34, overwrite, verbose, nc = nc)
 }

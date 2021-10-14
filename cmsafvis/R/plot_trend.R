@@ -1,9 +1,10 @@
 # helper functions: This functions render the trend plot
-plot_sig_map <- function(infile, sig.parameter)
+plot_sig_map <- function(infile, sig.parameter, nc = NULL)
 {
-  nc_in <- ncdf4::nc_open(infile)
+  if (!is.null(nc)) nc_in <- nc
+  else nc_in <- ncdf4::nc_open(infile)
   
-  file_data <- cmsafops::read_file(infile, sig.parameter)
+  file_data <- cmsafops::read_file(infile, sig.parameter, nc = nc)
   lon <- file_data$dimension_data$x
   lat <- file_data$dimension_data$y
   
@@ -204,7 +205,7 @@ plot_sig_map <- function(infile, sig.parameter)
                   adj = 1,
                   line = 0.3)
   
-  ncdf4::nc_close(nc_in)
+  if (is.null(nc)) ncdf4::nc_close(nc_in)
 }
 
 
@@ -401,10 +402,11 @@ plot_trend <- function(variable,
                        title = "",
                        subtitle = "",
                        trend_line = TRUE,
-                       verbose)
+                       verbose,
+                       nc = NULL)
 {
   # use wfldmean for trend plot
-  cmsafops::wfldmean(variable,infile, outfile = file.path(tempdir(),"tmp_time_series_plot.nc"), overwrite = TRUE)
+  cmsafops::wfldmean(variable, infile, outfile = file.path(tempdir(),"tmp_time_series_plot.nc"), overwrite = TRUE, nc = nc)
   temp_file <- file.path(tempdir(),"tmp_time_series_plot.nc")
   file_data <- cmsafops::read_file(temp_file, variable)
   nc_in <- ncdf4::nc_open(temp_file)
@@ -440,7 +442,8 @@ plot_trend <- function(variable,
     outfile = tmp.mk.test.outfile,
     nc34 = 4,
     overwrite = TRUE,
-    verbose = FALSE
+    verbose = FALSE,
+    nc = nc
   )
   
   tmp.trend.outfile <- file.path(tempdir(), "tmp.trend.outfile.nc")
@@ -455,7 +458,8 @@ plot_trend <- function(variable,
     option = 1,
     nc34 = 4,
     overwrite = TRUE,
-    verbose = FALSE
+    verbose = FALSE,
+    nc = nc
   )
   
   grDevices::png(paste0(out_dir, "/", outfile_name), units="in", width=18, height=6, res=100)

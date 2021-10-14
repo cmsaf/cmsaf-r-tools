@@ -13,6 +13,8 @@
 #'  in NetCDFv3 format (numeric). Default output is NetCDFv4.
 #'@param overwrite logical; should existing output file be overwritten?
 #'@param verbose logical; if TRUE, progress messages are shown
+#'@param nc Alternatively to \code{infile} you can specify the input as an
+#'  object of class `ncdf4` (as returned from \code{ncdf4::nc_open}).
 #'
 #'@return A NetCDF file including a time series of the selected years is written.
 #'@export
@@ -59,10 +61,10 @@
 #'unlink(c(file.path(tempdir(),"CMSAF_example_file.nc"), 
 #'  file.path(tempdir(),"CMSAF_example_file_selyear.nc")))
 selyear <- function(var, year = c(2000), infile, outfile, nc34 = 4,
-                    overwrite = FALSE, verbose = FALSE) {
+                    overwrite = FALSE, verbose = FALSE, nc = NULL) {
   check_variable(var)
 
-  check_infile(infile)
+  if (is.null(nc)) check_infile(infile)
   check_outfile(outfile)
 
   outfile <- correct_filename(outfile)
@@ -73,9 +75,9 @@ selyear <- function(var, year = c(2000), infile, outfile, nc34 = 4,
   calc_time_start <- Sys.time()
 
   # get information about dimensions and attributes
-  file_data <- read_file(infile, var)
+  file_data <- read_file(infile, var, nc = nc)
   if (file_data$time_info$has_time_bnds) {
-    time_bnds <- get_time_bounds_from_file(infile)
+    time_bnds <- get_time_bounds_from_file(infile, nc = nc)
   }
 
   # extract time information
@@ -128,7 +130,8 @@ selyear <- function(var, year = c(2000), infile, outfile, nc34 = 4,
 
   # extract desired year from infile
 
-  nc_in <- nc_open(infile)
+  if (!is.null(nc)) nc_in <- nc
+  else nc_in <- nc_open(infile)
   nc_out <- nc_open(outfile, write = TRUE)
   count <- 1
 
@@ -146,7 +149,7 @@ selyear <- function(var, year = c(2000), infile, outfile, nc34 = 4,
       }
     }
   }
-  nc_close(nc_in)
+  if (is.null(nc)) nc_close(nc_in)
   nc_close(nc_out)
 
   calc_time_end <- Sys.time()

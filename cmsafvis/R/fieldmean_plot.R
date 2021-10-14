@@ -43,7 +43,8 @@ fieldmean_plot <- function(config = NULL,
                            attach = FALSE,
                            infile_attach = "auto",
                            dwd_logo = FALSE,
-                           verbose = TRUE) {
+                           verbose = TRUE,
+                           nc = NULL) {
   # Call central argument parser
   arguments_necessary <- methods::formalArgs(parse_arguments)
   arguments <- as.list(match.call())
@@ -82,7 +83,8 @@ fieldmean_plot <- function(config = NULL,
   new_infile <- parsedArguments$new_infile
   dwd_logo <- parsedArguments$dwd_logo
   verbose <- parsedArguments$verbose
-
+  nc <- parsedArguments$nc
+  
   # check_infile_monitor_climate
   # if(accumulate == FALSE)
   #   stop("Creating a multi day graphic of non accumulated data is not possible. Please choose to accumulate the infile, or plot format 'animation', or select a single day in the date range")
@@ -106,7 +108,8 @@ fieldmean_plot <- function(config = NULL,
       end_date = end_date,
       accumulate = accumulate,
       temp_dir = temp_dir,
-      verbose = verbose
+      verbose = verbose,
+      nc = nc
     )
 
     climatology_file <- calculate_climatology(
@@ -123,7 +126,8 @@ fieldmean_plot <- function(config = NULL,
       lat_min = lat_min,
       lat_max = lat_max,
       accumulate = accumulate,
-      verbose = verbose
+      verbose = verbose,
+      nc = nc
     )
 
   if (is_country(country_code)) {
@@ -207,7 +211,8 @@ fieldmean_plot <- function(config = NULL,
     climate_year_end = climate_year_end,
     accumulate = accumulate,
     verbose = verbose,
-    keep_files = keep_files
+    keep_files = keep_files,
+    nc = nc
   )
 
   # Remove reusable files if desired

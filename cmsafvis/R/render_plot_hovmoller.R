@@ -5,6 +5,10 @@
 #' @inheritParams render_plot
 #' @param title_data1 Title of the first data set
 #' @param title_data2 Title of the second data set
+#'@param nc Alternatively to \code{infile1} you can specify the input as an
+#'  object of class `ncdf4` (as returned from \code{ncdf4::nc_open}).
+#'@param nc2 Alternatively to \code{infile2} you can specify the input as an
+#'  object of class `ncdf4` (as returned from \code{ncdf4::nc_open}).
 #' 
 #' @export
 render_plot_hovmoller <- function(outfile = NULL,
@@ -15,7 +19,11 @@ render_plot_hovmoller <- function(outfile = NULL,
                                 textsize,
                                 linesize,
                                 title_data1,
-                                title_data2) {
+                                title_data2,
+                                nc = NULL,
+                                nc2 = NULL) {
+  if (!is.null(nc)) visualizeVariables$file_name <- nc$filename
+  if (!is.null(nc2)) visualizeVariables$file_name2 <- nc2$filename
   if (is.null(outfile)) {
     outfile <- tempfile(fileext = fileExtension)
   }

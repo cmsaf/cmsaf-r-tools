@@ -17,6 +17,8 @@
 #'  in NetCDFv3 format (numeric). Default output is NetCDFv4.
 #'@param overwrite logical; should existing output file be overwritten?
 #'@param verbose logical; if TRUE, progress messages are shown
+#'@param nc Alternatively to \code{infile} you can specify the input as an
+#'  object of class `ncdf4` (as returned from \code{ncdf4::nc_open}).
 #'
 #'@return A NetCDF file including the selected region is written.
 #'@export
@@ -62,10 +64,11 @@
 #'unlink(c(file.path(tempdir(),"CMSAF_example_file.nc"), 
 #'  file.path(tempdir(),"CMSAF_example_file_sellonlatbox.nc")))
 sellonlatbox <- function(var, infile, outfile, lon1 = -180, lon2 = 180,
-                         lat1 = -90, lat2 = 90, nc34 = 4, overwrite = FALSE, verbose = FALSE) {
+                         lat1 = -90, lat2 = 90, nc34 = 4, overwrite = FALSE, verbose = FALSE,
+                         nc = NULL) {
   check_variable(var)
 
-  check_infile(infile)
+  if (is.null(nc)) check_infile(infile)
   check_outfile(outfile)
 
   outfile <- correct_filename(outfile)
@@ -76,7 +79,7 @@ sellonlatbox <- function(var, infile, outfile, lon1 = -180, lon2 = 180,
   calc_time_start <- Sys.time()
 
   # get information about dimensions and attributes
-  file_data <- read_file(infile, var)
+  file_data <- read_file(infile, var, nc = nc)
 
   if (!(file_data$grid$is_regular || length(file_data$grid$vars))) {
     stop("No lon/lat information found in file, please add by applying add_grid_info")
@@ -144,7 +147,7 @@ sellonlatbox <- function(var, infile, outfile, lon1 = -180, lon2 = 180,
   result[is.na(result)] <- file_data$variable$attributes$missing_value
 
   if (file_data$time_info$has_time_bnds) {
-    time_bnds <- get_time_bounds_from_file(infile)[, 1]
+    time_bnds <- get_time_bounds_from_file(infile, nc = nc)[, 1]
     vars_data <- list(result = result, time_bounds = time_bnds)
   }else{
     vars_data <- list(result = result)
@@ -188,10 +191,11 @@ sellonlatbox <- function(var, infile, outfile, lon1 = -180, lon2 = 180,
   )
 
   if (file_data$time_info$has_time_bnds) {
-    time_bnds <- get_time_bounds_from_file(infile)
+    time_bnds <- get_time_bounds_from_file(infile, nc = nc)
   }
 
-  nc_in <- nc_open(infile)
+  if (!is.null(nc)) nc_in <- nc
+  else nc_in <- nc_open(infile)
   nc_out <- nc_open(outfile, write = TRUE)
 
 
@@ -211,7 +215,7 @@ sellonlatbox <- function(var, infile, outfile, lon1 = -180, lon2 = 180,
                 count = c(-1, 1))
     }
   }
-  nc_close(nc_in)
+  if (is.null(nc)) nc_close(nc_in)
   nc_close(nc_out)
 
   calc_time_end <- Sys.time()

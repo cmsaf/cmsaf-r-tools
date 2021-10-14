@@ -12,6 +12,8 @@
 #'  in NetCDFv3 format (numeric). Default output is NetCDFv4.
 #'@param overwrite logical; should existing output file be overwritten?
 #'@param verbose logical; if TRUE, progress messages are shown
+#'@param nc Alternatively to \code{infile} you can specify the input as an
+#'  object of class `ncdf4` (as returned from \code{ncdf4::nc_open}).
 #'
 #'@return A NetCDF file including a time series of annual means is written.
 #'@export
@@ -55,18 +57,19 @@
 #'
 #'unlink(c(file.path(tempdir(),"CMSAF_example_file.nc"), 
 #'  file.path(tempdir(),"CMSAF_example_file_yearmean.nc")))
-yearmean <- function(var, infile, outfile, nc34 = 4, overwrite = FALSE, verbose = FALSE) {
+yearmean <- function(var, infile, outfile, nc34 = 4, overwrite = FALSE, verbose = FALSE, 
+                     nc = NULL) {
   calc_time_start <- Sys.time()
 
   check_variable(var)
-  check_infile(infile)
+  if (is.null(nc)) check_infile(infile)
   check_outfile(outfile)
   outfile <- correct_filename(outfile)
   check_overwrite(outfile, overwrite)
   check_nc_version(nc34)
 
   ##### extract data from file #####
-  file_data <- read_file(infile, var)
+  file_data <- read_file(infile, var, nc = nc)
   file_data$variable$prec <- "float"
   years_all <- get_date_time(file_data$dimension_data$t, file_data$time_info$units)$years
   years_unique <- sort(unique(years_all))
@@ -125,7 +128,8 @@ yearmean <- function(var, infile, outfile, nc34 = 4, overwrite = FALSE, verbose 
     year_dummy <- which(years_all == years_unique[i])
     startt <- min(dummy_vec[year_dummy])
     countt <- length(year_dummy)
-    nc_in <- nc_open(infile)
+    if (!is.null(nc)) nc_in <- nc
+    else nc_in <- nc_open(infile)
     dum_dat <- ncvar_get(
       nc_in,
       file_data$variable$name,
@@ -133,7 +137,7 @@ yearmean <- function(var, infile, outfile, nc34 = 4, overwrite = FALSE, verbose 
       count = c(-1, -1, countt),
       collapse_degen = FALSE
     )
-    nc_close(nc_in)
+    if(is.null(nc)) nc_close(nc_in)
 
     if (verbose) message(paste0("apply annual mean ", i,
                    " of ", length(years_unique)))

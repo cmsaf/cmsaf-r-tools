@@ -20,13 +20,17 @@
 #'@param verbose logical; if TRUE, progress messages are shown
 #'@param toolbox logical; if TRUE, toolbox mode enabled. The two files are adjusted in space 
 #'  and time so that they can be plotted.
+#'@param nc1 Alternatively to \code{infile1} you can specify the input as an
+#'  object of class `ncdf4` (as returned from \code{ncdf4::nc_open}).
+#'@param nc2 Alternatively to \code{infile2} you can specify the input as an
+#'  object of class `ncdf4` (as returned from \code{ncdf4::nc_open}).
 #'
 #'@return Two NetCDF files are written.
 #'@export
 #'
 #'@family 2d visualization 
 #'
-cmsaf.side.by.side <- function(var1, infile1, var2, infile2, outfile1, outfile2, plot.out = FALSE, nc34 = 4, overwrite = FALSE, verbose = FALSE, toolbox = FALSE) {
+cmsaf.side.by.side <- function(var1, infile1, var2, infile2, outfile1, outfile2, plot.out = FALSE, nc34 = 4, overwrite = FALSE, verbose = FALSE, toolbox = FALSE, nc1 = NULL, nc2 = NULL) {
   gc()
   calc_time_start <- Sys.time()
   
@@ -39,7 +43,7 @@ cmsaf.side.by.side <- function(var1, infile1, var2, infile2, outfile1, outfile2,
     }
   }
   
-  cmsafops::cmsaf.adjust.two.files(var1, infile1, var2, infile2, outfile1, outfile2, nc34, FALSE, FALSE)
+  cmsafops::cmsaf.adjust.two.files(var1, infile1, var2, infile2, outfile1, outfile2, nc34, FALSE, FALSE, nc1 = nc1, nc2 = nc2)
   
   if(!toolbox) {
     # data one
@@ -254,8 +258,10 @@ cmsaf.side.by.side <- function(var1, infile1, var2, infile2, outfile1, outfile2,
         )
         
         graphics::box(col = bordercolor, lwd = linesize)
-        pattern <- "[^\\/]+(\\.nc)$" # regular exp. to extract filenames
-        regex1 <- regmatches(infile1, regexpr(pattern, infile1))
+        # pattern <- "[^\\/]+(\\.nc)$" # regular exp. to extract filenames
+        # regex1 <- regmatches(infile1, regexpr(pattern, infile1))
+        # Same as above and works for URLs
+        regex1 <- cmsafops::get_basename(infile1, nc = nc1)
         graphics::mtext(regex1)
         creator_att <- ncdf4::ncatt_get(id, 0, "creator_name")
         creator <- ifelse(creator_att$hasatt, creator_att$value, "-")
@@ -359,8 +365,10 @@ cmsaf.side.by.side <- function(var1, infile1, var2, infile2, outfile1, outfile2,
         
         graphics::box(col = bordercolor, lwd = linesize)
         
-        pattern <- "[^\\/]+(\\.nc)$" # regular exp. to extract filenames
-        regex2 <- regmatches(infile2, regexpr(pattern, infile2))
+        # pattern <- "[^\\/]+(\\.nc)$" # regular exp. to extract filenames
+        # regex2 <- regmatches(infile2, regexpr(pattern, infile2))
+        # Same as above and works for URLs
+        regex2 <- cmsafops::get_basename(infile2, nc = nc2)
         graphics::mtext(regex2)
         
         creator_att2 <- ncdf4::ncatt_get(id2, 0, "creator_name")

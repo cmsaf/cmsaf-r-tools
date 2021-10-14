@@ -16,11 +16,16 @@
 #'  in NetCDFv3 format (numeric). Default output is NetCDFv4.
 #' @param overwrite logical; should existing output file be overwritten?
 #' @param verbose logical; if TRUE, progress messages are shown
+#'@param nc1 Alternatively to \code{infile1} you can specify the input as an
+#'  object of class `ncdf4` (as returned from \code{ncdf4::nc_open}).
+#'@param nc2 Alternatively to \code{infile2} you can specify the input as an
+#'  object of class `ncdf4` (as returned from \code{ncdf4::nc_open}).
 #' 
 #' @return Two NetCDF files with the same time period and coordinate system are the result.
 #' 
 #'@export
-cmsaf.adjust.two.files <- function(var1, infile1, var2, infile2, outfile1, outfile2, nc34 = 4, overwrite = FALSE, verbose = FALSE) {
+cmsaf.adjust.two.files <- function(var1, infile1, var2, infile2, outfile1, outfile2, nc34 = 4, overwrite = FALSE, verbose = FALSE,
+                                   nc1 = NULL, nc2 = NULL) {
   gc()
   
   calc_time_start <- Sys.time()
@@ -28,8 +33,8 @@ cmsaf.adjust.two.files <- function(var1, infile1, var2, infile2, outfile1, outfi
   check_variable(var1)
   check_variable(var2)
   
-  check_infile(infile1)
-  check_infile(infile2)
+  if (is.null(nc1)) check_infile(infile1)
+  if (is.null(nc2)) check_infile(infile2)
   
   check_outfile(outfile1)
   check_outfile(outfile2)
@@ -47,12 +52,13 @@ cmsaf.adjust.two.files <- function(var1, infile1, var2, infile2, outfile1, outfi
   time_agg_func <- c("hourmean", "hourmean", "daymean", "monmean", "yearmean")
   
   # infile1
-  id <- nc_open(infile1)
+  if (!is.null(nc1)) id <- nc1
+  else id <- nc_open(infile1)
   dim_names   <- names(id$dim)
   dimensions <- get_dimensions(id, dim_names)
   time_info <- get_time_info(id, dim_names, dimensions$names$t)
   timestep_infile1 <- substr(time_info$units, 1, 1)
-  nc_close(id)
+  if (is.null(nc1)) nc_close(id)
   
   # infile2
   id <- nc_open(infile2)
@@ -103,7 +109,8 @@ cmsaf.adjust.two.files <- function(var1, infile1, var2, infile2, outfile1, outfi
           infile = infile1, 
           outfile = temp_dir, 
           nc34 = 4, 
-          overwrite = TRUE
+          overwrite = TRUE,
+          nc = nc1
         )
         do.call(fun, argumentList)
         newinfile1 <- TRUE
@@ -114,7 +121,8 @@ cmsaf.adjust.two.files <- function(var1, infile1, var2, infile2, outfile1, outfi
           infile = infile2, 
           outfile = temp_dir, 
           nc34 = 4, 
-          overwrite = TRUE
+          overwrite = TRUE,
+          nc = nc2
         )
        
         do.call(fun, argumentList)
@@ -131,7 +139,7 @@ cmsaf.adjust.two.files <- function(var1, infile1, var2, infile2, outfile1, outfi
     date_time_one <- as.Date(get_time(file_data_one$time_info$units, file_data_one$dimension_data$t))
     
     # second file
-    file_data_second <- read_file(infile2, var2)
+    file_data_second <- read_file(infile2, var2, nc = nc2)
     file_data_second$variable$prec <- "float"
     date_time_two <- as.Date(get_time(file_data_second$time_info$units, file_data_second$dimension_data$t))
     
@@ -140,7 +148,7 @@ cmsaf.adjust.two.files <- function(var1, infile1, var2, infile2, outfile1, outfi
     end_date <- max(date_time_one[max(result)])   # get end date
     
     cmsafops::selperiod(var = var1, start = start_date, end = end_date, infile = temp_dir, outfile = temp_infile1, nc34 = nc34, overwrite = TRUE)
-    cmsafops::selperiod(var = var2, start = start_date, end = end_date, infile = infile2, outfile = temp_infile2, nc34 = nc34, overwrite = TRUE)
+    cmsafops::selperiod(var = var2, start = start_date, end = end_date, infile = infile2, outfile = temp_infile2, nc34 = nc34, overwrite = TRUE, nc = nc2)
   }
   if(newinfile2 == TRUE) {   # second data set is new
     # first file
@@ -160,17 +168,17 @@ cmsaf.adjust.two.files <- function(var1, infile1, var2, infile2, outfile1, outfi
     start_date <- min(date_time_one[min(result)])   # get start date
     end_date <- max(date_time_one[max(result)])   # get end date
     
-    cmsafops::selperiod(var = var1, start = start_date, end = end_date, infile = infile1, outfile = temp_infile1, nc34 = nc34, overwrite = TRUE)
+    cmsafops::selperiod(var = var1, start = start_date, end = end_date, infile = infile1, outfile = temp_infile1, nc34 = nc34, overwrite = TRUE, nc = nc1)
     cmsafops::selperiod(var = var2, start = start_date, end = end_date, infile = temp_dir, outfile = temp_infile2, nc34 = nc34, overwrite = TRUE)
   }
   if(newinfile1 != TRUE && newinfile2 != TRUE) {
     # first file
-    file_data_one <- read_file(infile1, var1)
+    file_data_one <- read_file(infile1, var1, nc = nc1)
     file_data_one$variable$prec <- "float"
     date_time_one <- as.Date(get_time(file_data_one$time_info$units, file_data_one$dimension_data$t))
     
     # second file
-    file_data_second <- read_file(infile2, var2)
+    file_data_second <- read_file(infile2, var2, nc = nc2)
     file_data_second$variable$prec <- "float"
     date_time_two <- as.Date(get_time(file_data_second$time_info$units, file_data_second$dimension_data$t))
     
@@ -179,8 +187,8 @@ cmsaf.adjust.two.files <- function(var1, infile1, var2, infile2, outfile1, outfi
     start_date <- min(date_time_one[min(result)])   # get start date
     end_date <- max(date_time_one[max(result)])   # get end date
     
-    cmsafops::selperiod(var = var1, start = start_date, end = end_date, infile = infile1, outfile = temp_infile1, nc34 = nc34, overwrite = TRUE)
-    cmsafops::selperiod(var = var2, start = start_date, end = end_date, infile = infile2, outfile = temp_infile2, nc34 = nc34, overwrite = TRUE)
+    cmsafops::selperiod(var = var1, start = start_date, end = end_date, infile = infile1, outfile = temp_infile1, nc34 = nc34, overwrite = TRUE, nc = nc1)
+    cmsafops::selperiod(var = var2, start = start_date, end = end_date, infile = infile2, outfile = temp_infile2, nc34 = nc34, overwrite = TRUE, nc = nc2)
   }
   if(file.exists(temp_dir)){
     unlink(temp_dir)

@@ -6,21 +6,23 @@ extractOutfileMean <- function(variable,
                            end_date,
                            mean_value = FALSE,
                            temp_dir,
-                           verbose) {
+                           verbose,
+                           nc = NULL) {
   if (verbose) {
     message("Prepare infile")
   }
-  selperiod_tmp <- file.path(tempdir(), basename(infile))
+  infile_basename <- cmsafops::get_basename(infile = infile, nc = nc)
+  selperiod_tmp <- file.path(tempdir(), infile_basename)
   if(file.exists(selperiod_tmp)){
     unlink(selperiod_tmp)
   }
   tryCatch({
-    cmsafops::selperiod(var = variable, start = start_date, end = end_date, infile = infile, outfile = selperiod_tmp, overwrite = TRUE)
+    cmsafops::selperiod(var = variable, start = start_date, end = end_date, infile = infile, outfile = selperiod_tmp, overwrite = TRUE, nc = nc)
   }, error = function(e) {
     stop(paste0("An error occured while extracting data. ","cmsafops::selperiod"))
   })
   
-  outfile <- file.path(temp_dir, basename(infile))
+  outfile <- file.path(temp_dir, infile_basename)
   
   tryCatch({
     if(mean_value)
@@ -28,12 +30,12 @@ extractOutfileMean <- function(variable,
       year_to_analyze <- format(start_date, "%Y")
       outfile <- add_ncdf_ext(
         construct_filename(
-          tools::file_path_sans_ext(basename(infile)),
+          tools::file_path_sans_ext(infile_basename),
           year_to_analyze,
           "timmean"
         ))
       outfile <- file.path(temp_dir, outfile)
-      cmsafops::timmean(var = variable, infile = selperiod_tmp, outfile = outfile, overwrite = TRUE)
+      cmsafops::timmean(var = variable, infile = selperiod_tmp, outfile = outfile, overwrite = TRUE, nc = nc)
     }
   }, error = function(e) {
     stop(paste0("An error occured while extracting data. ", "cmsafops::monmean"))

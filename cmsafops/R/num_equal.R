@@ -14,6 +14,8 @@
 #'  in NetCDFv3 format (numeric). Default output is NetCDFv4.
 #'@param overwrite logical; should existing output file be overwritten?
 #'@param verbose logical; if TRUE, progress messages are shown
+#'@param nc Alternatively to \code{infile} you can specify the input as an
+#'  object of class `ncdf4` (as returned from \code{ncdf4::nc_open}).
 #'
 #'@return A NetCDF file including the manipulated data fields of infile is
 #'  written. Standard output precision is 'integer'.
@@ -60,6 +62,6 @@
 #'unlink(c(file.path(tempdir(),"CMSAF_example_file.nc"), 
 #'  file.path(tempdir(),"CMSAF_example_file_num_equal.nc")))
 num_equal <- function(var, thld = 0, infile, outfile, nc34 = 4,
-                       overwrite = FALSE, verbose = FALSE) {
-  num_wrapper(3, var, thld, infile, outfile, nc34, overwrite, verbose)
+                       overwrite = FALSE, verbose = FALSE, nc = NULL) {
+  num_wrapper(3, var, thld, infile, outfile, nc34, overwrite, verbose, nc = nc)
 }

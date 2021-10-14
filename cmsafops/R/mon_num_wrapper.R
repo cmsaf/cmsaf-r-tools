@@ -1,16 +1,16 @@
-mon_num_wrapper <- function(op, var, thld, infile, outfile, nc34, overwrite, verbose, p = NULL) {
+mon_num_wrapper <- function(op, var, thld, infile, outfile, nc34, overwrite, verbose, p = NULL, nc = NULL) {
   calc_time_start <- Sys.time()
 
   check_variable(var)
   check_constant(thld)
-  check_infile(infile)
+  if(is.null(nc)) check_infile(infile)
   check_outfile(outfile)
   outfile <- correct_filename(outfile)
   check_overwrite(outfile, overwrite)
   check_nc_version(nc34)
 
   ##### extract data from file #####
-  file_data <- read_file(infile, var)
+  file_data <- read_file(infile, var, nc = nc)
 
   date_time <- get_date_time(file_data$dimension_data$t, file_data$time_info$units)
   months_all <- date_time$months
@@ -99,7 +99,8 @@ mon_num_wrapper <- function(op, var, thld, infile, outfile, nc34, overwrite, ver
     startt <- min(dummy_vec[mon_dummy])
     countt <- length(mon_dummy)
 
-    nc_in <- nc_open(infile)
+    if (!is.null(nc)) nc_in <- nc
+    else nc_in <- nc_open(infile)
     dum_dat <- ncvar_get(nc_in, file_data$variable$name, start = c(1, 1, startt), count = c(-1, -1, countt), collapse_degen = FALSE)
 
     dum_dat <- switch(op,
@@ -127,7 +128,7 @@ mon_num_wrapper <- function(op, var, thld, infile, outfile, nc34, overwrite, ver
     ncvar_put(nc_out, vars[[1]], data, start = c(1, 1, count), count = c(-1, -1, 1))
     count <- count + 1
 
-    nc_close(nc_in)
+    if (is.null(nc)) nc_close(nc_in)
   }
 
   nc_close(nc_out)

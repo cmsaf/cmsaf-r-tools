@@ -6,6 +6,8 @@
 #'@param infile Filename of input NetCDF file. This may include the directory
 #'  (character).
 #'@param verbose logical; if TRUE, progress messages are shown
+#'@param nc Alternatively to \code{infile} you can specify the input as an
+#'  object of class `ncdf4` (as returned from \code{ncdf4::nc_open}).
 #'
 #'@return The output is a list object including the variable and the
 #'  corresponding time variable. The dimension of the chosen variable is most
@@ -48,16 +50,17 @@
 #'  "CMSAF_example_file.nc"))
 #'
 #'unlink(file.path(tempdir(),"CMSAF_example_file.nc"))
-read_ncvar <- function(var, infile, verbose = FALSE) {
+read_ncvar <- function(var, infile, verbose = FALSE, nc = NULL) {
   check_variable(var)
-  check_infile(infile)
+  if (is.null(nc)) check_infile(infile)
 
   calc_time_start <- Sys.time()
 
   # get file information
-  file_data <- read_file_all(infile, var)
+  file_data <- read_file_all(infile, var, nc = nc)
 
-  id <- nc_open(infile)
+  if (!is.null(nc)) id <- nc
+  else id <- nc_open(infile)
   if (!(var %in% c(TIME_BOUNDS_NAMES$DEFAULT, NB2_NAME)) && var %in% DIM_NAMES && var %in% c(names(id$var), names(id$dim))) {
     file_data$variable$name <- var
   }
@@ -76,7 +79,7 @@ read_ncvar <- function(var, infile, verbose = FALSE) {
     output <- list(result)
     names(output) <- c(file_data$variable$name)
   }
-  nc_close(id)
+  if (is.null(nc)) nc_close(id)
 
   calc_time_end <- Sys.time()
   if (verbose) message(get_processing_time_string(calc_time_start, calc_time_end))

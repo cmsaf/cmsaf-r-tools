@@ -12,6 +12,8 @@
 #'  in NetCDFv3 format (numeric). Default output is NetCDFv4.
 #'@param overwrite logical; should existing output file be overwritten?
 #'@param verbose logical; if TRUE, progress messages are shown
+#'@param nc Alternatively to \code{infile} you can specify the input as an
+#'  object of class `ncdf4` (as returned from \code{ncdf4::nc_open}).
 #'
 #'@return A NetCDF file including a time series of seasonal anomalies is written.
 #'@export
@@ -55,18 +57,19 @@
 #'
 #'unlink(c(file.path(tempdir(),"CMSAF_example_file.nc"), 
 #'  file.path(tempdir(),"CMSAF_example_file_seas.anomaly.nc")))
-seas.anomaly <- function(var, infile, outfile, nc34 = 4, overwrite = FALSE, verbose = FALSE) {
+seas.anomaly <- function(var, infile, outfile, nc34 = 4, overwrite = FALSE, verbose = FALSE,
+                         nc = NULL) {
   calc_time_start <- Sys.time()
 
   check_variable(var)
-  check_infile(infile)
+  if (is.null(nc)) check_infile(infile)
   check_outfile(outfile)
   outfile <- correct_filename(outfile)
   check_overwrite(outfile, overwrite)
   check_nc_version(nc34)
 
   ##### extract data from file #####
-  file_data <- read_file(infile, var)
+  file_data <- read_file(infile, var, nc = nc)
   file_data$variable$prec <- "float"
 
   date_time <- get_date_time(file_data$dimension_data$t, file_data$time_info$units)
@@ -120,7 +123,8 @@ seas.anomaly <- function(var, infile, outfile, nc34 = 4, overwrite = FALSE, verb
   )
 
   ##### calculate and write result #####
-  nc_in <- nc_open(infile)
+  if (!is.null(nc)) nc_in <- nc
+  else nc_in <- nc_open(infile)
   nc_out <- nc_open(outfile, write = TRUE)
   dummy_vec <- seq_along(months_all)
 
@@ -221,7 +225,7 @@ seas.anomaly <- function(var, infile, outfile, nc34 = 4, overwrite = FALSE, verb
   }
 
   nc_close(nc_out)
-  nc_close(nc_in)
+  if (is.null(nc)) nc_close(nc_in)
 
   calc_time_end <- Sys.time()
   if (verbose) message(get_processing_time_string(calc_time_start, calc_time_end))

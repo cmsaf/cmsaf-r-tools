@@ -13,6 +13,8 @@
 #'  in NetCDFv3 format (numeric). Default output is NetCDFv4.
 #'@param overwrite logical; should existing output file be overwritten?
 #'@param verbose logical; if TRUE, progress messages are shown
+#'@param nc Alternatively to \code{infile} you can specify the input as an
+#'  object of class `ncdf4` (as returned from \code{ncdf4::nc_open}).
 #'@export
 mon.anomaly.climatology <- function(var, 
                                     infile,
@@ -20,7 +22,8 @@ mon.anomaly.climatology <- function(var,
                                     climatology_file, 
                                     nc34 = 4, 
                                     overwrite = FALSE, 
-                                    verbose = FALSE)
+                                    verbose = FALSE,
+                                    nc = NULL)
 {
   calc_time_start <- Sys.time()
   
@@ -38,7 +41,7 @@ mon.anomaly.climatology <- function(var,
   clim.data <- ncvar_get(nc_clim, file_data_clim$variable$name)
   nc_close(nc_clim)
   
-  file_data <- read_file(infile, var)
+  file_data <- read_file(infile, var, nc = nc)
   file_data$variable$prec <- "float"
   months_all <- get_date_time(file_data$dimension_data$t, file_data$time_info$units)$months
   years_all <- get_date_time(file_data$dimension_data$t, file_data$time_info$units)$year
@@ -46,7 +49,8 @@ mon.anomaly.climatology <- function(var,
   months_unique <- sort(unique(months_all))
   
   ### calculate monthly means
-  nc_monmean <- nc_open(infile)
+  if (!is.null(nc)) nc_monmean <- nc
+  else nc_monmean <- nc_open(infile)
   #monmeans <- ncvar_get(nc_monmean, file_data$variable$name)
   
   monmeans <- array(NA, dim = c(length(file_data$dimension_data$x),
@@ -65,7 +69,7 @@ mon.anomaly.climatology <- function(var,
   
   
   monmeans_months_all <- get_date_time(ncvar_get(nc_monmean, "time"), ncatt_get(nc_monmean, "time", "units")$value)$months
-  nc_close(nc_monmean)
+  if (is.null(nc)) nc_close(nc_monmean)
   
   dates <- as.POSIXlt(get_time(file_data$time_info$units, file_data$dimension_data$t), format = "%Y-%m-%d")
   dates$mday <- rep(1, length(dates))
@@ -143,7 +147,8 @@ mon.anomaly.climatology <- function(var,
     monmean_dummy <- which(months_all == months_unique[j])
     startt <- dummy_vec[monmean_dummy]
     
-    nc_in <- nc_open(infile)
+    if (!is.null(nc)) nc_in <- nc
+    else nc_in <- nc_open(infile)
     
     dum_dat <- array(NA, dim = c(length(file_data$dimension_data$x), length(file_data$dimension_data$y), length(startt)))
     
@@ -151,7 +156,7 @@ mon.anomaly.climatology <- function(var,
       dum_dat[, , i] <- ncvar_get(nc_in, file_data$variable$name, start = c(1, 1, startt[i]), count = c(-1, -1, 1), collapse_degen = FALSE)
     }
     
-    nc_close(nc_in)
+    if (is.null(nc)) nc_close(nc_in)
     
     if (verbose) message(paste0("apply monthly anomaly ", j,
                                 " of ", length(months_unique)))

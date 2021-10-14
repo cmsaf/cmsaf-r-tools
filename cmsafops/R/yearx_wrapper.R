@@ -1,15 +1,15 @@
-yearx_wrapper <- function(op, var, infile, outfile, nc34, overwrite, verbose) {
+yearx_wrapper <- function(op, var, infile, outfile, nc34, overwrite, verbose, nc = NULL) {
   calc_time_start <- Sys.time()
   gc()
   check_variable(var)
-  check_infile(infile)
+  if (is.null(nc)) check_infile(infile)
   check_outfile(outfile)
   outfile <- correct_filename(outfile)
   check_overwrite(outfile, overwrite)
   check_nc_version(nc34)
 
   ##### extract data from file #####
-  file_data <- read_file(infile, var)
+  file_data <- read_file(infile, var, nc = nc)
 
   if (op > 2) {
     file_data$variable$prec <- "float"
@@ -75,7 +75,8 @@ yearx_wrapper <- function(op, var, infile, outfile, nc34, overwrite, verbose) {
   nc_out <- nc_open(outfile, write = TRUE)
   dummy_vec <- seq_along(years_all)
   
-  nc_in <- nc_open(infile)
+  if (!is.null(nc)) nc_in <- nc
+  else nc_in <- nc_open(infile)
 
   for (i in seq_along(years_unique)) {
     year_dummy <- which(years_all == years_unique[i])
@@ -121,7 +122,7 @@ yearx_wrapper <- function(op, var, infile, outfile, nc34, overwrite, verbose) {
     ncvar_put(nc_out, vars[[1]], data, start = c(1, 1, i), count = c(-1, -1, 1))
   }
 
-  nc_close(nc_in)
+  if (is.null(nc)) nc_close(nc_in)
   nc_close(nc_out)
   
   calc_time_end <- Sys.time()

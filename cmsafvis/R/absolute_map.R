@@ -41,7 +41,8 @@ absolute_map <- function(config = NULL,
                          attach = FALSE,
                          infile_attach = "auto",
                          dwd_logo = FALSE,
-                         verbose = TRUE) {
+                         verbose = TRUE,
+                         nc = NULL) {
   # Call central argument parser
   arguments_necessary <- methods::formalArgs(parse_arguments)
   arguments <- as.list(match.call())
@@ -78,8 +79,9 @@ absolute_map <- function(config = NULL,
   new_infile <- parsedArguments$new_infile
   dwd_logo <- parsedArguments$dwd_logo
   verbose <- parsedArguments$verbose
-
-  check_infile_monitor_climate(infile, accumulate)
+  nc <- parsedArguments$nc
+  
+  check_infile_monitor_climate(infile, accumulate, nc = nc)
   
   if (attach) {
     attach_file(variable = variable,
@@ -100,7 +102,8 @@ absolute_map <- function(config = NULL,
       end_date = end_date,
       mean_value = mean_value,
       temp_dir = temp_dir,
-      verbose = verbose
+      verbose = verbose,
+      nc = nc
     )
   } else {
     finalInfile <- extractFinalOutfile(
@@ -110,7 +113,8 @@ absolute_map <- function(config = NULL,
       end_date = end_date,
       accumulate = accumulate,
       temp_dir = temp_dir,
-      verbose = verbose
+      verbose = verbose,
+      nc = nc
     )
   }
 

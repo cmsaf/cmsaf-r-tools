@@ -1,22 +1,22 @@
-fldx_wrapper <- function(op, var, infile, outfile, nc34, overwrite, verbose) {
+fldx_wrapper <- function(op, var, infile, outfile, nc34, overwrite, verbose, nc = NULL) {
   calc_time_start <- Sys.time()
 
   check_variable(var)
-  check_infile(infile)
+  if (is.null(nc)) check_infile(infile)
   check_outfile(outfile)
   outfile <- correct_filename(outfile)
   check_overwrite(outfile, overwrite)
   check_nc_version(nc34)
 
   ##### extract data from file #####
-  file_data <- read_file(infile, var)
+  file_data <- read_file(infile, var, nc = nc)
   if (op > 2) {
     file_data$variable$prec <- "float"
   }
   if (op < 4 || op > 4) {
     file_data$dimension_data$x <- round((max(file_data$dimension_data$x, na.rm = TRUE) + min(file_data$dimension_data$x, na.rm = TRUE)) / 2, digits = 2)
     file_data$dimension_data$y <- round((max(file_data$dimension_data$y, na.rm = TRUE) + min(file_data$dimension_data$y, na.rm = TRUE)) / 2, digits = 2)
-    result <- calc_field(infile, file_data, op)
+    result <- calc_field(infile, file_data, op, nc = nc)
   }else{
     grid <- raster::raster(nrows = length(file_data$dimension_data$x),
                            ncols = length(file_data$dimension_data$y),
@@ -28,14 +28,14 @@ fldx_wrapper <- function(op, var, infile, outfile, nc34, overwrite, verbose) {
     area <- raster::area(grid, weights = TRUE)
     weights <- raster::as.matrix(area)
 
-    result <- calc_field(infile, file_data, op, weights)
+    result <- calc_field(infile, file_data, op, weights, nc = nc)
 
     file_data$dimension_data$x <- round((max(file_data$dimension_data$x, na.rm = TRUE) + min(file_data$dimension_data$x, na.rm = TRUE)) / 2, digits = 2)
     file_data$dimension_data$y <- round((max(file_data$dimension_data$y, na.rm = TRUE) + min(file_data$dimension_data$y, na.rm = TRUE)) / 2, digits = 2)
   }
 
   if (file_data$time_info$has_time_bnds) {
-    time_bnds <- get_time_bounds_from_file(infile)
+    time_bnds <- get_time_bounds_from_file(infile, nc = nc)
     vars_data <- list(result = result, time_bounds = time_bnds)
   }else{
     vars_data <- list(result = result)

@@ -1,5 +1,6 @@
-read_file_all <- function(infile, var_name) {
-  id <- nc_open(infile)
+read_file_all <- function(infile, var_name, nc = NULL) {
+  if (!is.null(nc)) id <- nc
+  else id <- nc_open(infile)
 
   global_att <- ncatt_get(id, 0)
 
@@ -57,7 +58,7 @@ read_file_all <- function(infile, var_name) {
     t = ncvar_get(id, dimensions$names$t)
 
   )
-  nc_close(id)
+  if (is.null(nc)) nc_close(id)
 
   result <- list(
     global_att = global_att,

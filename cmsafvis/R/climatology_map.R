@@ -45,7 +45,8 @@ climatology_map <- function(config = NULL,
                             attach = FALSE,
                             infile_attach = "auto",
                             dwd_logo = FALSE,
-                            verbose = TRUE) {
+                            verbose = TRUE,
+                            nc = NULL) {
   # Call central argument parser
   arguments_necessary <- methods::formalArgs(parse_arguments)
   arguments <- as.list(match.call())
@@ -85,8 +86,9 @@ climatology_map <- function(config = NULL,
   new_infile <- parsedArguments$new_infile
   dwd_logo <- parsedArguments$dwd_logo
   verbose <- parsedArguments$verbose
-
-  check_infile_monitor_climate(infile, accumulate)
+  nc <- parsedArguments$nc
+  
+  check_infile_monitor_climate(infile, accumulate, nc = nc)
   
   if (attach) {
     attach_file(variable = variable,
@@ -108,7 +110,8 @@ climatology_map <- function(config = NULL,
       end_date = end_date,
       mean_value = mean_value,
       temp_dir = temp_dir,
-      verbose = verbose
+      verbose = verbose,
+      nc = nc
     )
   } else {
     # If user wants to accumulate the file, we do so here.
@@ -119,7 +122,8 @@ climatology_map <- function(config = NULL,
       end_date = end_date,
       accumulate = accumulate,
       temp_dir = temp_dir,
-      verbose = verbose
+      verbose = verbose,
+      nc = nc
     )
   }
 
@@ -139,7 +143,8 @@ climatology_map <- function(config = NULL,
       lat_min = lat_min,
       lat_max = lat_max,
       mean_value = mean_value,
-      verbose = verbose
+      verbose = verbose,
+      nc = nc
     )
   } else
   {
@@ -157,7 +162,8 @@ climatology_map <- function(config = NULL,
       lat_min = lat_min,
       lat_max = lat_max,
       accumulate = accumulate,
-      verbose = verbose
+      verbose = verbose,
+      nc = nc
     )
   }
 

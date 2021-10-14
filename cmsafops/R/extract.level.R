@@ -16,6 +16,8 @@
 #'  in NetCDFv3 format (numeric). Default output is NetCDFv4.
 #'@param overwrite logical; should existing output file be overwritten?
 #'@param verbose logical; if TRUE, progress messages are shown
+#'@param nc Alternatively to \code{infile} you can specify the input as an
+#'  object of class `ncdf4` (as returned from \code{ncdf4::nc_open}).
 #'
 #'@return A NetCDF file including the selected level is written. In case of
 #'  level = "all" all levels are written in separate NetCDF files and outfile
@@ -73,10 +75,10 @@
 #'  file.path(tempdir(),"CMSAF_example_file_extract.level2_level10.nc"),
 #'  file.path(tempdir(),"CMSAF_example_file_extract.level2_level11.nc")))
 extract.level <- function(var, infile, outfile, level = 1, nc34 = 4,
-                          overwrite = FALSE, verbose = FALSE) {
+                          overwrite = FALSE, verbose = FALSE, nc = NULL) {
   check_variable(var)
 
-  check_infile(infile)
+  if (is.null(nc)) check_infile(infile)
   check_outfile(outfile)
 
   outfile <- correct_filename(outfile)
@@ -87,9 +89,10 @@ extract.level <- function(var, infile, outfile, level = 1, nc34 = 4,
   calc_time_start <- Sys.time()
 
   # get information about dimensions and attributes
-  file_data <- read_file(infile, var)
+  file_data <- read_file(infile, var, nc = nc)
 
-  nc_in <- nc_open(infile)
+  if (!is.null(nc)) nc_in <- nc
+  else nc_in <- nc_open(infile)
     # check level
     if (length(names(nc_in$dim) == 4)) {
       start <- c(1, 1, 1, 1)
@@ -116,7 +119,7 @@ extract.level <- function(var, infile, outfile, level = 1, nc34 = 4,
                              count = count)
       }
     }
-  nc_close(nc_in)
+  if (is.null(nc)) nc_close(nc_in)
 
   # create netcdf
   nc_format <- get_nc_version(nc34)
@@ -162,7 +165,7 @@ extract.level <- function(var, infile, outfile, level = 1, nc34 = 4,
     result <- data1
 
     if (file_data$time_info$has_time_bnds) {
-      time_bnds <- get_time_bounds_from_file(infile)
+      time_bnds <- get_time_bounds_from_file(infile, nc = nc)
       vars_data <- list(result = result, time_bounds = time_bnds)
     }else{
       vars_data <- list(result = result)

@@ -1,11 +1,12 @@
-getTimeRange <- function(infile){
+getTimeRange <- function(infile, nc = NULL){
   date.time <- ""
   # define standard names of variables and dimensions
   t_name <- TIME_NAMES$DEFAULT
   t_units <- UNDEFINED
   
   # get file information
-  nc_in <- nc_open(infile)
+  if (!is.null(nc)) nc_in <- nc
+  else nc_in <- nc_open(infile)
   
   dimnames <- names(nc_in$dim)
   varnames <- names(nc_in$var)
@@ -34,6 +35,6 @@ getTimeRange <- function(infile){
     }
   }
   
-  nc_close(nc_in)
+  if (is.null(nc)) nc_close(nc_in)
   return(as.character(date.time))
 }

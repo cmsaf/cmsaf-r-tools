@@ -8,41 +8,48 @@
 #'@param var2 Name of NetCDF variable of the second data set (character).
 #'@param infile2 Filename of second input NetCDF file. This may include the directory
 #'  (character). Also supported formats for station data are .csv and .RData files.
+#'@param nc1 Alternatively to \code{infile1} you can specify the input as an
+#'  object of class `ncdf4` (as returned from \code{ncdf4::nc_open}).
+#'@param nc2 Alternatively to \code{infile2} you can specify the input as an
+#'  object of class `ncdf4` (as returned from \code{ncdf4::nc_open}).
 #'  
 #'@return Start date and end date are the result (list).
 #'
 #'@export
-calc_overlapping_time <- function(var1, infile1, var2 = NULL, infile2) {
+calc_overlapping_time <- function(var1, infile1, var2 = NULL, infile2,
+                                  nc1 = NULL, nc2 = NULL) {
   gc()
   
   calc_time_start <- Sys.time()
   
-  if(endsWith(infile1, ".nc") && endsWith(infile2, ".nc")) {
+  if((!is.null(nc1) || endsWith(infile1, ".nc")) && (!is.null(nc2) || endsWith(infile2, ".nc"))) {
     check_variable(var1)
     check_variable(var2)
     
-    check_infile(infile1)
-    check_infile(infile2)
+    if (is.null(nc1)) check_infile(infile1)
+    if (is.null(nc2)) check_infile(infile2)
     
     ##### extract data from two files #####
     timestep_string <- c("m","h", "d", "m", "y")
     time_agg_func <- c("hourmean", "hourmean", "daymean", "monmean", "yearmean")
     
     # infile1
-    id <- nc_open(infile1)
+    if (!is.null(nc1)) id <- nc1
+    else id <- nc_open(infile1)
     dim_names   <- names(id$dim)
     dimensions <- get_dimensions(id, dim_names)
     time_info <- get_time_info(id, dim_names, dimensions$names$t)
     timestep_infile1 <- substr(time_info$units, 1, 1)
-    nc_close(id)
+    if (is.null(nc1)) nc_close(id)
     
     # infile2
-    id <- nc_open(infile2)
+    if (!is.null(nc2)) id <- nc2
+    else id <- nc_open(infile2)
     dim_names   <- names(id$dim)
     dimensions <- get_dimensions(id, dim_names)
     time_info <- get_time_info(id, dim_names, dimensions$names$t)
     timestep_infile2 <- substr(time_info$units, 1, 1)
-    nc_close(id)
+    if (is.null(nc2)) nc_close(id)
     
     temp_dir <- file.path(tempdir(), "cmsaf_overlap_two_files_tmp.nc")
     
@@ -69,7 +76,8 @@ calc_overlapping_time <- function(var1, infile1, var2 = NULL, infile2) {
             infile = infile1, 
             outfile = temp_dir, 
             nc34 = 4, 
-            overwrite = TRUE
+            overwrite = TRUE,
+            nc = nc1
           )
           do.call(fun, argumentList)
           newinfile1 <- TRUE
@@ -80,7 +88,8 @@ calc_overlapping_time <- function(var1, infile1, var2 = NULL, infile2) {
             infile = infile2, 
             outfile = temp_dir, 
             nc34 = 4, 
-            overwrite = TRUE
+            overwrite = TRUE,
+            nc = nc2
           )
           
           do.call(fun, argumentList)
@@ -97,7 +106,7 @@ calc_overlapping_time <- function(var1, infile1, var2 = NULL, infile2) {
       date_time_one <- as.Date(get_time(file_data_one$time_info$units, file_data_one$dimension_data$t))
       
       # second file
-      file_data_second <- read_file(infile2, var2)
+      file_data_second <- read_file(infile2, var2, nc = nc2)
       file_data_second$variable$prec <- "float"
       date_time_two <- as.Date(get_time(file_data_second$time_info$units, file_data_second$dimension_data$t))
       
@@ -107,7 +116,7 @@ calc_overlapping_time <- function(var1, infile1, var2 = NULL, infile2) {
     }
     if(newinfile2 == TRUE) {   # second data set is new
       # first file
-      file_data_one <- read_file(infile1, var1)
+      file_data_one <- read_file(infile1, var1, nc = nc1)
       file_data_one$variable$prec <- "float"
       date_time_one <- as.Date(get_time(file_data_one$time_info$units, file_data_one$dimension_data$t))
       
@@ -123,7 +132,7 @@ calc_overlapping_time <- function(var1, infile1, var2 = NULL, infile2) {
     }
     if(newinfile1 != TRUE && newinfile2 != TRUE) {
       # first file
-      file_data_one <- read_file(infile1, var1)
+      file_data_one <- read_file(infile1, var1, nc = nc2)
       file_data_one$variable$prec <- "float"
       date_time_one <- as.Date(get_time(file_data_one$time_info$units, file_data_one$dimension_data$t))
       
@@ -140,11 +149,11 @@ calc_overlapping_time <- function(var1, infile1, var2 = NULL, infile2) {
     if(file.exists(temp_dir)){
       unlink(temp_dir)
     }
-  } else if(endsWith(infile1, ".nc") && (endsWith(infile2, ".csv") || endsWith(infile2, ".RData"))){
+  } else if((!is.null(nc1) || endsWith(infile1, ".nc")) && (is.null(nc2) && (endsWith(infile2, ".csv") || endsWith(infile2, ".RData")))){
     check_variable(var1)
-    check_infile(infile1)
+    if (is.null(nc1)) check_infile(infile1)
     
-    file_data_one <- read_file(infile1, var1)
+    file_data_one <- read_file(infile1, var1, nc = nc1)
     file_data_one$variable$prec <- "float"
     date_time_one <- as.Date(get_time(file_data_one$time_info$units, file_data_one$dimension_data$t))
     start_date <- min(date_time_one)

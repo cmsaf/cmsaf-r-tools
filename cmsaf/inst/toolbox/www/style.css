@@ -73,7 +73,7 @@ pre {
 }
 
 /* Prepare File Wrapping */
-#or_prepare {
+.or {
   margin-left: 15px;
   margin-right: 15px;
 }
