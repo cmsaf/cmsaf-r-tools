@@ -338,7 +338,7 @@ quicklook <- function(config,
   }
 
   # factor for font size
-  fsf <- iwidth / 800
+  fsf <- iwidth / 1021
   
   # Prepare polar projection
   
@@ -678,8 +678,11 @@ quicklook <- function(config,
         }
         
         # plot image
+        # UTH data with 0 to 360 grid were plotted wrong,
+        # but the solution on Windows did not work on Linux
         if (ind360) {
-          raster::image(raster::rotate(stacks[[j]]),
+        #  raster::image(raster::rotate(stacks[[j]]),
+            raster::image(stacks[[j]], y = slot_i,
                         main = "",
                         xlim = c(lon_min, lon_max),
                         ylim = c(lat_min, lat_max),
@@ -718,10 +721,10 @@ quicklook <- function(config,
         } else if (area == "GL") {
             if (lon_max >= 359) {
               maps::map("world2", interior = FALSE, xlim = c(lon_min, lon_max), 
-                ylim = c(lat_min, lat_max), wrap = c(lon_min, lon_max), add = TRUE)
+                ylim = c(lat_min, lat_max), wrap = c(-180, 180), add = TRUE)
             } else {
                 maps::map("world", interior = FALSE, xlim = c(lon_min, lon_max), 
-                  ylim = c(lat_min, lat_max), wrap = c(lon_min, lon_max), add = TRUE)
+                  ylim = c(lat_min, lat_max), wrap = c(-180, 180), add = TRUE)
             }
         } else {
             if (lon_max >= 359) {
