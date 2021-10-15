@@ -37,7 +37,7 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.2
 Encoding: UTF-8
 Language: en-US
-Suggests: plotKML (>= 0.6), rnaturalearth (>= 0.1), spelling (>= 2.1),
+Suggests: rnaturalearth (>= 0.1), spelling (>= 2.1),
         testthat (>= 2.3)
 Packaged: 2021-10-14 12:30:00 UTC
 Maintainer: Steffen Kothe <Steffen.Kothe@dwd.de>
