@@ -11,7 +11,7 @@ extractOutfile <- function(variable,
     message("Prepare infile")
   }
     
-  outfile <- file.path(temp_dir, get_basename(infile = infile, nc = nc))
+  outfile <- file.path(temp_dir, cmsafops:::get_basename(infile = infile, nc = nc))
   
   if(analyze_method == "accumulate"){
     tryCatch({

@@ -1,6 +1,6 @@
 Package: cmsafvis
 Title: Tools to Visualize CM SAF NetCDF Data
-Version: 1.1.7
+Version: 1.1.8
 Authors@R: 
     c(person(given = "Steffen",
            family = "Kothe",
@@ -25,7 +25,7 @@ Description: The Satellite Application Facility on Climate Monitoring (CM SAF)
 License: GPL (>= 3)
 Depends: R (>= 3.6)
 Imports: animation (>= 2.6), assertthat (>= 0.2.1), cmsafops (>=
-        1.2.0), colorspace (>= 1.4), countrycode (>= 1.1), fields (>=
+        1.2.1), colorspace (>= 1.4), countrycode (>= 1.1), fields (>=
         10.3), mapproj (>= 1.2.7), maps (>= 3.3.0), maptools (>= 0.9),
         methods (>= 3.6), ncdf4 (>= 1.17), png (>= 0.1), progress (>=
         1.2.2), raster (>= 3.0), rworldxtra (>= 1.01), sp (>= 1.4),

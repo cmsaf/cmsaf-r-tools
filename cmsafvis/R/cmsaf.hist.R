@@ -73,8 +73,8 @@ cmsaf.hist <- function(var1, infile1, var2, infile2, outfile1, outfile2, plot.ou
     # regex1 <- regmatches(infile1, regexpr(pattern, infile1))
     # regex2 <- regmatches(infile2, regexpr(pattern, infile2))
     # Equivalent to above and works for URLs.
-    regex1 <- get_basename(infile1, nc = nc1)
-    regex2 <- get_basename(infile2, nc = nc2)
+    regex1 <- cmsafops:::get_basename(infile1, nc = nc1)
+    regex2 <- cmsafops:::get_basename(infile2, nc = nc2)
     for(i in seq_along(time)) {
       if(plot.out) {
         plot_filename <- paste0("cmsaf_histogram_plot_", date.time[i], ".png")

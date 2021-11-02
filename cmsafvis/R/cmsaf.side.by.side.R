@@ -261,7 +261,7 @@ cmsaf.side.by.side <- function(var1, infile1, var2, infile2, outfile1, outfile2,
         # pattern <- "[^\\/]+(\\.nc)$" # regular exp. to extract filenames
         # regex1 <- regmatches(infile1, regexpr(pattern, infile1))
         # Same as above and works for URLs
-        regex1 <- get_basename(infile1, nc = nc1)
+        regex1 <- cmsafops:::get_basename(infile1, nc = nc1)
         graphics::mtext(regex1)
         creator_att <- ncdf4::ncatt_get(id, 0, "creator_name")
         creator <- ifelse(creator_att$hasatt, creator_att$value, "-")
@@ -368,7 +368,7 @@ cmsaf.side.by.side <- function(var1, infile1, var2, infile2, outfile1, outfile2,
         # pattern <- "[^\\/]+(\\.nc)$" # regular exp. to extract filenames
         # regex2 <- regmatches(infile2, regexpr(pattern, infile2))
         # Same as above and works for URLs
-        regex2 <- get_basename(infile2, nc = nc2)
+        regex2 <- cmsafops:::get_basename(infile2, nc = nc2)
         graphics::mtext(regex2)
         
         creator_att2 <- ncdf4::ncatt_get(id2, 0, "creator_name")

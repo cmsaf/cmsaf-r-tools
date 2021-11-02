@@ -1,5 +1,10 @@
 # Changelog for cmsafvis package
 
+## 1.1.8
+
+- Duplication of get_basename helper function in cmsafvis and cmsafops led to
+  a warning in cmsaf
+
 ## 1.1.7
 
 - Adaptations to work with files via URL
