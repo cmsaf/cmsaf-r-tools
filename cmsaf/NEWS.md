@@ -1,5 +1,9 @@
 # Release notes for cmsaf
 
+## 3.3.1
+
+- Bug fix in monitor_climate: lon and lat were handed over with wrong name
+
 ## 3.3.0
 
 - Add new option in Prepare panel to open data via URL

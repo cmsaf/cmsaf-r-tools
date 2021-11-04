@@ -78,21 +78,21 @@ render_region_plot <- function(infile,
     } else if (fileExtension == ".kml") {
       kml_toolbox <- raster::rasterToPolygons(ras)
 
-      # check_package_dependency("plotKML", reason = "exporting KML files")
-      # 
-      # plotKML::plotKML(
-      #   kml_toolbox,
-      #   file = outfile,
-      #   kmz = FALSE,
-      #   open.kml = FALSE,
-      #   plot.labpt = FALSE,
-      #   overwrite = TRUE,
-      #   outline = 0
-      # )
+      check_package_dependency("plotKML", reason = "exporting KML files")
+
+      plotKML::plotKML(
+        kml_toolbox,
+        file = outfile,
+        kmz = FALSE,
+        open.kml = FALSE,
+        plot.labpt = FALSE,
+        overwrite = TRUE,
+        outline = 0
+      )
       
-      cat("Sorry, but the plotKML R-package was removed from CRAN 
-              and KML output is not possible at the moment.
-              We are working on a solution for the next update.","\n")
+      # cat("Sorry, but the plotKML R-package was removed from CRAN 
+      #         and KML output is not possible at the moment.
+      #         We are working on a solution for the next update.","\n")
       
     }
     return(list(

@@ -1,5 +1,9 @@
 # Changelog for cmsafvis package
 
+## 1.1.9
+
+- plotKML package is back on CRAN und export of KML is possible again
+
 ## 1.1.8
 
 - Duplication of get_basename helper function in cmsafvis and cmsafops led to

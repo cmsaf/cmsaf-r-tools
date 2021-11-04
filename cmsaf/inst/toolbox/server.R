@@ -4145,10 +4145,10 @@ function(input, output, session) {
         # lon_max = input$lonRegionSlider[2],
         # lat_min = input$latRegionSlider[1],
         # lat_max = input$latRegionSlider[2],
-        lon1 = input$lonRegionMin,
-        lon2 = input$lonRegionMax,
-        lat1 = input$latRegionMin,
-        lat2 = input$latRegionMax,
+        lon_min = input$lonRegionMin,
+        lon_max = input$lonRegionMax,
+        lat_min = input$latRegionMin,
+        lat_max = input$latRegionMax,
         out_dir = monitor_climate_out_dir,
         temp_dir = monitor_climate_temp_dir,
         climate_dir = monitor_climate_temp_dir,
@@ -7054,12 +7054,12 @@ function(input, output, session) {
     cat("This tool helps you to visualize 1D-timeseries and 2D-maps.", "\n")
     cat("\n")
     cat("This version ('Oh no, not again!') was tested with the cmsaf", "\n")
-    cat("R-package in version 3.3.0.", "\n")
+    cat("R-package in version 3.3.1.", "\n")
     cat("\n")
     cat("Suggestions for improvements and praise for the developers", "\n")
     cat("can be send to contact.cmsaf@dwd.de.", "\n")
     cat("\n")
-    cat("                              - Steffen Kothe - 2021-10-14 -", "\n")
+    cat("                              - Steffen Kothe - 2021-11-04 -", "\n")
     cat("\n")
     cat("\n")
   })
