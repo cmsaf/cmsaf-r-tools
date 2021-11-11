@@ -225,6 +225,7 @@ fieldmean_plot <- function(config = NULL,
     variable = variable,
     infile = var_climatology_accumulated_fldmean,
     infile2 = infile_current,
+	infile3 = infile,								# added to plot all years
     country_code = country_code,
     climate_year_start = climate_year_start,
     climate_year_end = climate_year_end,

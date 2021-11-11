@@ -16,10 +16,18 @@ fieldmean_ensemble <-
            keep_files,
            nc = NULL) {
 
+	# Get full time range of infile
+	id <- ncdf4::nc_open(infile)
+	  date_time <- as.Date(cmsafops::get_time(ncdf4::ncatt_get(id, "time", "units")$value, ncdf4::ncvar_get(id, "time")))
+	  firstyear <- format(min(date_time), "%Y")
+	  lastyear  <- format(max(date_time), "%Y")
+	  lastyear  <- as.character(as.numeric(lastyear) - 1)
+	ncdf4::nc_close(id)
+
     if (verbose) {
       pb <- progress::progress_bar$new(
         format = "Computing field mean for :year [:bar] :percent eta: :eta",
-        total = length(climate_year_start:climate_year_end),
+		total = length(firstyear:lastyear),
         clear = TRUE,
         callback = function(x) {message("Computed field means")},
         show_after = 0
@@ -27,9 +35,9 @@ fieldmean_ensemble <-
     }
 
     # Compute field mean for each year.
-    for (climate_year in climate_year_start:climate_year_end) {
+	for (climate_year in firstyear:lastyear) {
       if (verbose) {
-        if (climate_year == climate_year_start) {
+		if (climate_year == firstyear) {
           pb$tick(0, tokens = list(year = climate_year))
         } else {
           pb$tick(tokens = list(year = climate_year))
@@ -42,7 +50,7 @@ fieldmean_ensemble <-
                                                  country_code,
                                                  "mask"))
       tmpfile <- file.path(temp_dir, tmpfile)
-
+	  
       if (file.exists(tmpfile)) {
         reuse_file <- compare_grid(
           infile1 = tmpfile,
@@ -79,7 +87,7 @@ fieldmean_ensemble <-
                                                     climate_year))
         }
         infile <- file.path(climate_dir, infile)
-
+		
         # Need to extract yearly files if climate files do not exist
         if (!file.exists(infile)) {
           extract_climate_files(
@@ -87,8 +95,8 @@ fieldmean_ensemble <-
             variable = variable,
             infile = infile,
             climate_dir = climate_dir,
-            climate_year_start = climate_year_start,
-            climate_year_end = climate_year_end,
+			climate_year_start = firstyear,
+            climate_year_end = lastyear,
             accumulate = accumulate,
             #mean_value = mean_value,
             verbose = verbose

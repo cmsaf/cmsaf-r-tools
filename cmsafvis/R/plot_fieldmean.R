@@ -2,6 +2,7 @@
 plot_fieldmean <- function(variable,
                            infile,
                            infile2,
+						   infile3,
                            country_code,
                            climate_year_start,
                            climate_year_end,
@@ -105,6 +106,14 @@ plot_fieldmean <- function(variable,
 
   input <- infile
   input2 <- infile2
+  
+  # Get full time range of infile
+  id <- ncdf4::nc_open(infile3)
+    date_time <- as.Date(cmsafops::get_time(ncdf4::ncatt_get(id, "time", "units")$value, ncdf4::ncvar_get(id, "time")))
+    firstyear <- format(min(date_time), "%Y")
+    lastyear  <- format(max(date_time), "%Y")
+	lastyear  <- as.character(as.numeric(lastyear) - 1)
+  ncdf4::nc_close(id)
 
   # read in netcdf data
   # read in annual mean
@@ -158,7 +167,7 @@ plot_fieldmean <- function(variable,
     limit <- -Inf
 
     # start loop over all years and read in netcdf data for annual sum of var
-    for (climate_year in seq(from = climate_year_start, to = climate_year_end, by = 1)) {
+	for (climate_year in seq(from = firstyear, to = lastyear, by = 1)) {
       input <- add_ncdf_ext(construct_filename(variable,
                                                climate_year,
                                                country_code,
@@ -235,7 +244,7 @@ plot_fieldmean <- function(variable,
     yearMinPosValue <- Inf
 
     # start loop to plot all years of climatology
-    for (climate_year in seq(from = climate_year_start, to = climate_year_end, by = 1)) {
+	for (climate_year in seq(from = firstyear, to = lastyear, by = 1)) {
       dat <- get(paste0(variable, "_acc_", climate_year))
 
       set_time_locale(language)
@@ -362,8 +371,8 @@ plot_fieldmean <- function(variable,
           limit <- -Inf
 
           # start loop over all years and read in netcdf data for annual sum of var
-          for (climate_year in seq(from = climate_year_start,
-                                   to = climate_year_end,
+		  for (climate_year in seq(from = firstyear,
+                                   to = lastyear,
                                    by = 1)) {
             input <- add_ncdf_ext(construct_filename(variable,
                                                      climate_year,
@@ -432,9 +441,8 @@ plot_fieldmean <- function(variable,
           yearMinPosIndex <- round(plot_length*0.9)
           yearMinPosValue <- Inf
 
-          # start loop to plot all years of climatology
-          for (climate_year in seq(from = climate_year_start,
-                                   to = climate_year_end,
+		  for (climate_year in seq(from = firstyear,
+                                   to = lastyear,
                                    by = 1)) {
             dat <- get(paste0(variable, "_acc_", climate_year))
 
@@ -533,8 +541,8 @@ plot_fieldmean <- function(variable,
 
             limit <- -Inf
 
-            for (climate_year in seq(from = climate_year_start,
-                                     to = climate_year_end,
+			for (climate_year in seq(from = firstyear,
+                                     to = lastyear,
                                      by = 1)) {
               input <- add_ncdf_ext(construct_filename(variable,
                                                        climate_year,
@@ -590,8 +598,8 @@ plot_fieldmean <- function(variable,
             )
 
             # start loop to plot all years of climatology
-            for (climate_year in seq(from = climate_year_start,
-                                     to = climate_year_end,
+			for (climate_year in seq(from = firstyear,
+                                     to = lastyear,
                                      by = 1)) {
               dat <- get(paste0(variable, "_acc_", climate_year))
 
@@ -693,7 +701,7 @@ plot_fieldmean <- function(variable,
 
     final_values <- data.frame(title = titles, years = standout_years, value = standout_values)
     
-    ranking.values <- ranking(out_dir, variable, country_code, climate_year_start, climate_year_end, finish_doy)
+	ranking.values <- ranking(out_dir, variable, country_code, firstyear, lastyear, finish_doy)
     calc.parameters.monitor.climate(final_values, ranking.values)
   
     # Print message

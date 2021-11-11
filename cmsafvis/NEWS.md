@@ -3,6 +3,8 @@
 ## 1.1.9
 
 - plotKML package is back on CRAN und export of KML is possible again
+- fieldmean plot includes now all available years and not just years included
+  in the climatology period
 
 ## 1.1.8
 
