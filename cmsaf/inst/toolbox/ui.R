@@ -25,7 +25,7 @@ right in and analyze or visualize a .nc file.
 Suggestions for improvements and praise for the developers
 can be sent to contact.cmsaf@dwd.de.
 
-- Steffen Kothe - 2021-11-04 -"
+- Steffen Kothe - 2021-11-24 -"
 
 # Variable can be found in global.R
 if (isRunningLocally) {
@@ -486,6 +486,9 @@ fluidPage(
                                              tags$div(id = "nc_info",
                                                       h3("Short File Information"),
                                                       verbatimTextOutput("ncShortInfo")),
+											                       tags$div(id = "og_info",
+                                                      h4("Operator Group Info"),
+                                                      verbatimTextOutput("ogInfo")),
                                              shinyjs::hidden(tags$div(id = "listOfOperators",
                                                                       h3("List of applied operators"),
                                                                       tableOutput("appliedOperators"))),
@@ -598,6 +601,12 @@ fluidPage(
                                                             options = list(create = TRUE,
                                                                            render = I(renderString))),
                                              checkboxInput("reverse", "Invert Colors", value = FALSE, width = NULL),
+                                             colourpicker::colourInput("bordercolor2",
+                                                      "Border Color",
+                                                      showColour = "background",
+                                                      palette = "limited",
+                                                      returnName = TRUE,
+                                                      value = "gray20"),
                             conditionalPanel(condition = "input.proj == 'rect' || input.plot_region",
                                              fluidRow(column(6,
                                                              shinyjs::hidden(uiOutput("num_rmin"))),

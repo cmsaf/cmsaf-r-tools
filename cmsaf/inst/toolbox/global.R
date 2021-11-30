@@ -148,7 +148,7 @@ operators[["Grid boxes statistics"]] <- c("Gridbox maxima" = "gridboxmax",
                                           "Gridbox variances" = "gridboxvar")
 
 operators[["Temporal operators"]] <- c("All-time average" = "timavg",
-									   "All-time maxima" = "timmax",
+									                     "All-time maxima" = "timmax",
                                        "All-time mean" = "timmean",
                                        "All-time minima" = "timmin",
                                        "All-time percentile" = "timpctl",

@@ -3308,6 +3308,130 @@ function(input, output, session) {
       req(nc_path_analyze())
       cmsafops::ncinfo(nc_path_analyze(), nc = nc_object_analyze())
     })
+	
+  # Operator Group Infos
+	output$ogInfo <- renderPrint({
+    req(input$operatorGroup)    
+	  if(input$operatorGroup == "Hourly statistics") {
+		  cat("Hourly statistics\n")
+	    cat("Calculate hourly statistics from data with a temporal resolution\n")
+	    cat("below one hour (e.g., 1/2 h or 15 min). Thus, it makes no sense to\n")
+	    cat("apply these operators for daily or monthly data.\n")
+	  }
+	  if(input$operatorGroup == "Daily statistics") {
+	    cat("Daily statistics\n")
+	    cat("Calculate daily statistics from data with a temporal resolution\n")
+	    cat("below one day (e.g., instantaneous). Thus, it makes no sense to\n")
+	    cat("apply these operators for monthly data.\n")
+	    cat("Multi-year operators will give you values for each day of the year.\n")
+	    cat("The date information in the output file is the date of the first\n")
+      cat("contributing input field.\n")
+	  }
+	  if(input$operatorGroup == "Monthly statistics") {
+	    cat("Monthly statistics\n")
+	    cat("Calculate monthly statistics from all timesteps of the same month.\n")
+	    cat("Multi-year operators will give you values for each month of the year.\n")
+	    cat("The date information in the output file is the date of the first\n")
+	    cat("contributing input field.\n")
+	  }
+	  if(input$operatorGroup == "Seasonal statistics") {
+	    cat("Seasonal statistics\n")
+	    cat("Calculate seasonal statistics from all timesteps of the same\n") 
+	    cat("season.Multi-year operators will give you values for each season\n")
+	    cat("of the year.The standard seasons are defined as DJF (output field 1),\n")
+	    cat("MAM (2), JJA (3) and SON (4).\n") 
+	    cat("The date information in the output file is the date of the first\n")
+	    cat("contributing input field.\n")
+	  }
+	  if(input$operatorGroup == "Annual statistics") {
+	    cat("Annual statistics\n")
+	    cat("Calculate annual statistics from all timesteps of the same year.\n")
+	    cat("The date information in the output file is the date of the first\n")
+	    cat("contributing input field.\n")
+	  }
+	  if(input$operatorGroup == "Temporal operators") {
+	    cat("Temporal operators\n")
+	    cat("Calculate statistics over all timesteps of a file.\n")
+	    cat("Besides standard statistics you will also find operators to do\n")
+	    cat("trend analysis or to calculate simple indices.\n")
+	    cat("The date information in the output file is the date of the first\n")
+	    cat("contributing input field.\n")
+	  }
+	  if(input$operatorGroup == "Running statistics") {
+	    cat("Running statistics\n")
+	    cat("Calculate statistics over a selected number of timesteps.\n")
+	    cat("You will have to give the number of time steps or number of days\n")
+	    cat("(for multi-year statistics).\n")
+	    cat("The date information in the output file is the date of the first\n")
+	    cat("contributing input field.\n")
+	  }
+	  if(input$operatorGroup == "Zonal statistics") {
+	    cat("Zonal statistics\n")
+	    cat("Calculate zonal (along latitude) statistics for\n")
+	    cat("each timestep of a file.\n")
+	  }
+	  if(input$operatorGroup == "Meridional statistics") {
+	    cat("Meridional statistics\n")
+	    cat("Calculate meridional (along longitude) statistics for\n")
+	    cat("each timestep of a file.\n")
+	  }
+	  if(input$operatorGroup == "Grid boxes statistics") {
+	    cat("Grid boxes statistics\n")
+	    cat("Calculate statistics for a given grid box size.\n")
+	  }
+	  if(input$operatorGroup == "Spatial operators") {
+	    cat("Spatial operators\n")
+	    cat("Calculate spatial statistics for each timestep of a file.\n")
+	    cat("The resulting file will contain a 1D-timeseries.\n")
+	  }
+	  if(input$operatorGroup == "Correlation and covariance") {
+	    cat("Correlation and covariance\n")
+	    cat("Calculate spatial or temporal correlations or covariances.\n")
+	    cat("These operators require a second file.\n")
+	  }
+	  if(input$operatorGroup == "Mathematical operators") {
+	    cat("Mathematical operators\n")
+	    cat("Add, multiply, subtract or divide your data by a constant\n")
+	    cat("or data from a second file.\n")
+	    cat("If you use data from a second file, make sure that\n")
+	    cat("the dimensions are matching.\n")
+	  }
+	  if(input$operatorGroup == "Selection") {
+	    cat("Selection\n")
+	    cat("These operators provide spatial or temporal selection from your data.\n")
+	    cat("Please make sure that the selected values are within the\n")
+	    cat("available range.\n")
+	  }
+	  if(input$operatorGroup == "Data manipulation") {
+	    cat("Data manipulation\n")
+	    cat("Regrid your data using different interpolation methods.\n")
+	    cat("Grid information is taken from a second, which has to be provided.\n")
+	  }
+	  if(input$operatorGroup == "Climate Analysis") {
+	    cat("Climate Analysis\n")
+	    cat("Here you will find some more complex operators to do climate analysis.\n")
+	    cat("Some of these operators require continous time series of daily data,\n")
+	    cat("which might cause some time consuming computations. But, the reults\n")
+	    cat("are worth waiting. So far, the resulting graphics or animations\n")
+	    cat("are not interactive.\n")
+	    cat("For animations you will have to install the ffmpeg library.\n")
+	  }
+	  if(input$operatorGroup == "Compare Data") {
+		  cat("Compare Data\n")
+	    cat("This operator provides the option to compare data of two input files.\n")
+	    cat("You can compare your spatial data to other spatial data or station\n")
+	    cat("data. Station data have to follow a specific format (for an example\n")
+	    cat("have a look at the output of 'Select data at multiple points' in\n")
+	    cat("CSV format). Adaptation options for the output graphics are limited \n")
+	    cat("and the calculation might take some time - we try to improve as soon\n")
+	    cat("as possible.\n")
+	  }
+	  if(input$operatorGroup == "Time range statistics") {
+	    cat("Time range statistics\n")
+	    cat("These operators compute the mean or sum for a given number\n")
+	    cat("of timesteps.\n")
+	  }
+	 })
 
     if (nrow(operatorDataFrame) == 0) {
       shinyjs::hide("listOfOperators")
@@ -6336,9 +6460,12 @@ function(input, output, session) {
   names(new_row) <- names(palettes)
   palettes <- rbind(palettes, new_row)
   rownames(palettes)[75] <- "tim.colors"
+  
+  palettes <- rbind(palettes, new_row)
+  rownames(palettes)[76] <- "larry"
 
   palettes <- rbind(palettes, new_row)
-  rownames(palettes)[76] <- "sunny"
+  rownames(palettes)[77] <- "sunny"
 
   x <- list()
   for (i in seq_len(nrow(palettes))) {
@@ -6569,6 +6696,7 @@ function(input, output, session) {
       db_num_brk(),          # number breaks
       db_lat_lon_trigger(),  # changes to lat, lon, bounds
       input$reverse,         # invert colors
+      input$bordercolor2,     # border color for outlines
       input$PAL,             # colorspace pallete
       db_text1_2(),
       db_text2_2()
@@ -6668,7 +6796,7 @@ function(input, output, session) {
                                                       num_brk = input$num_brk,
                                                       reverse = input$reverse,
                                                       textsize = textsize,
-                                                      bordercolor = bordercolor,
+                                                      bordercolor = input$bordercolor2,
                                                       plot_grid = plot_grid,
                                                       grid_col = grid_col,
                                                       image_def = image_def,
@@ -6709,7 +6837,7 @@ function(input, output, session) {
                                                                text3 = input$text3,
                                                                int = input$int,
                                                                textsize = textsize,
-                                                               bordercolor = bordercolor,
+                                                               bordercolor = input$bordercolor2,
                                                                linesize = linesize,
                                                                na.color = na.color,
                                                                PAL = input$PAL,
@@ -6752,7 +6880,7 @@ function(input, output, session) {
                                                  text3 = input$text3,
                                                  int = input$int,
                                                  textsize = textsize,
-                                                 bordercolor = bordercolor,
+                                                 bordercolor = input$bordercolor2,
                                                  linesize = linesize,
                                                  na.color = na.color,
                                                  PAL = input$PAL,
@@ -6911,7 +7039,7 @@ function(input, output, session) {
                                                                   num_brk = input$num_brk,
                                                                   reverse = input$reverse,
                                                                   textsize = textsize,
-                                                                  bordercolor = bordercolor,
+                                                                  bordercolor = input$bordercolor2,
                                                                   plot_grid = plot_grid,
                                                                   grid_col = grid_col,
                                                                   image_def = image_def,
@@ -6950,7 +7078,7 @@ function(input, output, session) {
                                                            text3 = input$text3,
                                                            int = input$int,
                                                            textsize = textsize,
-                                                           bordercolor = bordercolor,
+                                                           bordercolor = input$bordercolor2,
                                                            linesize = linesize,
                                                            na.color = na.color,
                                                            PAL = input$PAL,

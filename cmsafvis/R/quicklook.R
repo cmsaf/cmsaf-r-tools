@@ -87,6 +87,8 @@ quicklook <- function(config,
   rownames(palettes)[77] <- "cloud_mask1"
   palettes <- rbind(palettes, new_row)
   rownames(palettes)[78] <- "cloud_mask2"
+  palettes <- rbind(palettes, new_row)
+  rownames(palettes)[79] <- "larry"
   
   cloud_mask1 <- c("black", "transparent", "gray60", "white")
   cloud_mask2 <- c("black", "transparent", "gray60", "white", "pink")

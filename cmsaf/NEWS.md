@@ -3,6 +3,9 @@
 ## 3.3.1
 
 - Bug fix in monitor_climate: lon and lat were handed over with wrong name
+- For each selected 'Group of Operators' a small description text is shown
+- Added choice for border color
+- Added new color scheme 'larry'
 
 ## 3.3.0
 

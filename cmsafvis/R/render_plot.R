@@ -128,7 +128,7 @@ render_plot <- function(plot_rinstat,
 
   # If rectangular projection
   if (proj == "rect") {
-    # Use colorspace pallete
+    # Use colorspace palette
     col <- getColors(
       PAL = PAL,
       palettes = palettes,
