@@ -110,7 +110,7 @@ trend <- function(var, infile, outfile, option = 1, nc34 = 4,
   vars_data <- list(result = result, time_bounds = time_bnds)
 
   nc_format <- get_nc_version(nc34)
-  cmsaf_info <- paste0("cmsaf::trend for variable ",
+  cmsaf_info <- paste0("cmsafops::trend for variable ",
                        file_data$variable$name)
 
   time_data <- time_bnds[1, ]

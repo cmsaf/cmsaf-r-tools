@@ -330,7 +330,7 @@ selpoint.multi <- function(var, infile, path, pattern, outpath, lon1, lat1,
       result <- result_data[i, ]
       result[is.na(result)] <- file_data$variable$attributes$missing_value
 
-      cmsaf_info <- (paste0("cmsaf::selpoint.multi for variable ", file_data$variable$name))
+      cmsaf_info <- (paste0("cmsafops::selpoint.multi for variable ", file_data$variable$name))
 
       if (file_data$time_info$has_time_bnds) {
         vars_data <- list(result = result, time_bounds = time_bnds)

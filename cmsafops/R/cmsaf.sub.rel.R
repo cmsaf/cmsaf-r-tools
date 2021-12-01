@@ -80,7 +80,7 @@ cmsaf.sub.rel <- function(var1, infile1, var2, infile2, outfile, nc34=4,
   # create netcdf
   nc_format <- get_nc_version(nc34)
   
-  cmsaf_info <- paste0("cmsaf::cmsaf.sub.rel for variable ", var1)
+  cmsaf_info <- paste0("cmsafops::cmsaf.sub.rel for variable ", var1)
   
   ##### prepare output #####
   global_att_list <- names(file_data1$global_att)

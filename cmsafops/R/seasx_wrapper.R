@@ -35,10 +35,10 @@ seasx_wrapper <- function(op, var, infile, outfile, nc34, overwrite, verbose, nc
 
   cmsaf_info <- switch(
     op,
-    paste0("cmsaf::seasmean for variable ", file_data$variable$name),
-    paste0("cmsaf::seassum for variable ", file_data$variable$name),
-    paste0("cmsaf::seassd for variable ", file_data$variable$name),
-    paste0("cmsaf::seasvar for variable ", file_data$variable$name)
+    paste0("cmsafops::seasmean for variable ", file_data$variable$name),
+    paste0("cmsafops::seassum for variable ", file_data$variable$name),
+    paste0("cmsafops::seassd for variable ", file_data$variable$name),
+    paste0("cmsafops::seasvar for variable ", file_data$variable$name)
   )
 
   ##### prepare output #####

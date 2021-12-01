@@ -64,14 +64,14 @@ monx_wrapper <- function(op, var, infile, outfile, nc34, overwrite, verbose, p =
 
   cmsaf_info <- switch(
     op,
-    paste0("cmsaf::monmax for variable ", file_data$variable$name),
-    paste0("cmsaf::monmin for variable ", file_data$variable$name),
-    paste0("cmsaf::monmean for variable ", file_data$variable$name),
-    paste0("cmsaf::monsum for variable ", file_data$variable$name),
-    paste0("cmsaf::monsd for variable ", file_data$variable$name),
-    paste0("cmsaf::monvar for variable ", file_data$variable$name),
-    paste0("cmsaf::monpctl with p = ", p, " for variable ", file_data$variable$name),
-    paste0("cmsaf::monavg for variable ", file_data$variable$name),
+    paste0("cmsafops::monmax for variable ", file_data$variable$name),
+    paste0("cmsafops::monmin for variable ", file_data$variable$name),
+    paste0("cmsafops::monmean for variable ", file_data$variable$name),
+    paste0("cmsafops::monsum for variable ", file_data$variable$name),
+    paste0("cmsafops::monsd for variable ", file_data$variable$name),
+    paste0("cmsafops::monvar for variable ", file_data$variable$name),
+    paste0("cmsafops::monpctl with p = ", p, " for variable ", file_data$variable$name),
+    paste0("cmsafops::monavg for variable ", file_data$variable$name),
   )
 
   time_data <- time_bnds[1, ]

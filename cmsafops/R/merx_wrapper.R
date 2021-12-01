@@ -33,7 +33,7 @@ merx_wrapper <- function(op, var, infile, outfile, nc34, overwrite, verbose, nc 
 
   cmsaf_info <- switch(
     op,
-    paste0("cmsaf::mermean for variable ", file_data$variable$name),
+    paste0("cmsafops::mermean for variable ", file_data$variable$name),
   )
 
   ##### prepare output #####

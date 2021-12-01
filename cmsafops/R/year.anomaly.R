@@ -90,7 +90,7 @@ year.anomaly <- function(var, infile, outfile, nc34 = 4, overwrite = FALSE, verb
   clim <- get_climatology(infile, file_data, nc = nc)
 
   nc_format <- get_nc_version(nc34)
-  cmsaf_info <- paste0("cmsaf::year.anomaly for variable ",
+  cmsaf_info <- paste0("cmsafops::year.anomaly for variable ",
                        file_data$variable$name)
 
   time_data <- time_bnds[1, ]

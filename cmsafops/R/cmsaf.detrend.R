@@ -89,7 +89,7 @@ cmsaf.detrend <- function(var, infile, outfile, nc34 = 4, overwrite = FALSE, ver
   vars_data <- list(time_bounds = file_data$dimension_data$t)
 
   nc_format <- get_nc_version(nc34)
-  cmsaf_info <- paste0("cmsaf::cmsaf.detrend for variable ",
+  cmsaf_info <- paste0("cmsafops::cmsaf.detrend for variable ",
                        file_data$variable$name)
 
   time_data <- file_data$dimension_data$t

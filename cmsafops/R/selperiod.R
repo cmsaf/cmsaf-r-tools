@@ -110,7 +110,7 @@ selperiod <- local({
   
     # create netcdf
     nc_format <- get_nc_version(nc34)
-    cmsaf_info <- (paste0("cmsaf::selperiod for variable ", file_data$variable$name))
+    cmsaf_info <- (paste0("cmsafops::selperiod for variable ", file_data$variable$name))
     
     ##### prepare output #####
     global_att_list <- names(file_data$global_att)

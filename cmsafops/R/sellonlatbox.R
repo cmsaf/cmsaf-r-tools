@@ -155,7 +155,7 @@ sellonlatbox <- function(var, infile, outfile, lon1 = -180, lon2 = 180,
 
   # create netcdf
   nc_format <- get_nc_version(nc34)
-  cmsaf_info <- (paste0("cmsaf::sellonlatbox for variable ", file_data$variable$name))
+  cmsaf_info <- (paste0("cmsafops::sellonlatbox for variable ", file_data$variable$name))
 
   ##### prepare output #####
   global_att_list <- names(file_data$global_att)

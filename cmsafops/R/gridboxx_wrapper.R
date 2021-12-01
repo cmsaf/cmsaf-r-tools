@@ -154,13 +154,13 @@ gridboxx_wrapper <- function(op, var, lonGrid, latGrid, infile, outfile, nc34, o
     
     cmsaf_info <- switch(
       op,
-      paste0("cmsaf::gridboxmax for variable ", file_data$variable$name),
-      paste0("cmsaf::gridboxmin for variable ", file_data$variable$name),
-      paste0("cmsaf::gridboxrange for variable ", file_data$variable$name),
-      paste0("cmsaf::gridboxsum for variable ", file_data$variable$name),
-      paste0("cmsaf::gridboxmean for variable ", file_data$variable$name),
-      paste0("cmsaf::gridboxsd for variable ", file_data$variable$name),
-      paste0("cmsaf::gridboxvar for variable ", file_data$variable$name)
+      paste0("cmsafops::gridboxmax for variable ", file_data$variable$name),
+      paste0("cmsafops::gridboxmin for variable ", file_data$variable$name),
+      paste0("cmsafops::gridboxrange for variable ", file_data$variable$name),
+      paste0("cmsafops::gridboxsum for variable ", file_data$variable$name),
+      paste0("cmsafops::gridboxmean for variable ", file_data$variable$name),
+      paste0("cmsafops::gridboxsd for variable ", file_data$variable$name),
+      paste0("cmsafops::gridboxvar for variable ", file_data$variable$name)
     )
    
     ##### prepare output #####

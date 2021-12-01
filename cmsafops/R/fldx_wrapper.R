@@ -44,19 +44,19 @@ fldx_wrapper <- function(op, var, infile, outfile, nc34, overwrite, verbose, nc 
   nc_format <- get_nc_version(nc34)
   cmsaf_info <- switch(
     op,
-    paste0("cmsaf::fldmax for variable ",
+    paste0("cmsafops::fldmax for variable ",
            file_data$variable$name),
-    paste0("cmsaf::fldmin for variable ",
+    paste0("cmsafops::fldmin for variable ",
            file_data$variable$name),
-    paste0("cmsaf::fldmean for variable ",
+    paste0("cmsafops::fldmean for variable ",
            file_data$variable$name),
-    paste0("cmsaf::wfldmean for variable ",
+    paste0("cmsafops::wfldmean for variable ",
            file_data$variable$name),
-    paste0("cmsaf::fldrange for variable ",
+    paste0("cmsafops::fldrange for variable ",
            file_data$variable$name),
-    paste0("cmsaf::fldsd for variable ",
+    paste0("cmsafops::fldsd for variable ",
            file_data$variable$name),
-    paste0("cmsaf::fldsum for variable ",
+    paste0("cmsafops::fldsum for variable ",
            file_data$variable$name)
   )
 

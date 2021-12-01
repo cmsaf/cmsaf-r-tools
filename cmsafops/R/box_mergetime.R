@@ -200,10 +200,10 @@ box_mergetime <- function(var, path, pattern, outfile, lon1 = -180, lon2 = 180,
   # create netcdf
   nc_format <- get_nc_version(nc34)
   if (is.null(level)) {
-    cmsaf_info <- paste0("cmsaf::box_mergetime for variable ",
+    cmsaf_info <- paste0("cmsafops::box_mergetime for variable ",
                          file_data$variable$name)
   } else {
-    cmsaf_info <- paste0("cmsaf::levbox_mergetime for variable ",
+    cmsaf_info <- paste0("cmsafops::levbox_mergetime for variable ",
                          file_data$variable$name)
   }
 

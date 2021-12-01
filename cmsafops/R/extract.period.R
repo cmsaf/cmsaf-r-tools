@@ -120,7 +120,7 @@ extract.period <- function(var, start, end, infile, outfile, nc34 = 4,
 
   # create netcdf
   nc_format <- get_nc_version(nc34)
-  cmsaf_info <- (paste0("cmsaf::extract.period for variable ",
+  cmsaf_info <- (paste0("cmsafops::extract.period for variable ",
                         file_data$variable$name))
 
   ##### prepare output #####

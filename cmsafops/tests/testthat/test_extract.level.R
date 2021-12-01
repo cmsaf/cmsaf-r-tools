@@ -84,7 +84,7 @@ test_that("attributes are correct", {
   expect_equal(actual, -999)
 
   actual <- ncatt_get(file, "SIS", "cmsaf_info")$value
-  expect_equal(actual, "cmsaf::extract.level for variable SIS and level 1")
+  expect_equal(actual, "cmsafops::extract.level for variable SIS and level 1")
 
   global_attr <- ncatt_get(file, 0)
   expect_equal(length(global_attr), 1)

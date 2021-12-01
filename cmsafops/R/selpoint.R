@@ -193,7 +193,7 @@ selpoint <- function(var, infile, outfile, lon1 = 0, lat1 = 0, format = "nc",
   if (format == "nc") {
     # create netcdf
     nc_format <- get_nc_version(nc34)
-    cmsaf_info <- (paste0("cmsaf::selpoint for variable ", file_data$variable$name))
+    cmsaf_info <- (paste0("cmsafops::selpoint for variable ", file_data$variable$name))
 
     dum_fname <- unlist(strsplit(outfile, "\\."))
     if (dum_fname[length(dum_fname)] != "nc")

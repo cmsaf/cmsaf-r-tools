@@ -51,12 +51,12 @@ library(ncdf4)
 
 ## create some (non-realistic) example data
 
-lon <- seq(5, 15, 0.5)
-lat <- seq(45, 55, 0.5)
+lon <- seq(5, 10, 0.5)
+lat <- seq(45, 50, 0.5)
 time <- seq(as.Date("2000-01-01"), as.Date("2010-12-31"), "month")
 origin <- as.Date("1983-01-01 00:00:00")
 time <- as.numeric(difftime(time, origin, units = "hour"))
-data <- array(250:350, dim = c(21, 21, 132))
+data <- array(250:350, dim = c(11, 11, 132))
 
 ## create example NetCDF
 

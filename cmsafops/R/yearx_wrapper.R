@@ -35,11 +35,11 @@ yearx_wrapper <- function(op, var, infile, outfile, nc34, overwrite, verbose, nc
 
   cmsaf_info <- switch(
     op,
-    paste0("cmsaf::yearmax for variable ", file_data$variable$name),
-    paste0("cmsaf::yearmin for variable ", file_data$variable$name),
-    paste0("cmsaf::yearsd for variable ", file_data$variable$name),
-    paste0("cmsaf::yearvar for variable ", file_data$variable$name),
-    paste0("cmsaf::yearrange for variable ", file_data$variable$name),
+    paste0("cmsafops::yearmax for variable ", file_data$variable$name),
+    paste0("cmsafops::yearmin for variable ", file_data$variable$name),
+    paste0("cmsafops::yearsd for variable ", file_data$variable$name),
+    paste0("cmsafops::yearvar for variable ", file_data$variable$name),
+    paste0("cmsafops::yearrange for variable ", file_data$variable$name),
   )
 
   time_data <- time_bnds[1, ]

@@ -79,10 +79,10 @@ arith_wrapper <- function(op, var1, var2, infile1, infile2, outfile, nc34,
   nc_format <- get_nc_version(nc34)
 
   cmsaf_info <- switch(op,
-                       paste0("cmsaf::cmsaf.add for variable ", var1),
-                       paste0("cmsaf::cmsaf.sub for variable ", var1),
-                       paste0("cmsaf::cmsaf.mul for variable ", var1),
-                       paste0("cmsaf::cmsaf.div for variable ", var1)
+                       paste0("cmsafops::cmsaf.add for variable ", var1),
+                       paste0("cmsafops::cmsaf.sub for variable ", var1),
+                       paste0("cmsafops::cmsaf.mul for variable ", var1),
+                       paste0("cmsafops::cmsaf.div for variable ", var1)
   )
 
   ##### prepare output #####

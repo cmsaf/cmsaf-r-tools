@@ -107,7 +107,7 @@ mon.anomaly.climatology <- function(var,
   vars_data <- list(result = data_placeholder, time_bounds = time_bnds)
   
   nc_format <- get_nc_version(nc34)
-  cmsaf_info <- paste0("cmsaf::mon.anomaly for variable ",
+  cmsaf_info <- paste0("cmsafops::mon.anomaly for variable ",
                        file_data$variable$name)
   
   ##### prepare output #####

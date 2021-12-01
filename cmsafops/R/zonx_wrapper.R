@@ -32,8 +32,8 @@ zonx_wrapper <- function(op, var, infile, outfile, nc34, overwrite, verbose, nc 
 
   cmsaf_info <- switch(
     op,
-    paste0("cmsaf::zonsum for variable ", file_data$variable$name),
-    paste0("cmsaf::zonmean for variable ", file_data$variable$name),
+    paste0("cmsafops::zonsum for variable ", file_data$variable$name),
+    paste0("cmsafops::zonmean for variable ", file_data$variable$name),
   )
 
   time_data <- file_data$dimension_data$t

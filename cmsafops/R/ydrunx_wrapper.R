@@ -14,9 +14,9 @@ ydrunx_wrapper <- function(op, var, nts, infile, outfile, nc34, overwrite, verbo
   
   cmsaf_info <- switch(
     op,
-    paste0("cmsaf::ydrunsum for variable ", file_data$variable$name),
-    paste0("cmsaf::ydrunmean for variable ", file_data$variable$name),
-    paste0("cmsaf::ydrunsd for variable ", file_data$variable$name),
+    paste0("cmsafops::ydrunsum for variable ", file_data$variable$name),
+    paste0("cmsafops::ydrunmean for variable ", file_data$variable$name),
+    paste0("cmsafops::ydrunsd for variable ", file_data$variable$name),
   )
 
   switch(

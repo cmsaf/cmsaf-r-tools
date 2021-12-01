@@ -36,11 +36,11 @@ ydayx_wrapper <- function(op, var, infile, outfile, nc34, overwrite, verbose,
   
   cmsaf_info <- switch(
     op,
-    paste0("cmsaf::ydaymax for variable ", file_data$variable$name),
-    paste0("cmsaf::ydaymin for variable ", file_data$variable$name),
-    paste0("cmsaf::ydaysum for variable ", file_data$variable$name),
-    paste0("cmsaf::ydaysd for variable ", file_data$variable$name),
-    paste0("cmsaf::ydayrange for variable ", file_data$variable$name),
+    paste0("cmsafops::ydaymax for variable ", file_data$variable$name),
+    paste0("cmsafops::ydaymin for variable ", file_data$variable$name),
+    paste0("cmsafops::ydaysum for variable ", file_data$variable$name),
+    paste0("cmsafops::ydaysd for variable ", file_data$variable$name),
+    paste0("cmsafops::ydayrange for variable ", file_data$variable$name),
   )
   
   time_data <- time_bnds[1, ]

@@ -123,7 +123,7 @@ mon.anomaly <- function(var, infile, outfile, nc34 = 4, overwrite = FALSE, verbo
   clim <- get_climatology(infile, file_data, nc = nc)
 
   nc_format <- get_nc_version(nc34)
-  cmsaf_info <- paste0("cmsaf::mon.anomaly for variable ",
+  cmsaf_info <- paste0("cmsafops::mon.anomaly for variable ",
                        file_data$variable$name)
 
   #time_data <- file_data$dimension_data$t

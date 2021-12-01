@@ -67,7 +67,7 @@ test_that("attributes are correct", {
   expect_equal(actual, -999)
 
   actual <- ncatt_get(file, "SIS", "cmsaf_info")$value
-  expect_equal(actual, "cmsaf::cmsaf.addc 4 added to SIS")
+  expect_equal(actual, "cmsafops::cmsaf.addc 4 added to SIS")
 
   global_attr <- ncatt_get(file, 0)
   expect_equal(length(global_attr), 1)

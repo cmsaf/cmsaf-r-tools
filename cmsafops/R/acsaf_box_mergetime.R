@@ -231,7 +231,7 @@ target.list <- list()
     compression = NA
   }
 
-  cmsaf_info <- paste0("cmsaf::acsaf_box_mergetime for variables ")
+  cmsaf_info <- paste0("cmsafops::acsaf_box_mergetime for variables ")
   
   for(i in 1:length(varn)){
     target.list[i][is.na(target.list[i])] <- v_missing_value

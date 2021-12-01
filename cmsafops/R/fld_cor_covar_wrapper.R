@@ -100,8 +100,8 @@ fld_cor_covar_wrapper <- local({
     nc_format <- get_nc_version(nc34)
     
     cmsaf_info <- switch(op,
-                         fldcor = {"cmsaf::fldcor"},
-                         fldcovar = {"cmsaf::fldcovar"},
+                         fldcor = {"cmsafops::fldcor"},
+                         fldcovar = {"cmsafops::fldcovar"},
     )
     cmsaf_info <- paste0(cmsaf_info, " for variable ", file_data_one$variable$name)
     

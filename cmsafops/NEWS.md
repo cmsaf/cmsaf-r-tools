@@ -1,7 +1,9 @@
 # Changelog for cmsafops package
 
-## 1.2.1
+## 1.2.2
+- Correction of cmsaf_info attribute
 
+## 1.2.1
 - Modification of operators to work with data via URL
 
 ## 1.2.0

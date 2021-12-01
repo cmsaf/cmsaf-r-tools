@@ -38,12 +38,12 @@ arithc_wrapper <- function(op, var, const, infile, outfile, nc34, overwrite,
   nc_format <- get_nc_version(nc34)
 
   cmsaf_info <- switch(op,
-                       paste0("cmsaf::cmsaf.addc ", const, " added to ", var),
-                       paste0("cmsaf::cmsaf.subc ", const, " subtracted from ",
+                       paste0("cmsafops::cmsaf.addc ", const, " added to ", var),
+                       paste0("cmsafops::cmsaf.subc ", const, " subtracted from ",
                               var),
-                       paste0("cmsaf::cmsaf.mulc ", var, " multiplied by ",
+                       paste0("cmsafops::cmsaf.mulc ", var, " multiplied by ",
                               const),
-                       paste0("cmsaf::cmsaf.divc ", var, " divided by ", const)
+                       paste0("cmsafops::cmsaf.divc ", var, " divided by ", const)
   )
 
   ##### prepare output #####

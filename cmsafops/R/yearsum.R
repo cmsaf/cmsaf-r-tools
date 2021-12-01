@@ -87,7 +87,7 @@ yearsum <- function(var, infile, outfile, nc34 = 4, overwrite = FALSE, verbose =
   vars_data <- list(result = data_placeholder, time_bounds = time_bnds)
 
   nc_format <- get_nc_version(nc34)
-  cmsaf_info <- paste0("cmsaf::yearsum for variable ",
+  cmsaf_info <- paste0("cmsafops::yearsum for variable ",
                        file_data$variable$name)
 
   time_data <- time_bnds[1, ]

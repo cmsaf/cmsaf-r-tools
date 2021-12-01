@@ -37,10 +37,10 @@ yseasx_wrapper <- function(op, var, infile, outfile, nc34, overwrite, verbose, n
 
   cmsaf_info <- switch(
     op,
-    paste0("cmsaf::yseasmax for variable ", file_data$variable$name),
-    paste0("cmsaf::yseasmin for variable ", file_data$variable$name),
-    paste0("cmsaf::yseasmean for variable ", file_data$variable$name),
-    paste0("cmsaf::yseassd for variable ", file_data$variable$name)
+    paste0("cmsafops::yseasmax for variable ", file_data$variable$name),
+    paste0("cmsafops::yseasmin for variable ", file_data$variable$name),
+    paste0("cmsafops::yseasmean for variable ", file_data$variable$name),
+    paste0("cmsafops::yseassd for variable ", file_data$variable$name)
   )
 
   ##### prepare output #####

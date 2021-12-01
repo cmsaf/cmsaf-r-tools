@@ -112,7 +112,7 @@ mondaymean <- function(var, infile, outfile, nc34 = 4, overwrite = FALSE, verbos
     
     nc_format <- get_nc_version(nc34)
     
-    cmsaf_info <- paste0("cmsaf::mondaymean for variable ", file_data$variable$name)
+    cmsaf_info <- paste0("cmsafops::mondaymean for variable ", file_data$variable$name)
     
     time_data <- time_bnds[1, ]
     

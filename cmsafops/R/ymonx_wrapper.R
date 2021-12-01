@@ -34,11 +34,11 @@ ymonx_wrapper <- function(op, var, infile, outfile, nc34, overwrite, verbose,
 
   cmsaf_info <- switch(
     op,
-    paste0("cmsaf::ymonmax for variable ", file_data$variable$name),
-    paste0("cmsaf::ymonmin for variable ", file_data$variable$name),
-    paste0("cmsaf::ymonmean for variable ", file_data$variable$name),
-    paste0("cmsaf::ymonsum for variable ", file_data$variable$name),
-    paste0("cmsaf::ymonsd for variable ", file_data$variable$name)
+    paste0("cmsafops::ymonmax for variable ", file_data$variable$name),
+    paste0("cmsafops::ymonmin for variable ", file_data$variable$name),
+    paste0("cmsafops::ymonmean for variable ", file_data$variable$name),
+    paste0("cmsafops::ymonsum for variable ", file_data$variable$name),
+    paste0("cmsafops::ymonsd for variable ", file_data$variable$name)
   )
 
   time_data <- time_bnds[1, ]

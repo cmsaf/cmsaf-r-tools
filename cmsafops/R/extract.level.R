@@ -123,7 +123,7 @@ extract.level <- function(var, infile, outfile, level = 1, nc34 = 4,
 
   # create netcdf
   nc_format <- get_nc_version(nc34)
-  cmsaf_info <- (paste0("cmsaf::extract.level for variable ",
+  cmsaf_info <- (paste0("cmsafops::extract.level for variable ",
                         file_data$variable$name,
                         " and level ",
                         level))

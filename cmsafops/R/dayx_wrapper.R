@@ -45,14 +45,14 @@ dayx_wrapper <- function(op, var, infile, outfile, nc34, overwrite, p = NULL, ve
   
   cmsaf_info <- switch(
     op,
-    paste0("cmsaf::daymax for variable ", file_data$variable$name),
-    paste0("cmsaf::daymin for variable ", file_data$variable$name),
-    paste0("cmsaf::daymean for variable ", file_data$variable$name),
-    paste0("cmsaf::daysum for variable ", file_data$variable$name),
-    paste0("cmsaf::daysd for variable ", file_data$variable$name),
-    paste0("cmsaf::dayvar for variable ", file_data$variable$name),
-    paste0("cmsaf::daypctl with p = ", p, " for variable ", file_data$variable$name),
-    paste0("cmsaf::dayavg for variable ", file_data$variable$name),
+    paste0("cmsafops::daymax for variable ", file_data$variable$name),
+    paste0("cmsafops::daymin for variable ", file_data$variable$name),
+    paste0("cmsafops::daymean for variable ", file_data$variable$name),
+    paste0("cmsafops::daysum for variable ", file_data$variable$name),
+    paste0("cmsafops::daysd for variable ", file_data$variable$name),
+    paste0("cmsafops::dayvar for variable ", file_data$variable$name),
+    paste0("cmsafops::daypctl with p = ", p, " for variable ", file_data$variable$name),
+    paste0("cmsafops::dayavg for variable ", file_data$variable$name),
   )
   
   time_data <- time_bnds[1, ]

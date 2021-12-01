@@ -79,7 +79,7 @@ test_that("attributes are correct", {
   expect_equal(actual, -999)
 
   actual <- ncatt_get(file, "SIS", "cmsaf_info")$value
-  expect_equal(actual, "cmsaf::ymonmax for variable SIS")
+  expect_equal(actual, "cmsafops::ymonmax for variable SIS")
 
   global_attr <- ncatt_get(file, 0)
   expect_equal(length(global_attr), 2)
@@ -186,7 +186,7 @@ test_that("attributes are correct", {
   expect_equal(actual, -999)
 
   actual <- ncatt_get(file, "cfc", "cmsaf_info")$value
-  expect_equal(actual, "cmsaf::ymonmax for variable cfc")
+  expect_equal(actual, "cmsafops::ymonmax for variable cfc")
 
   global_attr <- ncatt_get(file, 0)
   expect_equal(length(global_attr), 2)
@@ -318,7 +318,7 @@ test_that("attributes are correct", {
   expect_equal(actual, -999)
 
   actual <- ncatt_get(file, "cfc", "cmsaf_info")$value
-  expect_equal(actual, "cmsaf::ymonmax for variable cfc")
+  expect_equal(actual, "cmsafops::ymonmax for variable cfc")
 
   global_attr <- ncatt_get(file, 0)
   expect_equal(length(global_attr), 2)

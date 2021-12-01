@@ -127,7 +127,7 @@ cmsaf.cat <- function(var, infiles, outfile, nc34 = 4, overwrite = FALSE, verbos
 
   # create netcdf
   nc_format <- get_nc_version(nc34)
-  cmsaf_info <- (paste0("cmsaf::cmsaf.cat for variable ",
+  cmsaf_info <- (paste0("cmsafops::cmsaf.cat for variable ",
                         file_data$variable$name))
 
   ##### prepare output #####

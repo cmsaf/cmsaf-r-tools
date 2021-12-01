@@ -37,12 +37,12 @@ runx_wrapper <- function(op, var, nts, infile, outfile, nc34, overwrite, verbose
   
     cmsaf_info <- switch(
       op,
-      paste0("cmsaf::runmin for variable ", file_data$variable$name),
-      paste0("cmsaf::runmax for variable ", file_data$variable$name),
-      paste0("cmsaf::runrange for variable ", file_data$variable$name),
-      paste0("cmsaf::runsum for variable ", file_data$variable$name),
-      paste0("cmsaf::runmean for variable ", file_data$variable$name),
-      paste0("cmsaf::runsd for variable ", file_data$variable$name),
+      paste0("cmsafops::runmin for variable ", file_data$variable$name),
+      paste0("cmsafops::runmax for variable ", file_data$variable$name),
+      paste0("cmsafops::runrange for variable ", file_data$variable$name),
+      paste0("cmsafops::runsum for variable ", file_data$variable$name),
+      paste0("cmsafops::runmean for variable ", file_data$variable$name),
+      paste0("cmsafops::runsd for variable ", file_data$variable$name),
     )
   
     time_data <- time_bnds[1, ]

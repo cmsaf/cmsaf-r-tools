@@ -97,7 +97,7 @@ selyear <- function(var, year = c(2000), infile, outfile, nc34 = 4,
 
   # create netcdf
   nc_format <- get_nc_version(nc34)
-  cmsaf_info <- (paste0("cmsaf::selyear for variable ", file_data$variable$name))
+  cmsaf_info <- (paste0("cmsafops::selyear for variable ", file_data$variable$name))
 
   ##### prepare output #####
   global_att_list <- names(file_data$global_att)

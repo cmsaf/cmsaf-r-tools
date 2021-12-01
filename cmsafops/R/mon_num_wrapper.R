@@ -50,9 +50,9 @@ mon_num_wrapper <- function(op, var, thld, infile, outfile, nc34, overwrite, ver
 
   cmsaf_info <- switch(
     op,
-    paste0("cmsaf::mon_num_above for variable ", file_data$variable$name),
-    paste0("cmsaf::mon_num_below for variable ", file_data$variable$name),
-    paste0("cmsaf::mon_num_equal for variable ", file_data$variable$name),
+    paste0("cmsafops::mon_num_above for variable ", file_data$variable$name),
+    paste0("cmsafops::mon_num_below for variable ", file_data$variable$name),
+    paste0("cmsafops::mon_num_equal for variable ", file_data$variable$name),
   )
 
   time_data <- time_bnds[1, ]

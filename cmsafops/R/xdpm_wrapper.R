@@ -33,8 +33,8 @@ xdpm_wrapper <- function(op, var, infile, outfile, nc34,
   nc_format <- get_nc_version(nc34)
 
   cmsaf_info <- switch(op,
-                       "div" = {"cmsaf::divdpm"},
-                       "mul" = {"cmsaf::muldpm"}
+                       "div" = {"cmsafops::divdpm"},
+                       "mul" = {"cmsafops::muldpm"}
   )
   cmsaf_info <- paste0(cmsaf_info, " for variable ", file_data$variable$name)
 

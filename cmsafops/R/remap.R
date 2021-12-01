@@ -201,7 +201,7 @@ remap <- function(var, infile1, infile2, outfile, method = "nearest", nc34 = 4,
     vars_data <- list(result = result)
   }
 
-  cmsaf_info <- (paste0("cmsaf::remap for variable ", file_data1$variable$name))
+  cmsaf_info <- (paste0("cmsafops::remap for variable ", file_data1$variable$name))
 
   ##### prepare output #####
   global_att_list <- names(file_data1$global_att)
