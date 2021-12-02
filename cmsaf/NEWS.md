@@ -6,6 +6,7 @@
 - For each selected 'Group of Operators' a small description text is shown
 - Added choice for border color
 - Added new color scheme 'larry'
+- Added warning if user directory does not exist
 
 ## 3.3.0
 

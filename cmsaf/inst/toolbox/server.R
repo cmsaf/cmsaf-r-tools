@@ -503,6 +503,9 @@ function(input, output, session) {
           outputDir <<- userDir
           # Create the output directory.
           if (!dir.exists(userDir)) {
+            cat("WARNING!","\n")
+            cat(paste(userDir," does not exist and will be created!", sep = ""),"\n")
+            cat("You might check the user directory in ~/CMSAF-Toolbox/config.conf","\n")
             dir.create(userDir)
           }
           setwd(userDir)
@@ -7207,7 +7210,7 @@ function(input, output, session) {
   })
 
   output$link <- renderUI({
-    url <- a("http://www.cmsaf.eu/R_toolbox", href = "http://www.cmsaf.eu/R_toolbox")
+    url <- a("https://www.cmsaf.eu/R_toolbox", href = "https://www.cmsaf.eu/R_toolbox")
     tagList("URL link:", url)
   })
 
