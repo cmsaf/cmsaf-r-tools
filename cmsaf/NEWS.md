@@ -1,5 +1,10 @@
 # Release notes for cmsaf
 
+## 3.3.2
+
+- Added new color schemes 'Rocket', 'Mako', 'Hawaii', 'Batlow',  
+  'albedo', 'albedo2'
+
 ## 3.3.1
 
 - Bug fix in monitor_climate: lon and lat were handed over with wrong name

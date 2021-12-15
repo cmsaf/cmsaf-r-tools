@@ -15,7 +15,7 @@ Description: The Satellite Application Facility on Climate Monitoring (CM SAF)
     Meteorological Satellites (EUMETSAT) and one of EUMETSATs Satellite Application 
     Facilities. The CM SAF contributes to the sustainable monitoring of the climate 
     system by providing essential climate variables related to the energy and water 
-    cycle of the atmosphere (<http://www.cmsaf.eu>). It is a joint cooperation of eight 
+    cycle of the atmosphere (<https://www.cmsaf.eu>). It is a joint cooperation of eight 
     National Meteorological and Hydrological Services.
     The 'cmsafops' R-package provides a collection of R-operators for the analysis and 
     manipulation of CM SAF NetCDF formatted data. Other CF conform NetCDF data with time, 

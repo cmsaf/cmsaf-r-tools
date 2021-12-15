@@ -122,6 +122,10 @@ seqm.pals[["Plasma"]]      <-
   c(-100,  100,  60, 100, 15, 95, 2.0, 0.9,  NA, 1) # viridis::plasma
 seqm.pals[["Inferno"]]     <-
   c(-100,   85,   0, 65,  1, 98, 1.1, 0.9, 120, 1) # viridis::inferno
+seqm.pals[["Rocket"]]      <- 
+  c(-70,   60,   0, 10,  2, 97, 0.8, 0.8, 130, 1) # viridis::rocket
+seqm.pals[["Mako"]]        <- 
+  c(325,  130,   0, 18,  2, 95, 1.0, 1.0,  70, 1) # viridis::mako
 
 seqm.pals[["Dark Mint"]]   <-
   c(240,  130,  30, 33, 25, 95, 1.0,  NA,  NA, 1) # CARTO: Dark Mint
@@ -204,6 +208,10 @@ seqm.pals[["Lajolla"]]     <-
   c(90,-20,  40,  5, 99,  5, 0.7, 0.8, 100, 1) # scico: lajolla
 seqm.pals[["Turku"]]       <-
   c(10,  120,  20,  0, 95,  1, 1.7, 0.8,  55, 1) # scico: turku
+seqm.pals[["Hawaii"]]      <- 
+  c(-30,  200,  70, 35, 30, 92, 0.3, 1.0,  75, 1) # scico: hawaii
+seqm.pals[["Batlow"]]      <- 
+  c(270,  -40,  35, 35, 12, 88, 0.6, 1.1,  75, 1) # scico: batlow
 
 dive.pals <- list()
 dive.pals[["Blue-Red"]]    <-
@@ -410,6 +418,10 @@ GetPaletteConfig <- function(gui = NULL) {
       "Inferno",
       "Lajolla",
       "Turku",
+	  "Rocket",
+	  "Mako",
+	  "Hawaii",
+	  "Batlow",
       # Base color maps (for shiny)
       "rainbow",
       "heat.colors",

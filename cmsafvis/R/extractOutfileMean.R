@@ -11,7 +11,7 @@ extractOutfileMean <- function(variable,
   if (verbose) {
     message("Prepare infile")
   }
-  infile_basename <- cmsafops:::get_basename(infile = infile, nc = nc)
+  infile_basename <- get_basename_vis(infile = infile, nc = nc)
   selperiod_tmp <- file.path(tempdir(), infile_basename)
   if(file.exists(selperiod_tmp)){
     unlink(selperiod_tmp)

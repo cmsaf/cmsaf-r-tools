@@ -21,7 +21,7 @@ calculate_climatology_outfile <- function(variable,
   climate_year_start = paste0(climate_year_start, "-01-01")
   climate_year_end = paste0(climate_year_end, "-12-01")
   
-  selperiod_tmp <- file.path(tempdir(), cmsafops:::get_basename(infile, nc =nc))
+  selperiod_tmp <- file.path(tempdir(), get_basename_vis(infile, nc =nc))
   if(file.exists(selperiod_tmp)){
     unlink(selperiod_tmp)
   }

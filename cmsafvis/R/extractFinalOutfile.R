@@ -14,7 +14,7 @@ extractFinalOutfile <- function(variable,
 
   year_to_analyze <- format(start_date, "%Y")
 
-  infile_basename <- cmsafops:::get_basename(infile = infile, nc = nc)
+  infile_basename <- get_basename_vis(infile = infile, nc = nc)
   selyearInfile <- add_ncdf_ext(
     construct_filename(
       tools::file_path_sans_ext(infile_basename),

@@ -9,7 +9,7 @@
 descriptionString <-
   "
 
-The CM SAF R TOOLBOX 3.3.1 -- 'Oh no, not again!'
+The CM SAF R TOOLBOX 3.3.2 -- 'Oh no, not again!'
 
 The intention of the CM SAF R Toolbox is to help you using
 CM SAF NetCDF formatted data
@@ -25,7 +25,7 @@ right in and analyze or visualize a .nc file.
 Suggestions for improvements and praise for the developers
 can be sent to contact.cmsaf@dwd.de.
 
-- Steffen Kothe - 2021-11-24 -"
+- Steffen Kothe - 2021-12-09 -"
 
 # Variable can be found in global.R
 if (isRunningLocally) {

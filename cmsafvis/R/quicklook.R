@@ -79,16 +79,20 @@ quicklook <- function(config,
   new_row <- data.frame("more", NA, NA, NA, NA, NA, NA, NA, NA, NA, 1)
   names(new_row) <- names(palettes)
   palettes <- rbind(palettes, new_row)
-  rownames(palettes)[75] <- "tim.colors"
+  rownames(palettes)[79] <- "tim.colors"
   
   palettes <- rbind(palettes, new_row)
-  rownames(palettes)[76] <- "sunny"
+  rownames(palettes)[80] <- "sunny"
   palettes <- rbind(palettes, new_row)
-  rownames(palettes)[77] <- "cloud_mask1"
+  rownames(palettes)[81] <- "cloud_mask1"
   palettes <- rbind(palettes, new_row)
-  rownames(palettes)[78] <- "cloud_mask2"
+  rownames(palettes)[82] <- "cloud_mask2"
   palettes <- rbind(palettes, new_row)
-  rownames(palettes)[79] <- "larry"
+  rownames(palettes)[83] <- "larry"
+  palettes <- rbind(palettes, new_row)
+  rownames(palettes)[84] <- "albedo"
+  palettes <- rbind(palettes, new_row)
+  rownames(palettes)[85] <- "albedo2"
   
   cloud_mask1 <- c("black", "transparent", "gray60", "white")
   cloud_mask2 <- c("black", "transparent", "gray60", "white", "pink")
@@ -197,6 +201,7 @@ quicklook <- function(config,
   logos <- c()
   slots <- c()
   invert <- c()
+  set_unit <- c()
   
   # define plotting area in case of polar projection
   area <- ""
@@ -222,6 +227,7 @@ quicklook <- function(config,
     plot_lim <- rbind(plot_lim, c(limits$min, limits$max))
     legends <- c(legends, configParams[[file_info$product_type]][[file_info$id]][[vars[i]]]$legend)
     slots <- c(slots, configParams[[file_info$product_type]][[file_info$id]][[vars[i]]]$slot)
+    set_unit <- c(set_unit, configParams[[file_info$product_type]][[file_info$id]][[vars[i]]]$unit)
     iinvert <- configParams[[file_info$product_type]][[file_info$id]][[vars[i]]]$invert_col
     if (is.null(iinvert)) {
       iinvert <- FALSE
@@ -244,6 +250,11 @@ quicklook <- function(config,
   for (k in seq_along(vars)) {
     varnames <- c(varnames, ncdf4::ncatt_get(nc, vars[k], "long_name")$value)
     units <- c(units, ncdf4::ncatt_get(nc, vars[k], "units")$value)
+    if (!is.null(set_unit)){
+      if (!is.na(set_unit[k])){
+        units[k] <- set_unit[k]
+      }
+    }
   }
   
   # check lon lat names (not elegant, but should work for now)

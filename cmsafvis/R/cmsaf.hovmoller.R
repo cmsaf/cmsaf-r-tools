@@ -69,8 +69,8 @@ cmsaf.hovmoller <- function(var1, infile1, var2, infile2, outfile1, outfile2, pl
     # regex1 <- regmatches(infile1, regexpr(pattern, infile1))
     # regex2 <- regmatches(infile2, regexpr(pattern, infile2))
     # Same as above and works for URLs
-    regex1 <- cmsafops:::get_basename(infile1, nc = nc1)
-    regex2 <- cmsafops:::get_basename(infile2, nc = nc2)
+    regex1 <- get_basename_vis(infile1, nc = nc1)
+    regex2 <- get_basename_vis(infile2, nc = nc2)
     
     graphics::par(cex = 1.2)
     

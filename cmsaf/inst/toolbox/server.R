@@ -6462,13 +6462,19 @@ function(input, output, session) {
   new_row <- data.frame("more", NA, NA, NA, NA, NA, NA, NA, NA, NA, 1)
   names(new_row) <- names(palettes)
   palettes <- rbind(palettes, new_row)
-  rownames(palettes)[75] <- "tim.colors"
+  rownames(palettes)[79] <- "tim.colors"
   
   palettes <- rbind(palettes, new_row)
-  rownames(palettes)[76] <- "larry"
+  rownames(palettes)[80] <- "larry"
+  
+  palettes <- rbind(palettes, new_row)
+  rownames(palettes)[81] <- "albedo"
+  
+  palettes <- rbind(palettes, new_row)
+  rownames(palettes)[82] <- "albedo2"
 
   palettes <- rbind(palettes, new_row)
-  rownames(palettes)[77] <- "sunny"
+  rownames(palettes)[83] <- "sunny"
 
   x <- list()
   for (i in seq_len(nrow(palettes))) {
@@ -7185,7 +7191,7 @@ function(input, output, session) {
     cat("This tool helps you to visualize 1D-timeseries and 2D-maps.", "\n")
     cat("\n")
     cat("This version ('Oh no, not again!') was tested with the cmsaf", "\n")
-    cat("R-package in version 3.3.1.", "\n")
+    cat("R-package in version 3.3.2.", "\n")
     cat("\n")
     cat("Suggestions for improvements and praise for the developers", "\n")
     cat("can be send to contact.cmsaf@dwd.de.", "\n")

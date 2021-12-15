@@ -120,7 +120,7 @@ in the \link[cmsaf:cmsaf]{cmsaf package}, which helps to apply 'cmsafops' operat
 }
 
 \references{
-\url{https://www.cmsaf.eu/R_toolbox}
+\url{http://www.cmsaf.eu/R_toolbox}
 
 Kothe, S.; Hollmann, R.; Pfeifroth, U.; Träger-Chatterjee, C.; Trentmann, J.
 The CM SAF R Toolbox—A Tool for the Easy Usage of Satellite-Based Climate

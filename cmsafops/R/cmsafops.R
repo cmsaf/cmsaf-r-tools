@@ -89,7 +89,7 @@
 #'
 #'  Contact: CM SAF Team \email{contact.cmsaf@dwd.de}
 #'
-#'@references \url{https://www.cmsaf.eu/R_toolbox}
+#'@references \url{http://www.cmsaf.eu/R_toolbox}
 #'
 #'  Kothe, S.; Hollmann, R.; Pfeifroth, U.; Träger-Chatterjee, C.; Trentmann, J.
 #'  The CM SAF R Toolbox—A Tool for the Easy Usage of Satellite-Based Climate
