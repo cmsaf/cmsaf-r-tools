@@ -15,6 +15,7 @@
 warming_stripes_plot <- function(variable = NULL,
                                  infile = NULL, 
                                  selected_number = 1,
+                                 stripe_color = 1,
                                  analyze_method = TRUE,
                                  temp_dir = tempdir(),
                                  out_dir = getwd(),
@@ -176,7 +177,9 @@ warming_stripes_plot <- function(variable = NULL,
   }
   
   country_name <- get_country_name(country_code)
-  title <- paste0(variable, " Stripes Plot: ", country_name, " (", climate_year_start, " - ", substring(end_date,1,4), ")")
+  # title <- paste0(variable, " Stripes Plot: ", country_name, " (", climate_year_start, " - ", substring(end_date,1,4), ")")
+  title <- paste0(variable, " change in ", country_name, " since XXXX (Reference: ", 
+                  climate_year_start, " - ", substring(end_date,1,4), ")")
   
   plot_warming_stripes(
     variable = variable,
@@ -193,5 +196,6 @@ warming_stripes_plot <- function(variable = NULL,
     pointsTF = pointsTF,
     lineTF = lineTF, 
     title = title,
+    stripe_color = stripe_color,
     verbose = TRUE)
 }

@@ -91,7 +91,20 @@ mon.anomaly <- function(var, infile, outfile, nc34 = 4, overwrite = FALSE, verbo
   time_data <- unique(dates)
   unit_vec <- unlist(strsplit(file_data$time_info$units, split = " "))
   snc_index <- which(unit_vec == "since")
-  time_data <- as.numeric(difftime(time_data, as.Date(unit_vec[snc_index + 1]), units = unit_vec[snc_index - 1]))
+  
+  # check time unit
+  unit_ref <- switch(
+    substr(toupper(unit_vec[snc_index - 1]), 1, 3),
+    "MIN" = "mins",
+    "SEC" = "secs",
+    "HOU" = "hours",
+    "DAY" = "days",
+    "WEE" = "weeks",
+    "MON" = "months",
+    "auto"
+  )
+  
+  time_data <- as.numeric(difftime(time_data, as.Date(unit_vec[snc_index + 1]), units = unit_ref))
 
   testnum <- mul
   test_count <- 0

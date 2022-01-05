@@ -83,7 +83,7 @@
 #'unlink(c(file.path(tempdir(),"CMSAF_example_file.nc"), file.path(tempdir(),"A.csv"), 
 #'  file.path(tempdir(),"B.csv")))
 selpoint.multi <- function(var, infile, path, pattern, outpath, lon1, lat1,
-                           station_names, format = "nc", nc34 = 4, verbose = FALSE,
+                           station_names = NULL, format = "nc", nc34 = 4, verbose = FALSE,
                            nc = NULL) {
   check_variable(var)
 
@@ -182,7 +182,7 @@ selpoint.multi <- function(var, infile, path, pattern, outpath, lon1, lat1,
         result <- ncvar_get(id, file_data$variable$name, start = c(lon_limit, lat_limit, 1), count = c(1, 1, -1))
         if (is.null(nc)) nc_close(id)
         result_data <- rbind(result_data, result)
-        }
+      }
 
     } # end for
   }else{
@@ -236,7 +236,7 @@ selpoint.multi <- function(var, infile, path, pattern, outpath, lon1, lat1,
     unit_ref <- unlist(strsplit(file_data$time_info$units, split = " "))[1]
 
     # check reference time unit
-    unit_ref_test <- switch(
+    unit_ref <- switch(
       substr(toupper(unit_ref), 1, 3),
       "MIN" = "mins",
       "SEC" = "secs",
@@ -273,7 +273,7 @@ selpoint.multi <- function(var, infile, path, pattern, outpath, lon1, lat1,
 	  dum_time <- as.numeric(ncvar_get(id, TIME_NAMES$DEFAULT))
 	  dum_t_units <- ncatt_get(id, TIME_NAMES$DEFAULT, ATTR_NAMES$UNITS)$value
     dt_dum <- get_time(dum_t_units, dum_time)
-	  dum_time <- as.integer(difftime(dt_dum, dt_ref, units = c(unit_ref)))
+	  dum_time <- as.numeric(difftime(dt_dum, dt_ref, units = c(unit_ref)))
 	  
       time_sorting <- append(time_sorting, dum_time)
       result_data <- rbind(result_data, dummy)
@@ -305,7 +305,8 @@ selpoint.multi <- function(var, infile, path, pattern, outpath, lon1, lat1,
 
     # create filename
     index <- 1
-    if (!missing(station_names)) {
+   # if (!missing(station_names)) {
+     if (!is.null(station_names)) {
       if (length(station_names) == length(lon1)) {
         outfile <- file.path(outpath, paste0(station_names[i], ".", format))
       } else {

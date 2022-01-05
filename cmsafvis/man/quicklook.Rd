@@ -49,3 +49,18 @@ A jpeg file with the same name as the original NetCDF file.
 The function creates a plot of the variables in NetCDF file(s) specified in the config file.
 Only NetCDF files that conform to the \href{https://www.cmsaf.eu/EN/Products/NamingConvention/Naming_Convention_node.html}{CM SAF naming convention} are supported.
 }
+\details{
+This operator can be applied using a configuration file (quicklook_config.yml).
+An example config file can be found in the extdata folder of this package. The following
+parameters can be defined:
+\itemize{
+\item{logo: }{color / black}
+\item{slot: }{numeric (e.g., 13)}
+\item{invert_col: }{TRUE / FALSE}
+\item{Dataset: }{character (e.g., ICDR Seviri Radiation)}
+\item{limits: }{min: numeric; max: numeric}
+\item{legend: }{TRUE / FALSE}
+\item{colorscale: }{character (e.g., Viridis)}
+\item{unit: }{character (e.g., Percent / '\%')}
+}
+}

@@ -4,6 +4,8 @@
 
 - Added new color schemes 'Rocket', 'Mako', 'Hawaii', 'Batlow',  
   'albedo', 'albedo2'
+- Fix issue when user directory is changed
+- Additional color options for stripe plots
 
 ## 3.3.1
 

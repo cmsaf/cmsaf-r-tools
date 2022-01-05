@@ -10,7 +10,8 @@
           max: 100
         legend: TRUE
         colorscale: Blues
-        logo: color
+        logo: black
+        unit: "%"
     CFCmm221AVPOS01:
       Dataset: CLARA-2, AVHRR on polar orbiting satellites
       CFC:
@@ -19,8 +20,8 @@
           max: 100
         legend: TRUE
         colorscale: Blues
-        logo: color
-        polar: TRUE
+        logo: black
+        unit: "%"
     CFCmm219AVPOS01:
       Dataset: CLARA-2, AVHRR on polar orbiting satellites
       CFC:
@@ -29,7 +30,8 @@
           max: 100
         legend: TRUE
         colorscale: Blues
-        logo: color
+        logo: black
+        unit: "%"
     CFCmm400AVPOS01:
       Dataset: ICDR AVHRR
       CFC:
@@ -38,7 +40,8 @@
           max: 100
         legend: TRUE
         colorscale: Blues
-        logo: color
+        logo: black
+        unit: "%"
     CFCdm410SVMSG01:
       Dataset: ICDR Seviri Clouds
       CFC:
@@ -47,7 +50,7 @@
           max: 100
         legend: TRUE
         colorscale: Blues
-        logo: color
+        logo: black
     CFCmd410SVMSG01:
       Dataset: ICDR Seviri Clouds
       CFC_MMDC:
@@ -56,7 +59,8 @@
           max: 100
         legend: TRUE
         colorscale: Blues
-        logo: color
+        logo: black
+        slot: 13
     CFCmm410SVMSG01:
       Dataset: ICDR Seviri Clouds
       CFC:
@@ -65,7 +69,7 @@
           max: 100
         legend: TRUE
         colorscale: Blues
-        logo: color
+        logo: black
     CFCdm400AVPOS01:
       Dataset: ICDR AVHRR
       CFC:
@@ -74,7 +78,8 @@
           max: 100
         legend: TRUE
         colorscale: Blues
-        logo: color
+        logo: black
+        unit: "%"
     CFCmd0011000101:
       Dataset: CM SAF COMET
       CFC:
@@ -83,7 +88,8 @@
           max: 100
         legend: TRUE
         colorscale: Blues
-        logo: color
+        logo: black
+        slot: 13
     CFCmm0011000101:
       Dataset: CM SAF COMET
       CFC:
@@ -92,7 +98,7 @@
           max: 100
         legend: TRUE
         colorscale: Blues
-        logo: color
+        logo: black
     CFCdm0011000101:
       Dataset: CM SAF COMET
       CFC_MMDC:
@@ -101,7 +107,7 @@
           max: 100
         legend: TRUE
         colorscale: Blues
-        logo: color
+        logo: black
     CFCmm002AVN0701:
       Dataset: CLARA-A2, AVHRR on NOAA-07
       CFC:
@@ -110,7 +116,8 @@
           max: 100
         legend: TRUE
         colorscale: Blues
-        logo: color
+        logo: black
+        unit: "%"
     CFCdm002AVN0701:
       Dataset: CLARA-A2, AVHRR on NOAA-07
       CFC:
@@ -119,7 +126,8 @@
           max: 100
         legend: TRUE
         colorscale: Blues
-        logo: color
+        logo: black
+        unit: "%"
     CFCmm002AVN0901:
       Dataset: CLARA-A2, AVHRR on NOAA-09
       CFC:
@@ -128,7 +136,8 @@
           max: 100
         legend: TRUE
         colorscale: Blues
-        logo: color
+        logo: black
+        unit: "%"
     CFCdm002AVN0901:
       Dataset: CLARA-A2, AVHRR on NOAA-09
       CFC:
@@ -137,7 +146,8 @@
           max: 100
         legend: TRUE
         colorscale: Blues
-        logo: color
+        logo: black
+        unit: "%"
     CFCmm002AVN1101:
       Dataset: CLARA-A2, AVHRR on NOAA-11
       CFC:
@@ -146,7 +156,8 @@
           max: 100
         legend: TRUE
         colorscale: Blues
-        logo: color
+        logo: black
+        unit: "%"
     CFCdm002AVN1101:
       Dataset: CLARA-A2, AVHRR on NOAA-11
       CFC:
@@ -155,7 +166,8 @@
           max: 100
         legend: TRUE
         colorscale: Blues
-        logo: color
+        logo: black
+        unit: "%"
     CFCmm002AVN1201:
       Dataset: CLARA-A2, AVHRR on NOAA-12
       CFC:
@@ -164,7 +176,8 @@
           max: 100
         legend: TRUE
         colorscale: Blues
-        logo: color
+        logo: black
+        unit: "%"
     CFCdm002AVN1201:
       Dataset: CLARA-A2, AVHRR on NOAA-12
       CFC:
@@ -173,7 +186,8 @@
           max: 100
         legend: TRUE
         colorscale: Blues
-        logo: color
+        logo: black
+        unit: "%"
     CFCmm002AVN1401:
       Dataset: CLARA-A2, AVHRR on NOAA-14
       CFC:
@@ -182,7 +196,8 @@
           max: 100
         legend: TRUE
         colorscale: Blues
-        logo: color
+        logo: black
+        unit: "%"
     CFCdm002AVN1401:
       Dataset: CLARA-A2, AVHRR on NOAA-14
       CFC:
@@ -191,7 +206,8 @@
           max: 100
         legend: TRUE
         colorscale: Blues
-        logo: color
+        logo: black
+        unit: "%"
     CFCmm002AVN1501:
       Dataset: CLARA-A2, AVHRR on NOAA-15
       CFC:
@@ -200,7 +216,8 @@
           max: 100
         legend: TRUE
         colorscale: Blues
-        logo: color
+        logo: black
+        unit: "%"
     CFCdm002AVN1501:
       Dataset: CLARA-A2, AVHRR on NOAA-15
       CFC:
@@ -209,7 +226,8 @@
           max: 100
         legend: TRUE
         colorscale: Blues
-        logo: color
+        logo: black
+        unit: "%"
     CFCmm002AVN1601:
       Dataset: CLARA-A2, AVHRR on NOAA-16
       CFC:
@@ -218,7 +236,8 @@
           max: 100
         legend: TRUE
         colorscale: Blues
-        logo: color
+        logo: black
+        unit: "%"
     CFCdm002AVN1601:
       Dataset: CLARA-A2, AVHRR on NOAA-16
       CFC:
@@ -227,7 +246,8 @@
           max: 100
         legend: TRUE
         colorscale: Blues
-        logo: color
+        logo: black
+        unit: "%"
     CFCmm002AVN1701:
       Dataset: CLARA-A2, AVHRR on NOAA-17
       CFC:
@@ -236,7 +256,8 @@
           max: 100
         legend: TRUE
         colorscale: Blues
-        logo: color
+        logo: black
+        unit: "%"
     CFCdm002AVN1701:
       Dataset: CLARA-A2, AVHRR on NOAA-17
       CFC:
@@ -245,7 +266,8 @@
           max: 100
         legend: TRUE
         colorscale: Blues
-        logo: color
+        logo: black
+        unit: "%"
     CFCmm002AVN1801:
       Dataset: CLARA-A2, AVHRR on NOAA-18
       CFC:
@@ -254,7 +276,8 @@
           max: 100
         legend: TRUE
         colorscale: Blues
-        logo: color
+        logo: black
+        unit: "%"
     CFCdm002AVN1801:
       Dataset: CLARA-A2, AVHRR on NOAA-18
       CFC:
@@ -263,7 +286,8 @@
           max: 100
         legend: TRUE
         colorscale: Blues
-        logo: color
+        logo: black
+        unit: "%"
     CFCmm002AVN1901:
       Dataset: CLARA-A2, AVHRR on NOAA-19
       CFC:
@@ -272,7 +296,8 @@
           max: 100
         legend: TRUE
         colorscale: Blues
-        logo: color
+        logo: black
+        unit: "%"
     CFCdm002AVN1901:
       Dataset: CLARA-A2, AVHRR on NOAA-19
       CFC:
@@ -281,7 +306,8 @@
           max: 100
         legend: TRUE
         colorscale: Blues
-        logo: color
+        logo: black
+        unit: "%"
     CFCmm002AVMEA01:
       Dataset: CLARA-A2, AVHRR on METOP-A
       CFC:
@@ -290,7 +316,8 @@
           max: 100
         legend: TRUE
         colorscale: Blues
-        logo: color
+        logo: black
+        unit: "%"
     CFCdm002AVMEA01:
       Dataset: CLARA-A2, AVHRR on METOP-A
       CFC:
@@ -299,7 +326,8 @@
           max: 100
         legend: TRUE
         colorscale: Blues
-        logo: color
+        logo: black
+        unit: "%"
     CFCmm002AVMEB01:
       Dataset: CLARA-A2, AVHRR on METOP-B
       CFC:
@@ -308,7 +336,8 @@
           max: 100
         legend: TRUE
         colorscale: Blues
-        logo: color
+        logo: black
+        unit: "%"
     CFCdm002AVMEB01:
       Dataset: CLARA-A2, AVHRR on METOP-B
       CFC:
@@ -317,7 +346,9 @@
           max: 100
         legend: TRUE
         colorscale: Blues
-        logo: color    
+        logo: black
+        unit: "%"
+        
     CFCmm0010016001:
       Dataset: CLAAS-1
       CFC:
@@ -326,7 +357,7 @@
           max: 100
         legend: TRUE
         colorscale: Blues
-        logo: color
+        logo: black
     CFCdm0010016001:
       Dataset: CLAAS-1
       CFC:
@@ -335,7 +366,7 @@
           max: 100
         legend: TRUE
         colorscale: Blues
-        logo: color
+        logo: black
     CFCmm003SVMSG01:
       Dataset: CLAAS-2
       CFC:
@@ -344,7 +375,7 @@
           max: 100
         legend: TRUE
         colorscale: Blues
-        logo: color
+        logo: black
     CFCdm003SVMSG01:
       Dataset: CLAAS-2
       CFC:
@@ -353,7 +384,7 @@
           max: 100
         legend: TRUE
         colorscale: Blues
-        logo: color
+        logo: black
     CFCmm002AVPOSE1:
       Dataset: CLARA-A2.1, AVHRR on polar orbiting satellites
       CFC:
@@ -362,7 +393,8 @@
           max: 100
         legend: TRUE
         colorscale: Blues
-        logo: color
+        logo: black
+        unit: "%"
     CFCdm002AVPOSE1:
       Dataset: CLARA-A2.1, AVHRR on polar orbiting satellites
       CFC:
@@ -371,7 +403,8 @@
           max: 100
         legend: TRUE
         colorscale: Blues
-        logo: color
+        logo: black
+        unit: "%"
   CFL:
   CFS:
   CMA:
@@ -383,7 +416,7 @@
           max: 3
         legend: FALSE
         colorscale: clouds
-        logo: color
+        logo: black
     CMAin003SVMSGE1:
       Dataset: CLAAS-2
       CMA:
@@ -392,7 +425,7 @@
           max: 3
         legend: FALSE
         colorscale: clouds
-        logo: color
+        logo: black
   COT:
   CPH:
     CPHmm400AVPOS01:
@@ -403,7 +436,8 @@
           max: 100
         legend: TRUE
         colorscale: Blues
-        logo: color
+        logo: black
+        unit: "%"
     CPHdm400AVPOS01:
       Dataset: ICDR AVHRR
       CPH:
@@ -412,7 +446,8 @@
           max: 100
         legend: TRUE
         colorscale: Blues
-        logo: color
+        logo: black
+        unit: "%"
   CPP:
 # CTH:
   CTO:
@@ -424,14 +459,14 @@
           max: 340
         legend: TRUE
         colorscale: PinkYl
-        logo: color
+        logo: black
       CTH:
         limits:
           min: 1
           max: 18600
         legend: TRUE
         colorscale: Greens
-        logo: color
+        logo: black
         invert_col: TRUE
       CTP:
         limits:
@@ -439,7 +474,7 @@
           max: 1000
         legend: TRUE
         colorscale: Purples
-        logo: color 
+        logo: black 
     CTOdm410SVMSG01:
       Dataset: ICDR Seviri Clouds
       CTT:
@@ -448,14 +483,14 @@
           max: 300
         legend: TRUE
         colorscale: terrain.colors
-        logo: color
+        logo: black
       CTH:
         limits:
           min: 1
           max: 18600
         legend: TRUE
         colorscale: terrain.colors
-        logo: color
+        logo: black
         invert_col: TRUE
       CTP:
         limits:
@@ -463,7 +498,7 @@
           max: 1000
         legend: TRUE
         colorscale: terrain.colors
-        logo: color 
+        logo: black 
     CTOdm400AVPOS01:
       Dataset: ICDR AVHRR
       CTT:
@@ -472,14 +507,14 @@
           max: 300
         legend: TRUE
         colorscale: terrain.colors
-        logo: color
+        logo: black
       CTH:
         limits:
           min: 1
           max: 18600
         legend: TRUE
         colorscale: terrain.colors
-        logo: color
+        logo: black
         invert_col: TRUE
       CTP:
         limits:
@@ -487,7 +522,7 @@
           max: 1000
         legend: TRUE
         colorscale: terrain.colors
-        logo: color
+        logo: black
     CTOmd410SVMSG01:
       Dataset: ICDR Seviri Clouds
       CTT_MMDC:
@@ -496,7 +531,7 @@
           max: 300
         legend: TRUE
         colorscale: terrain.colors
-        logo: color
+        logo: black
         slot: 13
       CTH_MMDC:
         limits:
@@ -504,7 +539,7 @@
           max: 18600
         legend: TRUE
         colorscale: terrain.colors
-        logo: color
+        logo: black
         slot: 13
         invert_col: TRUE
       CTP_MMDC:
@@ -513,7 +548,7 @@
           max: 1000
         legend: TRUE
         colorscale: terrain.colors
-        logo: color
+        logo: black
         slot: 13
     CTOmm410SVMSG01:
       Dataset: ICDR Seviri Clouds
@@ -523,14 +558,14 @@
           max: 300
         legend: TRUE
         colorscale: terrain.colors
-        logo: color
+        logo: black
       CTH:
         limits:
           min: 1
           max: 18600
         legend: TRUE
         colorscale: terrain.colors
-        logo: color
+        logo: black
         invert_col: TRUE
       CTP:
         limits:
@@ -538,7 +573,7 @@
           max: 1000
         legend: TRUE
         colorscale: terrain.colors
-        logo: color
+        logo: black
     CTOmm400AVPOS01:
       Dataset: ICDR AVHRR
       CTT:
@@ -547,14 +582,14 @@
           max: 300
         legend: TRUE
         colorscale: terrain.colors
-        logo: color
+        logo: black
       CTH:
         limits:
           min: 1
           max: 18600
         legend: TRUE
         colorscale: terrain.colors
-        logo: color
+        logo: black
         invert_col: TRUE
       CTP:
         limits:
@@ -562,7 +597,7 @@
           max: 1000
         legend: TRUE
         colorscale: terrain.colors
-        logo: color
+        logo: black
 # CTP:      
 # CTT:
   CTX:
@@ -574,21 +609,21 @@
           max: 10000
         legend: TRUE
         colorscale: Purples
-        logo: color
+        logo: black
       CTT:
         limits:
           min: 150
           max: 340
         legend: TRUE
         colorscale: PinkYl
-        logo: color
+        logo: black
       CTH:
         limits:
           min: 1
           max: 18600
         legend: TRUE
         colorscale: Greens
-        logo: color
+        logo: black
 # CTY:
   CWP:
   DAL:
@@ -601,7 +636,7 @@
           max: 750
         legend: TRUE
         colorscale: YlOrRd
-        logo: color
+        logo: black
     DNIin4101000101:
       Dataset: ICDR Seviri Radiation
       DNI:
@@ -610,7 +645,7 @@
           max: 1200
         legend: TRUE
         colorscale: YlOrRd
-        logo: color
+        logo: black
         slot: 25
     DNImm4101000101:
       Dataset: ICDR Seviri Radiation
@@ -620,7 +655,7 @@
           max: 500
         legend: TRUE
         colorscale: YlOrRd
-        logo: color
+        logo: black
   EMP:
     EMPmm002SCPOS01:
       Dataset: HOAPS, version 4.0
@@ -630,7 +665,7 @@
           max: 7
         legend: TRUE
         colorscale: Blue-Red 3
-        logo: color
+        logo: black
   EVA:
     EVAmm002SCPOS01:
       Dataset: HOAPS, version 4.0
@@ -639,8 +674,9 @@
           min: 0
           max: 17.5
         legend: TRUE
-        colorscale: Blues 3
-        logo: color
+        colorscale: Reds
+        invert_col: TRUE
+        logo: black
   FTH:
     FTHmm0010044801:
       Dataset: CM SAF FTH
@@ -650,7 +686,8 @@
           max: 100
         legend: TRUE
         colorscale: Blues 3
-        logo: color
+        invert_col: TRUE
+        logo: black
   HLW:
   HSH:
   HTW:
@@ -662,7 +699,8 @@
           max: 70
         legend: TRUE
         colorscale: Blues
-        logo: color
+        invert_col: TRUE
+        logo: black
   IWP:
     IWPmm400AVPOS01:
       Dataset: ICDR AVHRR
@@ -672,7 +710,7 @@
           max: 0.4
         legend: TRUE
         colorscale: Plasma
-        logo: color
+        logo: black
     IWPdm400AVPOS01:
       Dataset: ICDR AVHRR
       IWP:
@@ -681,7 +719,7 @@
           max: 0.5
         legend: TRUE
         colorscale: Plasma
-        logo: color
+        logo: black
   JCH:
     JCHmh002AVPOS01:
       Dataset: CLARA-A2.1, AVHRR on polar orbiting satellites
@@ -691,7 +729,7 @@
           max: 100
         legend: TRUE
         colorscale: Blues
-        logo: color
+        logo: black
   LHF:
     LHFmm002SCPOS01:
       Dataset: HOAPS, version 4.0
@@ -700,8 +738,9 @@
           min: 0
           max: 350
         legend: TRUE
-        colorscale: Blues 
-        logo: color
+        colorscale: Reds 
+        invert_col: TRUE
+        logo: black
   LTP:
   LTS:
   LWP:
@@ -713,7 +752,7 @@
           max: 0.4
         legend: TRUE
         colorscale: Plasma
-        logo: color
+        logo: black
     LWPdm400AVPOS01:
       Dataset: ICDR AVHRR
       LWP:
@@ -722,7 +761,7 @@
           max: 0.5
         legend: TRUE
         colorscale: Plasma
-        logo: color
+        logo: black
     LWPmm002AVPOS01:
       Dataset: CLARA-A2, AVHRR on polar orbiting satellites
       LWP:
@@ -731,7 +770,7 @@
           max: 0.4
         legend: TRUE
         colorscale: Plasma
-        logo: color
+        logo: black
     LWPdm002AVPOS01:
       Dataset: CLARA-A2, AVHRR on polar orbiting satellites
       LWP:
@@ -740,7 +779,7 @@
           max: 0.5
         legend: TRUE
         colorscale: Plasma
-        logo: color
+        logo: black
   NSH:
     NSHmm002SCPOS01:
       Dataset: HOAPS, version 4.0
@@ -750,7 +789,7 @@
           max: 25
         legend: TRUE
         colorscale: Blues
-        logo: color
+        logo: black
     
   PRE:
     PREmm002SCPOS01:
@@ -761,26 +800,28 @@
           max: 60
         legend: TRUE
         colorscale: Oslo
-        logo: color
+        logo: black
   SAL:
     SALmm400AVPOS01:
       Dataset: ICDR AVHRR
       SAL:
         limits:
           min: 0
-          max: 120
+          max: 100
         legend: TRUE
-        colorscale: topo.colors
-        logo: color
+        colorscale: albedo
+        logo: black
+        unit: "%"
     SALpm400AVPOS01:
       Dataset: ICDR AVHRR
       SAL:
         limits:
           min: 0
-          max: 120
+          max: 100
         legend: TRUE
-        colorscale: topo.colors
-        logo: color
+        colorscale: albedo
+        logo: black
+        unit: "%"
   SDL:
   SDU:
     SDUds4001000101:
@@ -791,7 +832,7 @@
           max: 20
         legend: TRUE
         colorscale: Plasma
-        logo: color
+        logo: black
     SDUds4011000101:
       Dataset: ICDR Seviri Radiation
       SDU:
@@ -800,7 +841,7 @@
           max: 20
         legend: TRUE
         colorscale: Plasma
-        logo: color
+        logo: black
     SDUms4011000101:
       Dataset: ICDR Seviri Radiation
       SDU:
@@ -809,7 +850,7 @@
           max: 400
         legend: TRUE
         colorscale: Plasma
-        logo: color
+        logo: black
   SID:
     SIDdm4101000101:
       Dataset: ICDR Seviri Radiation
@@ -819,7 +860,7 @@
           max: 450
         legend: TRUE
         colorscale: YlOrRd
-        logo: color
+        logo: black
     SIDin4101000101:
       Dataset: ICDR Seviri Radiation
       SID:
@@ -828,7 +869,7 @@
           max: 1200
         legend: TRUE
         colorscale: YlOrRd
-        logo: color
+        logo: black
         slot: 25
     SIDmm4101000101:
       Dataset: ICDR Seviri Radiation
@@ -838,7 +879,7 @@
           max: 450
         legend: TRUE
         colorscale: YlOrRd
-        logo: color
+        logo: black
   SIS:
     SISdm4101000101:
       Dataset: ICDR Seviri Radiation
@@ -848,7 +889,7 @@
           max: 450
         legend: TRUE
         colorscale: Viridis
-        logo: color
+        logo: black
     SISin4101000101:
       Dataset: ICDR Seviri Radiation
       SIS:
@@ -857,7 +898,7 @@
           max: 1200
         legend: TRUE
         colorscale: Viridis
-        logo: color
+        logo: black
         slot: 25
     SISmm4101000101:
       Dataset: ICDR Seviri Radiation
@@ -867,7 +908,7 @@
           max: 450
         legend: TRUE
         colorscale: Viridis
-        logo: color
+        logo: black
     SISmm400AVPOS01:
       Dataset: ICDR AVHRR
       SIS:
@@ -876,7 +917,7 @@
           max: 450
         legend: TRUE
         colorscale: Viridis
-        logo: color
+        logo: black
     SISdm400AVPOS01:
       Dataset: ICDR AVHRR
       SIS:
@@ -885,7 +926,7 @@
           max: 450
         legend: TRUE
         colorscale: Viridis
-        logo: color
+        logo: black
   SNL:
   SNS:
   SOL:
@@ -897,7 +938,7 @@
           max: 700
         legend: TRUE
         colorscale: Viridis
-        logo: color
+        logo: black
     SOLdm002AVPOS01:
       Dataset: CLARA-A2, AVHRR on polar orbiting satellites
       SOL:
@@ -906,7 +947,7 @@
           max: 800
         legend: TRUE
         colorscale: Viridis
-        logo: color
+        logo: black
   SRB:
   SRI:
   SWS:
@@ -918,7 +959,7 @@
           max: 17.5
         legend: TRUE
         colorscale: Blue-Red
-        logo: color
+        logo: black
   TET:
   TIS:
   TRS:
@@ -931,18 +972,21 @@
           max: 100
         legend: TRUE
         colorscale: Blues
-        logo: color
+        invert_col: TRUE
+        logo: black
       UTH_MEAN_ASCEND_DESCEND:
         limits:
           min: 0
           max: 100
         legend: TRUE
         colorscale: Blues
-        logo: color
+        invert_col: TRUE
+        logo: black
       UTH_MEAN_DESCEND:
         limits:
           min: 0
           max: 100
         legend: TRUE
         colorscale: Blues
-        logo: color
+        invert_col: TRUE
+        logo: black

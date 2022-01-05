@@ -198,7 +198,7 @@ operators[["Climate Analysis"]] <- c("Absolute map" = "absolute_map",
                                      "Climatology map" = "climatology_map",
                                      "Fieldmean plot" = "fieldmean_plot",
                                      "Fieldmean and anomaly map" = "fieldmean_and_anomaly_map",
-                                     "Warming Stripes Plot" = "warming_stripes_plot",
+                                     "Stripes Plot" = "warming_stripes_plot",
                                      "Time Series Plot" = "time_series_plot",
                                      "Trend Plot" = "trend_plot"
 )

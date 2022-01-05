@@ -12,7 +12,7 @@ selpoint.multi(
   outpath,
   lon1,
   lat1,
-  station_names,
+  station_names = NULL,
   format = "nc",
   nc34 = 4,
   verbose = FALSE,

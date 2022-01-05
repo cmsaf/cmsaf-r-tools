@@ -3,7 +3,7 @@
 # You should not use this R-script on its own!
 #
 # Have fun with the CM SAF R TOOLBOX!
-#                                              (Steffen Kothe / CM SAF 2021-10-14)
+#                                              (Steffen Kothe / CM SAF 2021-12-23)
 #__________________________________________________________________________________
 
 # Function to compute first of month
@@ -639,6 +639,7 @@ function(input, output, session) {
       userDirValid(1)
       shinyjs::show("selectedUserDirectory")
       setwd(userDir)
+	    writeLines(paste0("USRWDIR=", userDir), config_filepath)
     } else {
       shinyjs::hide("selectedUserDirectory")
     }
@@ -668,6 +669,8 @@ function(input, output, session) {
     showModal(modalDialog(
       h4("Your current user directory is located at:"),
       tags$strong(dirname(userDir)),
+      h5("A changed user directory will be visible with the next start of the CM SAF R Toolbox."),
+      h5("You can check and change the user directory in ~/CMSAF-Toolbox/config.conf."),
       br(),
       actionButton("userDirButton", "Change user directory."),
       title = "User directory information.",
@@ -3222,6 +3225,7 @@ function(input, output, session) {
         shinyjs::hide("plot_format")
         shinyjs::hide("monitorClimateAnalyzeMethod")
         shinyjs::hide("analyzeTimeSize")
+		shinyjs::hide("stripecol")
       }
     }
 
@@ -3251,13 +3255,20 @@ function(input, output, session) {
         shinyjs::show("region_to_select")
         shinyjs::show("plot_format")
         shinyjs::show("select_country")
-        if(operatorInput_value() %in% c("warming_stripes_plot", "time_series_plot", "trend_plot")){
+        if(operatorInput_value() %in% c("time_series_plot", "trend_plot")){
           shinyjs::show("monitorClimateAnalyzeMethod")
           shinyjs::show("analyzeTimeSize")
           shinyjs::hide("plot_format")
           #shinyjs::hide("region_to_select")
           shinyjs::hide("accumulateInfile")
           #shinyjs::hide("attachToExisting")
+        } 
+        if (operatorInput_value() %in% c("warming_stripes_plot")) {
+          shinyjs::show("monitorClimateAnalyzeMethod")
+          shinyjs::show("analyzeTimeSize")
+          shinyjs::show("stripecol")
+          shinyjs::hide("plot_format")
+          shinyjs::hide("accumulateInfile")
         }
       } else if(currentOperatorOption() == "compare_data") {
           shinyjs::show("file_selection")
@@ -4293,7 +4304,7 @@ function(input, output, session) {
         )
       }
       
-      if(operatorInput_value() %in% c("warming_stripes_plot", "time_series_plot", "trend_plot")){
+      if(operatorInput_value() %in% c("time_series_plot", "trend_plot")){
         argumentList <- append(
           argumentList,
           list(
@@ -4302,11 +4313,21 @@ function(input, output, session) {
           )
         )
       }
+      if(operatorInput_value() %in% c("warming_stripes_plot")){
+        argumentList <- append(
+          argumentList,
+          list(
+            analyze_method = input$monitorClimateAnalyzeMethod,
+            selected_number = as.numeric(input$analyzeTimeSize),
+            stripe_color = as.numeric(input$stripecol)
+          )
+        )
+      }
     }
 
     climate_analysis_ops <- c("absolute_map", "anomaly_map", "climatology_map", "fieldmean_plot", "fieldmean_and_anomaly_map", 
                               "warming_stripes_plot", "time_series_plot", "trend_plot")
-    
+
     # Get package and function
     if (operatorInput_value() %in% climate_analysis_ops) {
       fun <- get("monitor_climate", asNamespace("cmsafvis"))

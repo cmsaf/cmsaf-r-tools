@@ -1,5 +1,9 @@
 # Changelog for cmsafops package
 
+## 1.2.3
+- Bug fix in mon.anomaly: wrong definition of time unit
+- Bug fix in selpoint.multi: time is now double, not integer
+
 ## 1.2.2
 - Correction of cmsaf_info attribute
 

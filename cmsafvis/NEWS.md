@@ -5,6 +5,8 @@
 - new config parameter for quicklook: 'unit' - define variable unit
   - e.g., Percent or '%'
 - new color scales 'albedo' and 'albedo2' added 
+- minor adaptations to quicklook
+- GeoTiff output changed from RGB to raster values
 
 ## 1.1.9
 

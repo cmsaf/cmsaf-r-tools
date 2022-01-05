@@ -13,6 +13,7 @@ plot_warming_stripes <- function(variable,
                                  pointsTF,
                                  lineTF, 
                                  title,
+                                 stripe_color,
                                  verbose,
                                  nc = NULL)
 {
@@ -51,16 +52,40 @@ plot_warming_stripes <- function(variable,
   minY = min(dataT$date_info)
   maxY = max(dataT$date_info)
   
+  xlabel <- rep(NA, length(date_info_1))
+  n <- round(seq(1, length(xlabel), length.out = 4))
+  xlabel[n] <- format(date_info_1[n], "%Y")
+  
+  title <- gsub("XXXX", xlabel[1], title)
+  
   resfactor <- 1
   grDevices::png(filename=paste0(out_dir, "/", outfile_name), 
       res = 72*resfactor, height=640*resfactor, width=1140*resfactor)
   
   #plot(x=date_info_1, y= dum_dat, ylab=variable, xlab="time", main = title, type = "n")
-  graphics::plot(x=date_info_1, y = dum_dat, yaxt='n', ylab = '', xlab='', main = title, type = "n")
+  #graphics::plot(x=date_info_1, y = dum_dat, yaxt='n', ylab = '', xlab='', main = title, type = "n")
+  par(bg = "black")
+  graphics::plot(x=date_info_1, y = dum_dat, 
+                 ylab = '', xlab='', type = "n", axes = FALSE)
   
   rangeT=maxT-minT
   binWidth=rangeT/nBins
   palette <- rev(RColorBrewer::brewer.pal(nBins,"RdBu"))
+  
+  if (stripe_color == 2){palette <- 
+        grDevices::colorRampPalette(c("#474747", "#7a7a7a", "#a8a8a8", "#cdcdcd",
+                                      "#e2e2e2", "#f9f9f9", "#fdf3db", "#fee8b2",
+                                      "#fedf8c", "#fed66c", "#fdcf45", "#fac631"))
+    palette <- palette(nBins)
+  }
+
+  if (stripe_color == 3){palette <- 
+        grDevices::colorRampPalette(c("#5c3209", "#96560e", "#b27028", "#d1a759",
+                                      "#dfc07a", "#f5e5bf", "#fefefe","#b0dfda", 
+                                      "#6fc0b8", "#389c94", "#078470", "#045f5a", 
+                                      "#0f3c33"))
+    palette <- palette(nBins)
+  }
   
   #binCol <- function (Temp){ palette[floor((Temp - minT)/binWidth)+1] }
   binCol <- function (Temp){ 
@@ -78,7 +103,13 @@ plot_warming_stripes <- function(variable,
     #rect(y-0.5,minT,y+0.5,maxT,col=lineCol,border=NA,lwd=0)
   }
   
-  apply(dataT,1,rectPlot)
+  apply(dataT, 1, rectPlot)
+  
+  title(title, col.main = "white", cex.main = 2.0, line = 0.2, 
+        font.main = 2)
+  mtext(xlabel, side = 1, line = -0.5, at = date_info_1, 
+        cex = 1.5, col = "white")
+  
   if (pointsTF) graphics::points(dataT,pch=21,bg="white")
   if (lineTF) graphics::abline(stats::line(dataT),col="white")
   

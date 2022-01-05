@@ -186,7 +186,8 @@ render_plot <- function(plot_rinstat,
       ras_col <- raster::RGB(ras, col = col)
 
       check_package_dependency("rgdal", "exporting GeoTIFF files")
-      raster::writeRaster(ras_col, filename = outfile, format = "GTiff")  # Requires package rgdal
+      raster::writeRaster(ras, filename = outfile, format = "GTiff")
+      #raster::writeRaster(ras_col, filename = outfile, format = "GTiff")  # Requires package rgdal
     } else if (fileExtension == ".jpg") {
       grDevices::jpeg(outfile, width = iwidth, height = iheight)
     } else if (fileExtension == ".pdf") {

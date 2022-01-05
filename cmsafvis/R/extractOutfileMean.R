@@ -38,7 +38,7 @@ extractOutfileMean <- function(variable,
       cmsafops::timmean(var = variable, infile = selperiod_tmp, outfile = outfile, overwrite = TRUE, nc = nc)
     }
   }, error = function(e) {
-    stop(paste0("An error occured while extracting data. ", "cmsafops::monmean"))
+    stop(paste0("An error occured while extracting data. ", "cmsafops::timmean"))
   })
   
   return(outfile)

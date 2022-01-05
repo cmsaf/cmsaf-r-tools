@@ -19,6 +19,19 @@
 #'@param verbose logical; if TRUE, progress messages are shown
 #'
 #'@return A jpeg file with the same name as the original NetCDF file.
+#'@details This operator can be applied using a configuration file (quicklook_config.yml).
+#'An example config file can be found in the extdata folder of this package. The following
+#'parameters can be defined: 
+#'\itemize{
+#'  \item{logo: }{color / black}
+#'  \item{slot: }{numeric (e.g., 13)}
+#'  \item{invert_col: }{TRUE / FALSE}
+#'  \item{Dataset: }{character (e.g., ICDR Seviri Radiation)}
+#'  \item{limits: }{min: numeric; max: numeric}
+#'  \item{legend: }{TRUE / FALSE}
+#'  \item{colorscale: }{character (e.g., Viridis)}
+#'  \item{unit: }{character (e.g., Percent / '%')}
+#' }
 #'@export
 #'@importFrom assertthat assert_that is.count is.flag is.readable is.writeable
 
@@ -351,7 +364,12 @@ quicklook <- function(config,
   }
 
   # factor for font size
-  fsf <- iwidth / 1021
+  hcor <- (iheight / 750) - 1
+  if (hcor < 0) {
+    hcor <- 0
+  }
+  fsf2 <- iwidth / 1021
+  fsf <- round((iwidth / 1021) + hcor, digit = 2)
   
   # Prepare polar projection
   
@@ -364,10 +382,10 @@ quicklook <- function(config,
     }
     nx <- dim(lond)[1]
     ny <- dim(lond)[2]
-    landcol   <- "cornsilk3"     # "navajowhite3"
-    oceancol  <- "cornsilk2"     # "cadetblue3"
-    outcol    <- "cornsilk4"
-    bordercol <- "gray"
+    landcol   <- "gray75"     # "navajowhite3"
+    oceancol  <- "gray85"     # "cadetblue3"
+    outcol    <- "gray20"
+    bordercol <- "gray20"
   
     m <- maps::map("world", plot = FALSE)
   }
@@ -676,19 +694,44 @@ quicklook <- function(config,
               stop("Bluemarble plotting is not available. See https://www.cmsaf.eu/R_toolbox")
             }
         } else {
-          graphics::image(lon_min:(lon_max*1.01),
+          graphics::image((lon_min*0.998):(lon_max*1.002),
                           lat_min:lat_max,
-                          outer(lon_min:(lon_max*1.01),lat_min:lat_max,"+"),
+                          outer((lon_min*0.998):(lon_max*1.002),lat_min:lat_max,"+"),
                           main = "",
                           xlim = c(lon_min, lon_max),
                           ylim = c(lat_min, lat_max),
                           xlab = " ",
                           ylab = " ",
-                          col = "cornsilk2",
+                          col = "gray85",
                           axes = FALSE,
                           asp = 1
           )
         }
+         
+         # land plot
+         if (file_info$grid == "Satellite projection MSG/Seviri") {
+           raster::extent(stacks[[j]]) <- c(-1, 1, -1, 1)
+           suppressWarnings(
+             maps::map("world", projection = "orthographic", fill = TRUE, border = NA, 
+                       col = "gray75", orientation = c(0,0,0), add = TRUE)
+           )
+         } else if (area == "GL") {
+           if (lon_max >= 359) {
+             maps::map("world2", fill = TRUE, border = NA, xlim = c(lon_min, lon_max), 
+                       col = "gray75", ylim = c(lat_min, lat_max), wrap = c(-180, 180), add = TRUE)
+           } else {
+             maps::map("world", fill = TRUE, border = NA, xlim = c(lon_min, lon_max), 
+                       col = "gray75", ylim = c(lat_min, lat_max), wrap = c(-180, 180), add = TRUE)
+           }
+         } else {
+           if (lon_max >= 359) {
+             maps::map("world2", fill = TRUE, border = NA, xlim = c(lon_min, lon_max), 
+                       col = "gray75", ylim = c(lat_min, lat_max), add = TRUE)
+           } else {
+             maps::map("world", fill = TRUE, border = NA, xlim = c(lon_min, lon_max), 
+                       col = "gray75", ylim = c(lat_min, lat_max), add = TRUE)
+           }
+         }
         
         # plot image
         # UTH data with 0 to 360 grid were plotted wrong,
@@ -704,7 +747,7 @@ quicklook <- function(config,
                         ylab = "",
                         zlim = plot_lim[j,],
                         col = col,
-                        colNA = "cornsilk2",
+                        colNA = "gray85",
                         asp = 1,
                         add = TRUE
           )
@@ -718,34 +761,34 @@ quicklook <- function(config,
                           ylab = "",
                           zlim = plot_lim[j,],
                           col = col,
-                          colNA = "cornsilk2",
+                          colNA = "gray85",
                           asp = 1,
                           add = TRUE
             )
         }
         
-        
         # borderline plot
         if (file_info$grid == "Satellite projection MSG/Seviri") {
           raster::extent(stacks[[j]]) <- c(-1, 1, -1, 1)
           suppressWarnings(
-            maps::map("world", projection = "orthographic", interior = FALSE, orientation = c(0,0,0), add = TRUE)
+            maps::map("world", projection = "orthographic", interior = FALSE, 
+                      col = "gray20", orientation = c(0,0,0), add = TRUE)
           )
         } else if (area == "GL") {
             if (lon_max >= 359) {
               maps::map("world2", interior = FALSE, xlim = c(lon_min, lon_max), 
-                ylim = c(lat_min, lat_max), wrap = c(-180, 180), add = TRUE)
+                        col = "gray20", ylim = c(lat_min, lat_max), wrap = c(-180, 180), add = TRUE)
             } else {
                 maps::map("world", interior = FALSE, xlim = c(lon_min, lon_max), 
-                  ylim = c(lat_min, lat_max), wrap = c(-180, 180), add = TRUE)
+                          col = "gray20", ylim = c(lat_min, lat_max), wrap = c(-180, 180), add = TRUE)
             }
         } else {
             if (lon_max >= 359) {
               maps::map("world2", interior = FALSE, xlim = c(lon_min, lon_max), 
-                        ylim = c(lat_min, lat_max), add = TRUE)
+                        col = "gray20", ylim = c(lat_min, lat_max), add = TRUE)
             } else {
                 maps::map("world", interior = FALSE, xlim = c(lon_min, lon_max), 
-                        ylim = c(lat_min, lat_max), add = TRUE)
+                          col = "gray20", ylim = c(lat_min, lat_max), add = TRUE)
             }
         }
        }
@@ -815,8 +858,7 @@ quicklook <- function(config,
       }
       
       # plot legend
-      # graphics::par(cex = 1*fsf)
-      
+
       if (legends[j]) {
         raster::plot(stacks[[j]], y = slot_i,
                      main = "",
@@ -840,7 +882,9 @@ quicklook <- function(config,
       
       
       # figure title
-      if (is_multiplot) graphics::mtext(CapWords(varnames[j]), line = 0.4, cex = 1.25*fsf)
+      if (is_multiplot) {
+        graphics::mtext(CapWords(varnames[j]), line = 0.4, cex = 1.25*fsf2)
+      }
       
     }
     
@@ -850,18 +894,18 @@ quicklook <- function(config,
                       side = 3,
                       line = -2,
                       outer = TRUE,
-                      cex = 1.45*fsf,
-                      
+                      cex = 1.45*fsf2,
                       font = 2
       )
     } else {
+      if (nchar(paste(CapWords(varnames[1]), dataset_name, file_time, sep = ", ")) > 70){
+        fsf <- (fsf + fsf2) / 2
+      }
       graphics::mtext(paste(CapWords(varnames[1]), dataset_name, file_time, sep = ", "),
                       side = 3,
                       line = -3,
-                      
                       outer = TRUE,
                       cex = 1.45*fsf,
-                      
                       font = 2
       )
     }
