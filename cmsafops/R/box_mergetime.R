@@ -104,7 +104,17 @@ box_mergetime <- function(var, path, pattern, outfile, lon1 = -180, lon2 = 180,
     stop("No files found that match the pattern")
   }
 
-  filelist <- sort(filelist)
+  # Sort files by first time step of each file
+  time_order <- NULL
+  
+  for (i in seq_along(filelist)) {
+    file_info <- read_file(filelist[i], var)
+    time_order <- rbind(time_order, c(i, file_info$dimension_data$t[1]))
+  }
+  
+  time_order_id <- order(time_order[,2])
+  #filelist <- sort(filelist)
+  filelist <- filelist[time_order_id]
   fdim <- length(filelist)
 
   file <- filelist[1]

@@ -1,11 +1,14 @@
 # Release notes for cmsaf
 
-## 3.3.2
+## 3.4.0
 
 - Added new color schemes 'Rocket', 'Mako', 'Hawaii', 'Batlow',  
   'albedo', 'albedo2'
 - Fix issue when user directory is changed
 - Additional color options for stripe plots
+- Circular stripe plots inspired by Emanuele Bevacqua (see emanuele.bevacqua.eu)
+- New option to (just) merge nc files in Prepare by using box_mergetime,
+  which is faster, but has no checks or adaptations
 
 ## 3.3.1
 

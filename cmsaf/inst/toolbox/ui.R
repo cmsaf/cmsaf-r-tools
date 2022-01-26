@@ -3,20 +3,20 @@
 # You should not use this R-script on its own!
 #
 # Have fun with the CM SAF R TOOLBOX!
-#                                              (Steffen Kothe / CM SAF 2021-10-14)
+#                                              (Steffen Kothe / CM SAF 2022-01-20)
 #__________________________________________________________________________________
 
 descriptionString <-
   "
 
-The CM SAF R TOOLBOX 3.3.2 -- 'Oh no, not again!'
+The CM SAF R TOOLBOX 3.4.0 -- 'Just Read the Instructions'
 
 The intention of the CM SAF R Toolbox is to help you using
-CM SAF NetCDF formatted data
+CM SAF NetCDF formatted climate data
 
 This includes:
-  1. Preparation of ordered CM SAF data files.
-  2. Analysis of prepared CM SAF data.
+  1. Preparation of data files.
+  2. Analysis and manipulation of prepared data.
   3. Visualization of the results.
 
 To begin, choose a .tar file or a .nc file in the prepare section or jump
@@ -25,7 +25,7 @@ right in and analyze or visualize a .nc file.
 Suggestions for improvements and praise for the developers
 can be sent to contact.cmsaf@dwd.de.
 
-- Steffen Kothe - 2021-12-09 -"
+- Steffen Kothe - 2022-01-20 -"
 
 # Variable can be found in global.R
 if (isRunningLocally) {
@@ -234,6 +234,9 @@ fluidPage(
                            tags$div(id = "panel_prepareInput1Nc",
                                     uiOutput("variable_ui_nc"),
                                     uiOutput("dateRange_ui_nc"),
+                                    checkboxInput("justmerge", 
+                                                  "Just merge (no checks, no adaptations, ignore date range)",
+                                                  value = FALSE),
                                     shinyjs::disabled(actionButton("applyDateRange",
                                                                    "Apply")),
                            )),
@@ -344,12 +347,11 @@ fluidPage(
                                              shinyjs::hidden(checkboxInput("accumulateInfile",
                                                                            "Do you want to accumulate the infile over time?",
                                                                            value = TRUE)),																		   
-											shinyjs::hidden(selectInput("stripecol", label = h3("Select color"), 
-																		   choices = list("Temp" = 1, "Sun" = 2, "Precip" = 3),
-																		   selected = 1)),
-                                             # shinyjs::hidden(checkboxInput("meanInfile",
-                                             #                               "Do you want to mean the infile over time?",
-                                             #                               value = FALSE)),
+											                       shinyjs::hidden(selectInput("stripecol", label = h3("Select color"), 
+																		                      choices = list("Temp" = 1, "Sun" = 2, "Precip" = 3),
+																		                      selected = 1)),
+											                       shinyjs::hidden(checkboxInput("circular", label = "Circular Plot", value = FALSE)),
+
                                              
                                              shinyjs::hidden(checkboxInput("attachToExisting",
                                                                            "Do you want to attach the data to that of an already existing file?"

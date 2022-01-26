@@ -7,6 +7,7 @@
 - new color scales 'albedo' and 'albedo2' added 
 - minor adaptations to quicklook
 - GeoTiff output changed from RGB to raster values
+- Circular Stripe plots (contribution by Emanuele Bevacqua; see emanuele.bevacqua.eu)
 
 ## 1.1.9
 

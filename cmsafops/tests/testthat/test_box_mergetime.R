@@ -586,8 +586,10 @@ test_that("data is correct", {
 
   temp1 <- seq(250, 272)
   temp2 <- seq(230, 252)
-  expected_data <- c(temp2, temp2, temp2[1:3],
-                     rep(temp1, 7))
+  # expected_data <- c(temp2, temp2, temp2[1:3],
+  #                    rep(temp1, 7))
+  expected_data <- c(temp1, temp1, temp1[1:3], temp1[4:23],
+                     temp1, temp1[1:6], temp2, temp2, temp2[1:3])
   expected <- array(expected_data, dim = c(7, 7, 3))
 
   expect_equivalent(actual, expected)
@@ -648,7 +650,7 @@ test_that("coordinates are correct", {
   expect_identical(actual, array(seq(45, 48, 0.5)))
 
   actual <- ncvar_get(file, "time")
-  expect_equal(actual, array(c(158544, 149016, 158544)))
+  expect_equal(actual, array(c(149016, 158544, 158544)))
 })
 
 nc_close(file)

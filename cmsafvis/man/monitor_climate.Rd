@@ -39,6 +39,8 @@ monitor_climate(
   infile_attach = "auto",
   analyze_method = TRUE,
   selected_number = 1,
+  stripe_color = 1,
+  circ_plot = FALSE,
   dwd_logo = FALSE,
   verbose = TRUE,
   nc = NULL
@@ -122,6 +124,10 @@ If attach is false, this will be ignored(character).}
 
 \item{selected_number}{Timesteps of the same selected time range (Warming Stripes Plots, Time Series Plots, Trend Plots)}
 
+\item{stripe_color}{Color option for stripe plots (Warming Stripes Plots)}
+
+\item{circ_plot}{Circular stripe plots (logical)}
+
 \item{dwd_logo}{Whether to add the DWD logo (logical).}
 
 \item{verbose}{Whether to display progress messages (logical).}
@@ -136,6 +142,8 @@ application is for daily accumulated data, such as sunshine duration.
 Dependent on the output format a PNG or MP4 is created.
 }
 \details{
+Circular stripe plots are inspired by Emanuele Bevacqua (see emanuele.bevacqua.eu)
+
 You can pass a YAML config file and/or specify the arguments directly.
 Argument prioritization is done in the following way:
 Direct argument > config argument > default argument.

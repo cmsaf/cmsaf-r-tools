@@ -3,7 +3,7 @@
 # You should not use this R-script on its own!
 #
 # Have fun with the CM SAF R TOOLBOX!
-#                                              (Steffen Kothe / CM SAF 2021-12-23)
+#                                              (Steffen Kothe / CM SAF 2022-01-20)
 #__________________________________________________________________________________
 
 # Function to compute first of month
@@ -690,8 +690,12 @@ function(input, output, session) {
                  tags$p("of your data. This is the first step after you downloaded your ordered tar-file(s) or NetCDF files or obtained a direct URL."),
                  tags$p("For NetCDF files, you only need to select the first file and the others are selected automatically."),
                  br(),
-                 tags$p("This application will help you to extract, unzip and merge the data."),
+                 tags$p("This application will help you to extract and merge the data."),
                  tags$p("In addition, you can select a time range and region from your data."),
+                 br(),
+                 tags$p("If you choose the option to 'just merge' the data files, make sure that grid"),
+                 tags$p("and variables are matching. Files are automatically chosen by the pattern of"),
+                 tags$p("the first four characters of the file names."),
                  br(),
                  tags$p("Finally, a NetCDF file will be created for you. You can find it in the output directory"),
                  tags$p("located at ", tags$strong(dirname(userDir))),
@@ -703,8 +707,12 @@ function(input, output, session) {
                  tags$p("of your data. This is the first step after you downloaded your ordered tar-file(s)."),
                  tags$p("For NetCDF files, you only need to select the first file and the others are selected automatically."),
                  br(),
-                 tags$p("This application will help you to extract, unzip and merge the data."),
+                 tags$p("This application will help you to extract and merge the data."),
                  tags$p("In addition, you can select a time range and region from your data."),
+                 br(),
+                 tags$p("If you choose the option to 'just merge' the data files, make sure that grid"),
+                 tags$p("and variables are matching. Files are automatically chosen by the pattern of"),
+                 tags$p("the first four characters of the file names."),
                  br(),
                  tags$p("Finally, a NetCDF file will be created for you."),
                  tags$p(tags$strong("Make sure to download your session files before closing this application.")),
@@ -1582,7 +1590,7 @@ function(input, output, session) {
       # Rendering date range.
       output$dateRange_ui <- renderUI({
         dateRangeInput(inputId = "dateRange_prepare",
-                       label = "Please select a date range to analyze.",
+                       label = "Please select a date range to prepare.",
                        start = extractedDates$date_from,
                        end = extractedDates$date_to,
                        min = extractedDates$date_from,
@@ -1654,7 +1662,7 @@ function(input, output, session) {
       # Rendering date range.
       output$dateRange_ui_nc <- renderUI({
         dateRangeInput(inputId = "dateRange_prepare_nc",
-                       label = "Please select a date range to analyze.",
+                       label = "Please select a date range to prepare.",
                        start = extractedDates$date_from,
                        end = extractedDates$date_to,
                        min = extractedDates$date_from,
@@ -1686,6 +1694,11 @@ function(input, output, session) {
   observeEvent(input$dateRange_prepare_nc, {
     req(input$dateRange_prepare_nc[1])
     req(input$dateRange_prepare_nc[2])
+    shinyjs::enable("applyDateRange")
+  })
+  
+  observeEvent(input$justmerge, {
+    req(input$justmerge)
     shinyjs::enable("applyDateRange")
   })
 
@@ -2109,7 +2122,8 @@ function(input, output, session) {
           "time",
           "SATID",
           "latitude",
-          "longitude"
+          "longitude",
+          "crs"
         )
       ))
 
@@ -2166,26 +2180,105 @@ function(input, output, session) {
     untarVals(untarFiles(tar_path(), dateRange_prep()[1], dateRange_prep()[2], timestep(), tar_flag = 1))
   }, ignoreInit = TRUE)
   
+  # # When apply date range (nc prepare) button is pressed.
+  # observeEvent(input$applyDateRange, {
+    # # Require positve click value.
+    # req(input$applyDateRange > 0)
+
+    # # Get first of month if timestep == m
+    # if (timestep() == "m") {
+      # dateRange_prep(firstOfMonth(input$dateRange_prepare_nc))
+    # } else {
+      # dateRange_prep(input$dateRange_prepare_nc)
+    # }
+    
+    # # Show spinner
+    # shinyjs::hide("panel_prepareInput1Nc")
+    # shinyjs::reset("panel_prepareInput1Nc")
+    # shinyjs::show("spinner_prepare4", anim = TRUE, animType = "fade")
+    
+    # # From this point on nc and tar files are processed immediately
+    # untarVals(ncFilelist_dateRange(nc_path(), dateRange_prep()[1], dateRange_prep()[2], timestep(), nc_flag = 1))
+  # }, ignoreInit = TRUE)
+  
+  
+  # Function to create the output
+    creatingOutputfile2 <- function(path_to_tar, var) {
+
+    file1   <- cmsafops::get_basename(path_to_tar)
+    ordDir  <- dirname(path_to_tar)
+	  outfile <- file.path(outputDir, paste0(var, "_mergetime.nc"))
+
+    # box_mergetime
+      pattern <- substr(file1, 1, 4)
+
+      cmsafops::box_mergetime(var,
+                           path = ordDir,
+                           pattern = pattern,
+                           outfile = outfile,
+                           overwrite = TRUE)
+      return(outfile)
+  }
+  
+  
   # When apply date range (nc prepare) button is pressed.
   observeEvent(input$applyDateRange, {
     # Require positve click value.
     req(input$applyDateRange > 0)
+
+	# If just merge checkbox = TRUE
+	if (input$justmerge) {
+		# Show / hide spinner
+		shinyjs::hide("panel_prepareInput1Nc")
+		shinyjs::show("spinner_prepare3", anim = TRUE, animType = "fade")
+
+		res <- try(outputFilepath(creatingOutputfile2(nc_path(),
+                                                   input$variableInput360)))
     
-    # Get first of month if timestep == m
-    if (timestep() == "m") {
-      dateRange_prep(firstOfMonth(input$dateRange_prepare_nc))
-    } else {
-      dateRange_prep(input$dateRange_prepare_nc)
-    }
+		if (class(res) == "try-error") {
+			showModal(modalDialog(
+				h4("An error occured while creating an output file."),
+				tags$p(paste0("Message: ", res)),
+				title = "Error!",
+				size = "m"
+			))
+		}
+
+		# Variable 'isRunningLocally' can be found in global.R
+		if (repeatWarning() && !isRunningLocally) {
+			showModal(modalDialog(
+				tags$p("A .nc file has been created for you. ",
+					"Its contents are temporarily stored in the session folder.",
+					"Please downlaod the session folder if you want to save it.",
+					"All files will be removed after closing this app!"),
+				checkboxInput("noRepeat", "Do not show this message again."),
+			title = "Warning to prevent data loss!",
+			size = "l"
+		))
+		}
+	
+		shinyjs::hide("spinner_prepare3")
+		resetToAnalyzePanel()
+	} else {
+	
+		# Get first of month if timestep == m
+		if (timestep() == "m") {
+			dateRange_prep(firstOfMonth(input$dateRange_prepare_nc))
+		} else {
+			dateRange_prep(input$dateRange_prepare_nc)
+		}
     
-    # Show spinner
-    shinyjs::hide("panel_prepareInput1Nc")
-    shinyjs::reset("panel_prepareInput1Nc")
-    shinyjs::show("spinner_prepare4", anim = TRUE, animType = "fade")
+		# Show spinner
+		shinyjs::hide("panel_prepareInput1Nc")
+		shinyjs::reset("panel_prepareInput1Nc")
+		shinyjs::show("spinner_prepare4", anim = TRUE, animType = "fade")
     
-    # From this point on nc and tar files are processed immediately
-    untarVals(ncFilelist_dateRange(nc_path(), dateRange_prep()[1], dateRange_prep()[2], timestep(), nc_flag = 1))
-  }, ignoreInit = TRUE)
+		# From this point on nc and tar files are processed immediately
+		untarVals(ncFilelist_dateRange(nc_path(), dateRange_prep()[1], dateRange_prep()[2], timestep(), nc_flag = 1))
+	
+	  }
+    }, ignoreInit = TRUE)
+  
 
   # Set all input values for next stage.
   observe({
@@ -2807,7 +2900,7 @@ function(input, output, session) {
         resetToPreparePanel()
       } else {
 
-      var_default <- subset(vn, !(vn %in% c("lat", "lon", "latitude", "longitude", "time_bnds", "nb2", "time")))
+      var_default <- subset(vn, !(vn %in% c("lat", "lon", "latitude", "longitude", "time_bnds", "nb2", "time", "crs")))
 
       # Stop if data are in sinusoidal projection
       if ("sinusoidal" %in% vn) {
@@ -3007,13 +3100,13 @@ function(input, output, session) {
           fluidRow(
             column(width = 5,
                    selectInput("climate_year_start",
-                               label = "Climatology start year",
+                               label = "Climatol. start year",
                                choices = years,
                                selected = years[1])
                                ),
             column(width = 5,
                    selectInput("climate_year_end",
-                               label = "Climatology end year",
+                               label = "Climatol. end year",
                                choices = years,
                                selected = end_year
                                ))
@@ -3225,7 +3318,8 @@ function(input, output, session) {
         shinyjs::hide("plot_format")
         shinyjs::hide("monitorClimateAnalyzeMethod")
         shinyjs::hide("analyzeTimeSize")
-		shinyjs::hide("stripecol")
+		    shinyjs::hide("stripecol")
+		    shinyjs::hide("circular")
       }
     }
 
@@ -3267,6 +3361,7 @@ function(input, output, session) {
           shinyjs::show("monitorClimateAnalyzeMethod")
           shinyjs::show("analyzeTimeSize")
           shinyjs::show("stripecol")
+          shinyjs::show("circular")
           shinyjs::hide("plot_format")
           shinyjs::hide("accumulateInfile")
         }
@@ -4319,7 +4414,8 @@ function(input, output, session) {
           list(
             analyze_method = input$monitorClimateAnalyzeMethod,
             selected_number = as.numeric(input$analyzeTimeSize),
-            stripe_color = as.numeric(input$stripecol)
+            stripe_color = as.numeric(input$stripecol),
+            circ_plot = as.numeric(input$circular)
           )
         )
       }
@@ -5148,7 +5244,7 @@ function(input, output, session) {
       resetToPreparePanel()
     } else {
 
-    vn <- subset(vn, !(vn %in% c("lat", "lon", "latitude", "longitude", "time_bnds", "nb2", "time")))
+    vn <- subset(vn, !(vn %in% c("lat", "lon", "latitude", "longitude", "time_bnds", "nb2", "time", "crs")))
 
     # If more than one we allow user to choose a variable. Catch this input here.
     if (!is.null(variable_visualize_modal())) {
@@ -7211,13 +7307,13 @@ function(input, output, session) {
     cat("The CMSAF Visualizer is part of the CM SAF R Toolbox.", "\n")
     cat("This tool helps you to visualize 1D-timeseries and 2D-maps.", "\n")
     cat("\n")
-    cat("This version ('Oh no, not again!') was tested with the cmsaf", "\n")
-    cat("R-package in version 3.3.2.", "\n")
+    cat("This version ('Just Read The Instructions') was tested with the cmsaf", "\n")
+    cat("R-package in version 3.4.0.", "\n")
     cat("\n")
     cat("Suggestions for improvements and praise for the developers", "\n")
     cat("can be send to contact.cmsaf@dwd.de.", "\n")
     cat("\n")
-    cat("                              - Steffen Kothe - 2021-11-04 -", "\n")
+    cat("                              - Steffen Kothe - 2022-01-20 -", "\n")
     cat("\n")
     cat("\n")
   })

@@ -3,6 +3,7 @@
 ## 1.2.3
 - Bug fix in mon.anomaly: wrong definition of time unit
 - Bug fix in selpoint.multi: time is now double, not integer
+- Add time sorting of filelist to box_mergetime
 
 ## 1.2.2
 - Correction of cmsaf_info attribute

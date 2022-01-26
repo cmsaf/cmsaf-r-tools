@@ -3,6 +3,8 @@
 #' This plotting routine generates graphical output for
 #' the given variable within the given time range and area.
 #' Dependent on the output format a PNG is created.
+#' 
+#' Circular stripe plots are inspired by Emanuele Bevacqua (see emanuele.bevacqua.eu)
 #'
 #' @inheritParams monitor_climate
 #' @param pointsTF Show data points (logical).
@@ -37,7 +39,8 @@ warming_stripes_plot <- function(variable = NULL,
                                  attach = FALSE,
                                  infile_attach = "auto",
                                  pointsTF = FALSE,
-                                 lineTF = FALSE, 
+                                 lineTF = FALSE,
+                                 circ_plot = FALSE,
                                  title = "",
                                  verbose = TRUE,
                                  nc = NULL)
@@ -197,5 +200,6 @@ warming_stripes_plot <- function(variable = NULL,
     lineTF = lineTF, 
     title = title,
     stripe_color = stripe_color,
+    circ_plot = circ_plot,
     verbose = TRUE)
 }

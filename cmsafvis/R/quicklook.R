@@ -369,7 +369,7 @@ quicklook <- function(config,
     hcor <- 0
   }
   fsf2 <- iwidth / 1021
-  fsf <- round((iwidth / 1021) + hcor, digit = 2)
+  fsf <- round((iwidth / 1021) + hcor, digits = 2)
   
   # Prepare polar projection
   

@@ -8,6 +8,7 @@ warming_stripes_plot(
   variable = NULL,
   infile = NULL,
   selected_number = 1,
+  stripe_color = 1,
   analyze_method = TRUE,
   temp_dir = tempdir(),
   out_dir = getwd(),
@@ -30,6 +31,7 @@ warming_stripes_plot(
   infile_attach = "auto",
   pointsTF = FALSE,
   lineTF = FALSE,
+  circ_plot = FALSE,
   title = "",
   verbose = TRUE,
   nc = NULL
@@ -41,6 +43,8 @@ warming_stripes_plot(
 \item{infile}{Path to NetCDF file (\code{NULL} or character). If \code{NULL} then it needs to be specified in the config file.}
 
 \item{selected_number}{Timesteps of the same selected time range (Warming Stripes Plots, Time Series Plots, Trend Plots)}
+
+\item{stripe_color}{Color option for stripe plots (Warming Stripes Plots)}
 
 \item{analyze_method}{Two analyze methods: mean == FALSE; accumulate == TRUE (logical) (Warming Stripes Plots, Time Series Plots, Trend Plots)}
 
@@ -92,6 +96,8 @@ If attach is false, this will be ignored(character).}
 
 \item{lineTF}{Show trend line (logical).}
 
+\item{circ_plot}{Circular stripe plots (logical)}
+
 \item{title}{Set title (character).}
 
 \item{verbose}{Whether to display progress messages (logical).}
@@ -103,4 +109,7 @@ object of class \code{ncdf4} (as returned from \code{ncdf4::nc_open}).}
 This plotting routine generates graphical output for
 the given variable within the given time range and area.
 Dependent on the output format a PNG is created.
+}
+\details{
+Circular stripe plots are inspired by Emanuele Bevacqua (see emanuele.bevacqua.eu)
 }
