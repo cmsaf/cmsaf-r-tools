@@ -3320,6 +3320,7 @@ function(input, output, session) {
         shinyjs::hide("analyzeTimeSize")
 		    shinyjs::hide("stripecol")
 		    shinyjs::hide("circular")
+		    shinyjs::hide("absrel")
       }
     }
 
@@ -3344,6 +3345,11 @@ function(input, output, session) {
         }
         if (!(operatorInput_value() %in% c("absolute_map"))) {
           shinyjs::show("climatology_years")
+        }
+		
+		    if ((operatorInput_value() %in% c("anomaly_map"))) {
+          shinyjs::show("stripecol")
+		      shinyjs::show("absrel")
         }
 
         shinyjs::show("region_to_select")
@@ -4398,6 +4404,16 @@ function(input, output, session) {
           )
         )
       }
+	  
+	  if (operatorInput_value() == "anomaly_map") {
+        argumentList <- append(
+          argumentList,
+          list(
+            color_pal = as.numeric(input$stripecol),
+            relative  = as.logical(input$absrel)
+          )
+        )
+      }
       
       if(operatorInput_value() %in% c("time_series_plot", "trend_plot")){
         argumentList <- append(
@@ -4414,7 +4430,7 @@ function(input, output, session) {
           list(
             analyze_method = input$monitorClimateAnalyzeMethod,
             selected_number = as.numeric(input$analyzeTimeSize),
-            stripe_color = as.numeric(input$stripecol),
+            color_pal = as.numeric(input$stripecol),
             circ_plot = as.numeric(input$circular)
           )
         )
@@ -4723,7 +4739,6 @@ function(input, output, session) {
     # Open file and get data
     if (!is.null(nc1)) id <- nc1
     else id <- ncdf4::nc_open(infile)
-    
     # Remap to regGrid if necessary
     file_info <- cmsafops:::check_dims(id)
     if (is.null(nc1)) ncdf4::nc_close(id)
@@ -4770,7 +4785,7 @@ function(input, output, session) {
     date <- ncdf4::ncvar_get(id, "time")
     t_unit <- ncdf4::ncatt_get(id, "time", "units")$value
     date.time <- as.character(cmsafops::get_time(t_unit, date))
-   
+    
     unit <- ncdf4::ncatt_get(id, var, "units")$value
     if (unit == 0)
       (unit <- "-")
@@ -4780,6 +4795,23 @@ function(input, output, session) {
       (varname <- ncdf4::ncatt_get(id, var, "standard_name")$value)
     if (varname == 0)
       (varname <- var)
+    
+    time_bounds = NULL
+    if (file_info$has_time_bnds){
+      time_bound0 <- ncdf4::ncvar_get(id, "time_bnds")
+      time_bound1 <- as.character(cmsafops::get_time(t_unit, time_bound0[1,]))
+      time_bound2 <- as.character(cmsafops::get_time(t_unit, time_bound0[2,]))
+      if (startsWith(t_unit, "hours")) {
+        time_bound1 <- as.POSIXct(time_bound1, format = "%Y-%m-%d %R")
+        time_bound2 <- as.POSIXct(time_bound2, format = "%Y-%m-%d %R")
+      } else {
+        time_bound1 <- as.Date(time_bound1)
+        time_bound2 <- as.Date(time_bound2)
+      }
+      for (i in seq_along(time_bound1)){
+        time_bounds <- append(time_bounds, paste(time_bound1[i], " \u2013 ", time_bound2[i], sep = "")) 
+      }
+    }
 
     creator_att <- ncdf4::ncatt_get(id, 0, "institution")
     if (!creator_att$hasatt) {
@@ -4929,6 +4961,7 @@ function(input, output, session) {
             data = data,
             data2 = data2,
             date.time = date.time,
+            time_bounds = time_bounds,
             x_range = x_range,
             ylabel = ylabel,
             xlabel = xlabel,
@@ -4972,6 +5005,7 @@ function(input, output, session) {
             data2 = station_data_compare(),
             data3 = station_data_time_series_plot,   # only for time series plot (compare data)
             date.time = date.time,
+            time_bounds = time_bounds,
             x_range = x_range,
             ylabel = ylabel,
             xlabel = xlabel,
@@ -5020,6 +5054,7 @@ function(input, output, session) {
           plot_dim = 1,
           data = data,
           date.time = date.time,
+          time_bounds = time_bounds,
           x_range = x_range,
           ylabel = ylabel,
           vn = vn,
@@ -5063,6 +5098,7 @@ function(input, output, session) {
           plot_dim = 1,
           data = data,
           date.time = date.time,
+          time_bounds = time_bounds,
           x_range = x_range,
           ylabel = ylabel,
           vn = vn,
@@ -5108,6 +5144,7 @@ function(input, output, session) {
           plot_dim = 2,
           data = data,
           date.time = date.time,
+          time_bounds = time_bounds,
           min_lon = min_lon,
           max_lon = max_lon,
           min_lat = min_lat,
@@ -5122,7 +5159,7 @@ function(input, output, session) {
       )
     }
   }
-
+ 
   observeEvent(input$action_visualize_variable_modal, {
     # Update the variable
     variable_visualize_modal(input$variable_visualize_modal)
@@ -5389,14 +5426,25 @@ function(input, output, session) {
               shinyjs::show("proj")
             }
           }
+
+          if (!is.null(visualizeVariables()$time_bounds)){
+            output$timestep_visualize <- renderUI({
+              selectInput("timestep",
+                          label = "Select Time Step",
+                          choices = visualizeVariables()$time_bounds,
+                          selected = visualizeVariables()$time_bounds[1],
+                          selectize = FALSE)
+            })
+          } else {
+            output$timestep_visualize <- renderUI({
+              selectInput("timestep",
+                          label = "Select Time Step",
+                          choices = visualizeVariables()$date.time,
+                          selected = visualizeVariables()$date.time[1],
+                          selectize = FALSE)
+            })
+          }
           
-          output$timestep_visualize <- renderUI({
-            selectInput("timestep",
-                        label = "Select Time Step",
-                        choices = visualizeVariables()$date.time,
-                        selected = visualizeVariables()$date.time[1],
-                        selectize = FALSE)
-          })
           
           output$lon_visualize <- renderUI({
             tmp <- c(max(round(as.numeric(visualizeVariables()$min_lon)), -180), min(round(as.numeric(visualizeVariables()$max_lon)), 180))
@@ -7308,12 +7356,12 @@ function(input, output, session) {
     cat("This tool helps you to visualize 1D-timeseries and 2D-maps.", "\n")
     cat("\n")
     cat("This version ('Just Read The Instructions') was tested with the cmsaf", "\n")
-    cat("R-package in version 3.4.0.", "\n")
+    cat("R-package in version 3.4.1.", "\n")
     cat("\n")
     cat("Suggestions for improvements and praise for the developers", "\n")
     cat("can be send to contact.cmsaf@dwd.de.", "\n")
     cat("\n")
-    cat("                              - Steffen Kothe - 2022-01-20 -", "\n")
+    cat("                              - Steffen Kothe - 2022-02-15 -", "\n")
     cat("\n")
     cat("\n")
   })

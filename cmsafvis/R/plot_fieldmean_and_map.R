@@ -17,6 +17,7 @@ plot_fieldmean_and_map <- function(variable,
                                    output_format,
                                    min_value,
                                    max_value,
+								                   color_pal,
                                    nbreaks,
                                    freeze_animation,
                                    outfile_name,
@@ -192,6 +193,19 @@ plot_fieldmean_and_map <- function(variable,
       "red",
       "red4"
     ))
+	
+    if (color_pal == 2){bwr_col <- 
+      grDevices::colorRampPalette(c("#474747", "#7a7a7a", "#a8a8a8", "#cdcdcd",
+                                    "#e2e2e2", "#f9f9f9", "#fdf3db", "#fee8b2",
+                                    "#fedf8c", "#fed66c", "#fdcf45", "#fac631"))
+    }
+    
+    if (color_pal == 3){bwr_col <- 
+      grDevices::colorRampPalette(c("#5c3209", "#96560e", "#b27028", "#d1a759",
+                                    "#dfc07a", "#f5e5bf", "#fefefe","#b0dfda", 
+                                    "#6fc0b8", "#389c94", "#078470", "#045f5a", 
+                                    "#0f3c33"))
+    }
 
   # Overwrite color arguments with default values if non are specified
   if (is.null(min_value)) {
@@ -1091,7 +1105,7 @@ plot_fieldmean_and_map <- function(variable,
   if (verbose) {
     dat_max <- get(paste0(variable, "_acc_", yearMaxEnd))
     dat_min <- get(paste0(variable, "_acc_", yearMinEnd))
-    titles <- c("Analyzed year", "Climatology", "Maximum valued year in climatology", "Minimum valued year in climatology")
+    titles <- c("Analyzed year", "Climatology", "Maximum valued year", "Minimum valued year")
 
     standout_years <- c(format(start_date, format = "%Y"),
                         paste(climate_year_start, climate_year_end, sep = " - "),

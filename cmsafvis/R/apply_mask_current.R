@@ -13,7 +13,8 @@ apply_mask_current <- function(variable,
                                start_date,
                                end_date,
                                accumulate = FALSE,
-                               mean_value = FALSE) {
+                               mean_value = FALSE,
+                               relative = FALSE) {
   start_doy <- format(start_date, format = "%j")
   finish_doy <- format(end_date, format = "%j")
 
@@ -96,12 +97,21 @@ apply_mask_current <- function(variable,
   climatology_nc <- ncdf4::nc_open(climatology_file)
   unit_string <- ncdf4::ncatt_get(climatology_nc, "time", "units")$value
   time_data <- ncdf4::ncvar_get(climatology_nc, "time")
+
+  date_time <- as.Date(cmsafops::get_time(ncdf4::ncatt_get(climatology_nc, "time", "units")$value, 
+                                          ncdf4::ncvar_get(climatology_nc, "time")))
+  firstyear <- format(min(date_time), "%Y")
+  lastyear  <- format(max(date_time), "%Y")
+  lastyear  <- as.character(as.numeric(lastyear))
+
   ncdf4::nc_close(climatology_nc)
 
   # Get relevant dates
   climatology_dates <- as.Date(cmsafops::get_time(unit_string, time_data))
-  compare_start_date <- format(paste0(climate_year_start, format(start_date, format = "-%m-%d")))
-  compare_end_date <- format(paste0(climate_year_start, format(end_date, format = "-%m-%d")))
+  # compare_start_date <- format(paste0(climate_year_start, format(start_date, format = "-%m-%d")))
+  # compare_end_date <- format(paste0(climate_year_start, format(end_date, format = "-%m-%d")))
+  compare_start_date <- format(paste0(firstyear, format(start_date, format = "-%m-%d")))
+  compare_end_date <- format(paste0(lastyear, format(end_date, format = "-%m-%d")))
   climatology_dates <- climatology_dates[((compare_start_date <= climatology_dates) & (climatology_dates <= compare_end_date))]
 
   if (length(climatology_dates) == 0) {
@@ -162,16 +172,27 @@ apply_mask_current <- function(variable,
   }
   
   diff_climate_file <- file.path(temp_dir, diff_climate_file)
-
-  cmsafops::cmsaf.sub(
-    var1 = variable,
-    var2 = variable,
-    infile1 = infile_lonlattimerange,
-    infile2 = climatology_file_timerange,
-    outfile = diff_climate_file,
-    overwrite = TRUE
-  )
-
+  
+  if (relative) {
+    cmsafops::cmsaf.sub.rel(
+      var1 = variable,
+      var2 = variable,
+      infile1 = infile_lonlattimerange,
+      infile2 = climatology_file_timerange,
+      outfile = diff_climate_file,
+      overwrite = TRUE
+    )
+  } else {
+    cmsafops::cmsaf.sub(
+      var1 = variable,
+      var2 = variable,
+      infile1 = infile_lonlattimerange,
+      infile2 = climatology_file_timerange,
+      outfile = diff_climate_file,
+      overwrite = TRUE
+    )
+  }
+  
   region_name <- get_country_name(country_code)
 
   adjust_location(

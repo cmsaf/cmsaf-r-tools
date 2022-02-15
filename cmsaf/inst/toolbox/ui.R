@@ -9,7 +9,7 @@
 descriptionString <-
   "
 
-The CM SAF R TOOLBOX 3.4.0 -- 'Just Read the Instructions'
+The CM SAF R TOOLBOX 3.4.1 -- 'Just Read the Instructions'
 
 The intention of the CM SAF R Toolbox is to help you using
 CM SAF NetCDF formatted climate data
@@ -25,7 +25,7 @@ right in and analyze or visualize a .nc file.
 Suggestions for improvements and praise for the developers
 can be sent to contact.cmsaf@dwd.de.
 
-- Steffen Kothe - 2022-01-20 -"
+- Steffen Kothe - 2022-02-15 -"
 
 # Variable can be found in global.R
 if (isRunningLocally) {
@@ -347,10 +347,11 @@ fluidPage(
                                              shinyjs::hidden(checkboxInput("accumulateInfile",
                                                                            "Do you want to accumulate the infile over time?",
                                                                            value = TRUE)),																		   
-											                       shinyjs::hidden(selectInput("stripecol", label = h3("Select color"), 
-																		                      choices = list("Temp" = 1, "Sun" = 2, "Precip" = 3),
+											                       shinyjs::hidden(selectInput("stripecol", label = "Select color", 
+																		                      choices = list("Blue-Red" = 1, "Grey-Yellow" = 2, "Brown-Green" = 3),
 																		                      selected = 1)),
 											                       shinyjs::hidden(checkboxInput("circular", label = "Circular Plot", value = FALSE)),
+											                       shinyjs::hidden(checkboxInput("absrel", label = "Relative Values", value = FALSE)),
 
                                              
                                              shinyjs::hidden(checkboxInput("attachToExisting",
@@ -589,7 +590,7 @@ fluidPage(
                                                          label = "Number of Colors",
                                                          value = 32,
                                                          min = 2,
-                                                         max = 64,
+                                                         max = 128,
                                                          step = 1)),
                                     column(6,
                                             conditionalPanel(condition = "input.proj == 'rect' && !input.plot_region",

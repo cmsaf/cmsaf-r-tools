@@ -687,7 +687,7 @@ plot_fieldmean <- function(variable,
   if (verbose) {
     dat_max <- get(paste0(variable, "_acc_", yearMaxEnd))
     dat_min <- get(paste0(variable, "_acc_", yearMinEnd))
-    titles <- c("Analyzed year", "Climatology", "Maximum valued year in climatology", "Minimum valued year in climatology")
+    titles <- c("Analyzed year", "Climatology", "Maximum valued year", "Minimum valued year")
 
     standout_years <- c(format(start_date, format = "%Y"),
                         paste(climate_year_start, climate_year_end, sep = " - "),

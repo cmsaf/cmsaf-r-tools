@@ -55,7 +55,8 @@
 #' If attach is false, this will be ignored(character).
 #' @param analyze_method Two analyze methods: mean == FALSE; accumulate == TRUE (logical) (Warming Stripes Plots, Time Series Plots, Trend Plots)
 #' @param selected_number Timesteps of the same selected time range (Warming Stripes Plots, Time Series Plots, Trend Plots)
-#' @param stripe_color Color option for stripe plots (Warming Stripes Plots)
+#' @param color_pal Color option for stripe and anomaly plots
+#' @param relative Use relative values for anomaly plots
 #' @param circ_plot Circular stripe plots (logical)
 #' @param dwd_logo Whether to add the DWD logo (logical).
 #' @param verbose Whether to display progress messages (logical).
@@ -98,7 +99,8 @@ monitor_climate <- function(plot_type = "absolute_map",
                             infile_attach = "auto",
                             analyze_method = TRUE,
                             selected_number = 1,
-                            stripe_color = 1,
+                            color_pal = 1,
+                            relative = FALSE,
                             circ_plot = FALSE,
                             dwd_logo = FALSE,
                             verbose = TRUE,

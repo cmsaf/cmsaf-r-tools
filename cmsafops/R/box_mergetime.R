@@ -109,7 +109,10 @@ box_mergetime <- function(var, path, pattern, outfile, lon1 = -180, lon2 = 180,
   
   for (i in seq_along(filelist)) {
     file_info <- read_file(filelist[i], var)
-    time_order <- rbind(time_order, c(i, file_info$dimension_data$t[1]))
+    time_order <- rbind(time_order, c(i, 
+                                      format(get_time(file_info$time_info$units, 
+                                                      file_info$dimension_data$t[1]),
+                                                      "%Y%m%d%H%M%S")))
   }
   
   time_order_id <- order(time_order[,2])

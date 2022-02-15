@@ -13,6 +13,8 @@ plot_abs_map <- function(variable,
                          output_format,
                          min_value,
                          max_value,
+						             color_pal,
+						             relative,
                          nbreaks,
                          freeze_animation,
                          outfile_name,
@@ -66,6 +68,7 @@ plot_abs_map <- function(variable,
     get_unit(variable = variable, language = language),
     "]"
   )
+  if (relative) units_text <- "percent"
   box_text <- paste0(get_climatology_word(language), ": ")
   time_box <- paste0(get_translation_duration(language), ":")
 
@@ -90,7 +93,7 @@ plot_abs_map <- function(variable,
   }
 
   duration <- finish_doy - start_doy + 1
-
+  
   if (start_doy == finish_doy) {
     field_to_plot <- field_source
     field_for_setup <- field_source
@@ -161,13 +164,13 @@ plot_abs_map <- function(variable,
   if (plot_type == "anomaly_map") {
     if (abs(max(field_for_setup_last, na.rm = TRUE)) < abs(min(field_for_setup_last, na.rm = TRUE))) {
       limit_lower <- min(field_for_setup_last, na.rm = TRUE)
-      limit_lower_z <- signif(floor(limit_lower - 50), digits = 1)
+      limit_lower_z <- signif(floor(limit_lower - 0), digits = 2)
       min_value_default <- limit_lower_z
       max_value_default <- (-1) * min_value_default
     }
     else{
       limit_upper <- max(field_for_setup, na.rm = TRUE)
-      limit_upper_z <- signif(ceiling(limit_upper + 50), digits = 1)
+      limit_upper_z <- signif(ceiling(limit_upper + 0), digits = 2)
       max_value_default <- limit_upper_z
       min_value_default <- (-1) * max_value_default
     }
@@ -182,6 +185,19 @@ plot_abs_map <- function(variable,
           "red4"
         )
       )
+	  
+	if (color_pal == 2){bwr_col <- 
+      grDevices::colorRampPalette(c("#474747", "#7a7a7a", "#a8a8a8", "#cdcdcd",
+                                    "#e2e2e2", "#f9f9f9", "#fdf3db", "#fee8b2",
+                                    "#fedf8c", "#fed66c", "#fdcf45", "#fac631"))
+    }
+    
+    if (color_pal == 3){bwr_col <- 
+      grDevices::colorRampPalette(c("#5c3209", "#96560e", "#b27028", "#d1a759",
+                                    "#dfc07a", "#f5e5bf", "#fefefe","#b0dfda", 
+                                    "#6fc0b8", "#389c94", "#078470", "#045f5a", 
+                                    "#0f3c33"))
+    }
   }
 
   if (output_format == "animation") {

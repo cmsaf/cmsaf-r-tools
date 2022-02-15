@@ -111,13 +111,21 @@ merge_climatology <- function(
     }
   }
 
+  # Get full time range of infile
+  id <- ncdf4::nc_open(infile)
+    date_time <- as.Date(cmsafops::get_time(ncdf4::ncatt_get(id, "time", "units")$value, ncdf4::ncvar_get(id, "time")))
+    firstyear <- format(min(date_time), "%Y")
+    lastyear  <- format(max(date_time), "%Y")
+    lastyear  <- as.character(as.numeric(lastyear) - 1)
+  ncdf4::nc_close(id)
+  
   # Need to extract yearly files if climatology does not exist
   extract_climate_files(
     variable = variable,
     infile = infile,
     climate_dir = climate_dir,
-    climate_year_start = climate_year_start,
-    climate_year_end = climate_year_end,
+    climate_year_start = firstyear,
+    climate_year_end = lastyear,
     accumulate = accumulate,
     verbose = verbose,
     nc = nc

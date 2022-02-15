@@ -1,5 +1,11 @@
 # Changelog for cmsafvis package
 
+## 1.1.11
+
+- Minor adaptations to fieldmean plots
+- New color options for anomaly plots
+- Option to plot relative anomaly plots
+
 ## 1.1.10
 
 - new config parameter for quicklook: 'unit' - define variable unit

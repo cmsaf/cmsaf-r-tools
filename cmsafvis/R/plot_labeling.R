@@ -9,7 +9,7 @@ get_title <- function(variable, plot_type = NULL, language, year = NULL) {
     assert_that(nchar(year) == 4)
     title <- paste(year, "vs.", switch(
       language,
-      "eng" = "climatology",
+      "eng" = "Climatology",
       "deu" = "Klimatologie",
       stop("unknown language")
     ))
@@ -62,7 +62,7 @@ get_climatology_word <- function(language) {
 
   word <- switch(
     language,
-    "eng" = "climatology",
+    "eng" = "Climatology",
     "deu" = "Klimatologie",
     stop("unknown language")
   )
@@ -75,7 +75,7 @@ get_translation_duration <- function(language) {
 
   word <- switch(
     language,
-    "eng" = "time span",
+    "eng" = "Time span",
     "deu" = "Zeitraum",
     stop("unknown language")
   )

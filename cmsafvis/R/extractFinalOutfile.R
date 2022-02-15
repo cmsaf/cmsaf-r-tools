@@ -76,6 +76,7 @@ extractFinalOutfile <- function(variable,
       )
     )
     outfile <- file.path(temp_dir, outfile)
+    
     tryCatch({
       cmsafops::timcumsum(
         var = variable,

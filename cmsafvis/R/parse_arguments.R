@@ -29,6 +29,8 @@ parse_arguments <- function(plot_type,
                             freeze_animation = FALSE,
                             min_value = NULL,
                             max_value = NULL,
+                            color_pal = 1,
+                            relative = FALSE,
                             nbreaks = NULL,
                             language = "eng",
                             keep_files = TRUE,
@@ -348,6 +350,42 @@ parse_arguments <- function(plot_type,
   if (is.number(min_value) && is.number(max_value)) {
     assert_that(min_value <= max_value)
   }
+  
+  #### color_pal ####
+  if (missing(color_pal) && configRead) {
+    color_pal_config <- tryCatch(
+      configParams$color_pal,
+      error = function(cond) {
+        stop(paste0(
+          "Can't read 'color_pal' from config file: ",
+          normalizePath(config)
+        ))
+      }
+    )
+    if (!is.null(color_pal_config)) {
+      color_pal <- color_pal_config
+    }
+  }
+  
+  assert_that(is.number(color_pal))
+  
+  #### relative ####
+  if (missing(relative) && configRead) {
+    relative_config <- tryCatch(
+      configParams$relative,
+      error = function(cond) {
+        stop(paste0(
+          "Can't read 'relative' from config file: ",
+          normalizePath(config)
+        ))
+      }
+    )
+    if (!is.null(relative_config)) {
+      relative <- relative_config
+    }
+  }
+  
+  assert_that(is.logical(relative))
 
   #### nbreaks ####
   if (missing(nbreaks) && configRead) {
@@ -848,6 +886,8 @@ parse_arguments <- function(plot_type,
     output_format = output_format,
     min_value = min_value,
     max_value = max_value,
+    color_pal = color_pal,
+    relative = relative,
     nbreaks = nbreaks,
     freeze_animation = freeze_animation,
     outfile_name = outfile_name,

@@ -13,7 +13,7 @@ plot_warming_stripes <- function(variable,
                                  pointsTF,
                                  lineTF, 
                                  title,
-                                 stripe_color,
+                                 color_pal,
                                  circ_plot,
                                  verbose,
                                  nc = NULL)
@@ -124,14 +124,14 @@ plot_warming_stripes <- function(variable,
     
     colors=c(rev(Blues),Red)
     
-    if (stripe_color == 2){palette <- 
+    if (color_pal == 2){palette <- 
       grDevices::colorRampPalette(c("#474747", "#7a7a7a", "#a8a8a8", "#cdcdcd",
                                     "#e2e2e2", "#f9f9f9", "#fdf3db", "#fee8b2",
                                     "#fedf8c", "#fed66c", "#fdcf45", "#fac631"))
     colors <- palette(340)
     }
     
-    if (stripe_color == 3){palette <- 
+    if (color_pal == 3){palette <- 
       grDevices::colorRampPalette(c("#5c3209", "#96560e", "#b27028", "#d1a759",
                                     "#dfc07a", "#f5e5bf", "#fefefe","#b0dfda", 
                                     "#6fc0b8", "#389c94", "#078470", "#045f5a", 
@@ -238,14 +238,14 @@ plot_warming_stripes <- function(variable,
     binWidth = rangeT/nBins
     palette <- rev(RColorBrewer::brewer.pal(nBins,"RdBu"))
   
-    if (stripe_color == 2){palette <- 
+    if (color_pal == 2){palette <- 
         grDevices::colorRampPalette(c("#474747", "#7a7a7a", "#a8a8a8", "#cdcdcd",
                                       "#e2e2e2", "#f9f9f9", "#fdf3db", "#fee8b2",
                                       "#fedf8c", "#fed66c", "#fdcf45", "#fac631"))
       palette <- palette(nBins)
     }
 
-    if (stripe_color == 3){palette <- 
+    if (color_pal == 3){palette <- 
         grDevices::colorRampPalette(c("#5c3209", "#96560e", "#b27028", "#d1a759",
                                       "#dfc07a", "#f5e5bf", "#fefefe","#b0dfda", 
                                       "#6fc0b8", "#389c94", "#078470", "#045f5a", 

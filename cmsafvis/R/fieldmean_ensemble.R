@@ -95,7 +95,7 @@ fieldmean_ensemble <-
             variable = variable,
             infile = infile,
             climate_dir = climate_dir,
-			climate_year_start = firstyear,
+			      climate_year_start = firstyear,
             climate_year_end = lastyear,
             accumulate = accumulate,
             #mean_value = mean_value,

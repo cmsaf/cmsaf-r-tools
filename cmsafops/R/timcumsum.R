@@ -130,7 +130,7 @@ timcumsum <- function(var,
         )
 
         nc_of <- nc_open(of)
-        meandata <- ncvar_get(nc_of, file_data$variable$name)
+        meandata <- ncvar_get(nc_of, file_data$variable$name, collapse_degen = FALSE)
         meantimes <-
           get_date_time(ncvar_get(nc_of, "time"),
                         file_data$time_info$units)

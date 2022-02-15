@@ -38,6 +38,8 @@ anomaly_map <- function(config = NULL,
                         freeze_animation = FALSE,
                         min_value = NULL,
                         max_value = NULL,
+						            color_pal = 1,
+						            relative = FALSE,
                         nbreaks = NULL,
                         language = "eng",
                         keep_files = TRUE,
@@ -79,6 +81,8 @@ anomaly_map <- function(config = NULL,
   min_value <- parsedArguments$min_value
   max_value <- parsedArguments$max_value
   nbreaks <- parsedArguments$nbreaks
+  color_pal <- parsedArguments$color_pal
+  relative <- parsedArguments$relative
   outfile_name <- parsedArguments$outfile_name
   keep_files <- parsedArguments$keep_files
   states <- parsedArguments$states
@@ -207,7 +211,8 @@ if (is_country(country_code)) {
     start_date = start_date,
     end_date = end_date,
     accumulate = accumulate,
-    mean_value = mean_value
+    mean_value = mean_value,
+    relative = relative
   )
 
   # Remove reusable file if desired
@@ -233,6 +238,8 @@ if (is_country(country_code)) {
       output_format = output_format,
       min_value = min_value,
       max_value = max_value,
+	    color_pal = color_pal,
+	    relative = relative,
       nbreaks = nbreaks,
       freeze_animation = freeze_animation,
       outfile_name = outfile_name,
@@ -260,6 +267,8 @@ if (is_country(country_code)) {
       output_format = output_format,
       min_value = min_value,
       max_value = max_value,
+	    color_pal = color_pal,
+      relative = relative,
       nbreaks = nbreaks,
       freeze_animation = freeze_animation,
       outfile_name = outfile_name,

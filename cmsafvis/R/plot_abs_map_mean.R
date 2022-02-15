@@ -13,6 +13,8 @@ plot_abs_map_mean <- function(variable,
                          output_format,
                          min_value,
                          max_value,
+						             color_pal,
+						             relative,
                          nbreaks,
                          freeze_animation,
                          outfile_name,
@@ -62,6 +64,7 @@ plot_abs_map_mean <- function(variable,
     get_unit(variable = variable, language = language),
     "]"
   )
+  if (relative) units_text <- "percent"
   box_text <- paste0(get_climatology_word(language), ": ")
   time_box <- paste0(get_translation_duration(language), ":")
 
@@ -190,6 +193,19 @@ plot_abs_map_mean <- function(variable,
           "red4"
         )
       )
+	  
+	if (color_pal == 2){bwr_col <- 
+      grDevices::colorRampPalette(c("#474747", "#7a7a7a", "#a8a8a8", "#cdcdcd",
+                                    "#e2e2e2", "#f9f9f9", "#fdf3db", "#fee8b2",
+                                    "#fedf8c", "#fed66c", "#fdcf45", "#fac631"))
+    }
+    
+    if (color_pal == 3){bwr_col <- 
+      grDevices::colorRampPalette(c("#5c3209", "#96560e", "#b27028", "#d1a759",
+                                    "#dfc07a", "#f5e5bf", "#fefefe","#b0dfda", 
+                                    "#6fc0b8", "#389c94", "#078470", "#045f5a", 
+                                    "#0f3c33"))
+    }
   }
 
   if (output_format == "animation") {
