@@ -3,7 +3,7 @@
 # You should not use this R-script on its own!
 #
 # Have fun with the CM SAF R TOOLBOX!
-#                                              (Steffen Kothe / CM SAF 2022-01-20)
+#                                              (Steffen Kothe / CM SAF 2022-03-15)
 #__________________________________________________________________________________
 
 # Function to compute first of month
@@ -4798,7 +4798,7 @@ function(input, output, session) {
     
     time_bounds = NULL
     if (file_info$has_time_bnds){
-      time_bound0 <- ncdf4::ncvar_get(id, "time_bnds")
+      time_bound0 <- ncdf4::ncvar_get(id, "time_bnds", collapse_degen = FALSE)
       time_bound1 <- as.character(cmsafops::get_time(t_unit, time_bound0[1,]))
       time_bound2 <- as.character(cmsafops::get_time(t_unit, time_bound0[2,]))
       if (startsWith(t_unit, "hours")) {
@@ -5446,26 +5446,49 @@ function(input, output, session) {
           }
           
           
+          # output$lon_visualize <- renderUI({
+          #   tmp <- c(max(round(as.numeric(visualizeVariables()$min_lon)), -180), min(round(as.numeric(visualizeVariables()$max_lon)), 180))
+          #   lon_bounds(tmp)
+          #   sliderInput("slider1",
+          #               label = "Longitude",
+          #               min = max(round(as.numeric(visualizeVariables()$min_lon)) - 20, -180),
+          #               max = min(round(as.numeric(visualizeVariables()$max_lon)) + 20, 180),
+          #               value = c(tmp[1], tmp[2]))
+          # })
+          
+          # Use shinyWidgets instead of lon / lat slider
+          #
           output$lon_visualize <- renderUI({
             tmp <- c(max(round(as.numeric(visualizeVariables()$min_lon)), -180), min(round(as.numeric(visualizeVariables()$max_lon)), 180))
             lon_bounds(tmp)
-            sliderInput("slider1",
+            shinyWidgets::numericRangeInput("slider1",
                         label = "Longitude",
                         min = max(round(as.numeric(visualizeVariables()$min_lon)) - 20, -180),
                         max = min(round(as.numeric(visualizeVariables()$max_lon)) + 20, 180),
                         value = c(tmp[1], tmp[2]))
           })
-
+         
           output$lat_visualize <- renderUI({
             tmp <- c(max(round(as.numeric(visualizeVariables()$min_lat)), -90), min(round(as.numeric(visualizeVariables()$max_lat)), 90))
             lat_bounds(tmp)
-
-            sliderInput("slider2",
+            
+            shinyWidgets::numericRangeInput("slider2",
                         label = "Latitude",
                         min = max(round(as.numeric(visualizeVariables()$min_lat)) - 20, -90),
                         max = min(round(as.numeric(visualizeVariables()$max_lat)) + 20, 90),
                         value = c(tmp[1], tmp[2]))
           })
+          
+          # output$lat_visualize <- renderUI({
+          #   tmp <- c(max(round(as.numeric(visualizeVariables()$min_lat)), -90), min(round(as.numeric(visualizeVariables()$max_lat)), 90))
+          #   lat_bounds(tmp)
+          # 
+          #   sliderInput("slider2",
+          #               label = "Latitude",
+          #               min = max(round(as.numeric(visualizeVariables()$min_lat)) - 20, -90),
+          #               max = min(round(as.numeric(visualizeVariables()$max_lat)) + 20, 90),
+          #               value = c(tmp[1], tmp[2]))
+          # })
           
           output$ihsf_visualize <- renderUI({
             tmp <- 0.1

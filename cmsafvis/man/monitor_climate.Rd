@@ -39,7 +39,8 @@ monitor_climate(
   infile_attach = "auto",
   analyze_method = TRUE,
   selected_number = 1,
-  stripe_color = 1,
+  color_pal = 1,
+  relative = FALSE,
   circ_plot = FALSE,
   dwd_logo = FALSE,
   verbose = TRUE,
@@ -124,7 +125,9 @@ If attach is false, this will be ignored(character).}
 
 \item{selected_number}{Timesteps of the same selected time range (Warming Stripes Plots, Time Series Plots, Trend Plots)}
 
-\item{stripe_color}{Color option for stripe plots (Warming Stripes Plots)}
+\item{color_pal}{Color option for stripe and anomaly plots}
+
+\item{relative}{Use relative values for anomaly plots}
 
 \item{circ_plot}{Circular stripe plots (logical)}
 

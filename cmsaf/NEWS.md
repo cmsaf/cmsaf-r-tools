@@ -5,6 +5,7 @@
 - Minor adaptation to stripe plots
 - New color options for anomaly plots
 - Visualizer shows time bounds if included
+- Visualizer lon / lat sliders replaced by shinyWidgets::numericRangeInput
 
 ## 3.4.0
 

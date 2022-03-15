@@ -8,7 +8,7 @@ warming_stripes_plot(
   variable = NULL,
   infile = NULL,
   selected_number = 1,
-  stripe_color = 1,
+  color_pal = 1,
   analyze_method = TRUE,
   temp_dir = tempdir(),
   out_dir = getwd(),
@@ -44,7 +44,7 @@ warming_stripes_plot(
 
 \item{selected_number}{Timesteps of the same selected time range (Warming Stripes Plots, Time Series Plots, Trend Plots)}
 
-\item{stripe_color}{Color option for stripe plots (Warming Stripes Plots)}
+\item{color_pal}{Color option for stripe and anomaly plots}
 
 \item{analyze_method}{Two analyze methods: mean == FALSE; accumulate == TRUE (logical) (Warming Stripes Plots, Time Series Plots, Trend Plots)}
 

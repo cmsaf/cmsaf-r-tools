@@ -45,6 +45,7 @@ Imports:
     shinyFiles (>= 0.8.0),
     shinyjs (>= 1.1),
     shinythemes (>= 1.1),
+    shinyWidgets (>= 0.6),
     sp (>= 1.4),
     tcltk (>= 3.5),
     data.table,
@@ -56,5 +57,5 @@ Suggests: spelling (>= 2.1), testthat (>= 2.3)
 RoxygenNote: 7.1.2
 Encoding: UTF-8
 Language: en-US
-Packaged: 2022-01-20 12:34:00 UTC; SK
+Packaged: 2022-03-15 12:34:00 UTC; SK
 Maintainer: Steffen Kothe <Steffen.Kothe@dwd.de>

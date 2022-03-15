@@ -28,6 +28,8 @@ anomaly_map(
   freeze_animation = FALSE,
   min_value = NULL,
   max_value = NULL,
+  color_pal = 1,
+  relative = FALSE,
   nbreaks = NULL,
   language = "eng",
   keep_files = TRUE,
@@ -90,6 +92,10 @@ Please match the file ending according to the output_format.}
 \item{min_value}{Lower values than this are ignored (\code{NULL} or numeric). If \code{NULL}, no values are ignored.}
 
 \item{max_value}{Larger values than this are ignored (\code{NULL} or numeric). If \code{NULL}, no values are ignored.}
+
+\item{color_pal}{Color option for stripe and anomaly plots}
+
+\item{relative}{Use relative values for anomaly plots}
 
 \item{nbreaks}{Number of color breaks (\code{NULL} or positive integer). A value will be computed if \code{NULL} is passed.}
 
