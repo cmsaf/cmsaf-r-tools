@@ -1,5 +1,9 @@
 # Changelog for cmsafvis package
 
+## 1.1.12
+
+- Adapt y-limit for fieldmean
+
 ## 1.1.11
 
 - Minor adaptations to fieldmean plots

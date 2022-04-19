@@ -9,7 +9,7 @@
 descriptionString <-
   "
 
-The CM SAF R TOOLBOX 3.4.1 -- 'Just Read the Instructions'
+The CM SAF R TOOLBOX 3.4.2 -- 'Just Read the Instructions'
 
 The intention of the CM SAF R Toolbox is to help you using
 CM SAF NetCDF formatted climate data
@@ -25,7 +25,7 @@ right in and analyze or visualize a .nc file.
 Suggestions for improvements and praise for the developers
 can be sent to contact.cmsaf@dwd.de.
 
-- Steffen Kothe - 2022-02-15 -"
+- Steffen Kothe - 2022-03-16 -"
 
 # Variable can be found in global.R
 if (isRunningLocally) {

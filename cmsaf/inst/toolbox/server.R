@@ -3,7 +3,7 @@
 # You should not use this R-script on its own!
 #
 # Have fun with the CM SAF R TOOLBOX!
-#                                              (Steffen Kothe / CM SAF 2022-03-15)
+#                                              (Steffen Kothe / CM SAF 2022-03-17)
 #__________________________________________________________________________________
 
 # Function to compute first of month
@@ -347,6 +347,7 @@ function(input, output, session) {
 
   # Reactive value for timestep
   timestep <- reactiveVal()
+  timestep_c <- reactiveVal()
 
   #Reactive value for maximum level
   max_level <- reactiveVal()
@@ -5426,7 +5427,10 @@ function(input, output, session) {
               shinyjs::show("proj")
             }
           }
-
+          
+          # initialize timestep_c
+          timestep_c(visualizeVariables()$date.time[1])
+          
           if (!is.null(visualizeVariables()$time_bounds)){
             output$timestep_visualize <- renderUI({
               selectInput("timestep",
@@ -5445,6 +5449,11 @@ function(input, output, session) {
             })
           }
           
+          observeEvent(input$timestep, {
+            if (!is.null(visualizeVariables()$time_bounds)){
+              timestep_c(visualizeVariables()$date.time[which(visualizeVariables()$time_bounds == input$timestep)])
+            }
+          })
           
           # output$lon_visualize <- renderUI({
           #   tmp <- c(max(round(as.numeric(visualizeVariables()$min_lon)), -180), min(round(as.numeric(visualizeVariables()$max_lon)), 180))
@@ -5459,23 +5468,24 @@ function(input, output, session) {
           # Use shinyWidgets instead of lon / lat slider
           #
           output$lon_visualize <- renderUI({
-            tmp <- c(max(round(as.numeric(visualizeVariables()$min_lon)), -180), min(round(as.numeric(visualizeVariables()$max_lon)), 180))
+            tmp <- c(max(round(as.numeric(visualizeVariables()$min_lon), digits = 2), -180), 
+                     min(round(as.numeric(visualizeVariables()$max_lon), digits = 2), 180))
             lon_bounds(tmp)
             shinyWidgets::numericRangeInput("slider1",
                         label = "Longitude",
-                        min = max(round(as.numeric(visualizeVariables()$min_lon)) - 20, -180),
-                        max = min(round(as.numeric(visualizeVariables()$max_lon)) + 20, 180),
+                        min = -180,
+                        max = 180,
                         value = c(tmp[1], tmp[2]))
           })
          
           output$lat_visualize <- renderUI({
-            tmp <- c(max(round(as.numeric(visualizeVariables()$min_lat)), -90), min(round(as.numeric(visualizeVariables()$max_lat)), 90))
+            tmp <- c(max(round(as.numeric(visualizeVariables()$min_lat), digits = 2), -90), 
+                     min(round(as.numeric(visualizeVariables()$max_lat), digits = 2), 90))
             lat_bounds(tmp)
-            
             shinyWidgets::numericRangeInput("slider2",
                         label = "Latitude",
-                        min = max(round(as.numeric(visualizeVariables()$min_lat)) - 20, -90),
-                        max = min(round(as.numeric(visualizeVariables()$max_lat)) + 20, 90),
+                        min = -90,
+                        max = 90,
                         value = c(tmp[1], tmp[2]))
           })
           
@@ -6239,7 +6249,7 @@ function(input, output, session) {
   co.data.compare.diff <- reactive({ 
     req(analyze_file2_plot())
     req(endsWith(analyze_file2_plot(), ".RData") || endsWith(analyze_file2_plot(), ".csv"))
-    req(input$timestep)
+    req(timestep_c())
     
     a <- station_data_compare()
     data_nc <- visualizeVariables()$data
@@ -6317,9 +6327,9 @@ function(input, output, session) {
       
       # extract data for chosen time step
       if (mmdm == "m" & mmdm_sat == "m") {
-        match_time   <- which(format(as.Date(station_data_compare()[, ti_n]), "%Y-%m") == format(as.Date(input$timestep), "%Y-%m"), arr.ind = TRUE)
+        match_time   <- which(format(as.Date(station_data_compare()[, ti_n]), "%Y-%m") == format(as.Date(timestep_c()), "%Y-%m"), arr.ind = TRUE)
       } else {
-        match_time   <- which(station_data_compare()[, ti_n] == input$timestep, arr.ind = TRUE)
+        match_time   <- which(station_data_compare()[, ti_n] == timestep_c(), arr.ind = TRUE)
       }
       
       lon_station  <- a[, lo_n][match_time]
@@ -6356,7 +6366,7 @@ function(input, output, session) {
         lon_coor <- coor_sat[inds,1]
         lat_coor <- coor_sat[inds,2]
         
-        data_sat[istation] <- data_nc[which(lon == lon_coor),which(lat == lat_coor), which(date.time == input$timestep)]
+        data_sat[istation] <- data_nc[which(lon == lon_coor),which(lat == lat_coor), which(date.time == timestep_c())]
       }
       
       data_station_diff_absolute <- data_sat - data_station
@@ -6457,9 +6467,9 @@ function(input, output, session) {
 
       # extract data for chosen time step
       if (mmdm == "m" & mmdm_sat == "m") {
-        match_time   <- which(format(as.Date(instat.data()[, ti_n]), "%Y-%m") == format(as.Date(input$timestep), "%Y-%m"), arr.ind = TRUE)
+        match_time   <- which(format(as.Date(instat.data()[, ti_n]), "%Y-%m") == format(as.Date(timestep_c()), "%Y-%m"), arr.ind = TRUE)
       } else {
-        match_time   <- which(instat.data()[, ti_n] == input$timestep, arr.ind = TRUE)
+        match_time   <- which(instat.data()[, ti_n] == timestep_c(), arr.ind = TRUE)
       }
 
       lon_station  <- instat.data()[, lo_n][match_time]
@@ -6495,7 +6505,7 @@ function(input, output, session) {
         lon_coor <- coor_sat[inds,1]
         lat_coor <- coor_sat[inds,2]
         
-        data_sat[istation] <- data_nc[which(lon == lon_coor),which(lat == lat_coor), which(date.time == input$timestep)]
+        data_sat[istation] <- data_nc[which(lon == lon_coor),which(lat == lat_coor), which(date.time == timestep_c())]
       }
       
       cd <- data.frame(data_station, data_sat, lon_station, lat_station)
@@ -6614,12 +6624,12 @@ function(input, output, session) {
   }, ignoreInit = TRUE)
 
   # Get new data if timestep is updated
-  observeEvent(input$timestep, {
-    req(is.element(input$timestep, visualizeVariables()$date.time))
+  observeEvent(timestep_c(), {
+    req(is.element(timestep_c(), visualizeVariables()$date.time))
     # Update the data according to the time step using the visualize nc file's id and previously calculated variable.
     if (!is.null(nc_object_visualize())) id <- nc_object_visualize()
     else id <- ncdf4::nc_open(nc_path_visualize())
-    tmp <- getVariableData(which(visualizeVariables()$date.time == input$timestep), id, visualizeVariables()$vn)
+    tmp <- getVariableData(which(visualizeVariables()$date.time == timestep_c()), id, visualizeVariables()$vn)
     if (is.null(nc_object_visualize())) ncdf4::nc_close(id)
 
     if (reversedDimensions$transpose) {
@@ -6980,7 +6990,7 @@ function(input, output, session) {
                                                       division = input$division,
                                                       selectedRegion = input$region,
                                                       region_data = region_data(),
-                                                      timestep = input$timestep,
+                                                      timestep = timestep_c(),
                                                       num_tick = input$num_tick,
                                                       num_rmin = input$num_rmin,
                                                       num_rmax = input$num_rmax,
@@ -7008,13 +7018,13 @@ function(input, output, session) {
                                                                visualizeDataTimestep = visualizeDataTimestep(),
                                                                nc_path_visualize = nc_path_visualize(),
                                                                visualizeDataMax = visualizeDataMax(),
-                                                               timestep_2d = input$timestep,
+                                                               timestep_2d = timestep_c(),
                                                                lon_bounds = lon_bounds(),
                                                                lat_bounds = lat_bounds(),
                                                                lon_loc_vec = lon_loc_vec(),
                                                                lat_loc_vec = lat_loc_vec(),
                                                                name_loc_vec = name_loc_vec(),
-                                                               timestep = input$timestep,
+                                                               timestep = timestep_c(),
                                                                num_tick = input$num_tick,
                                                                num_rmin = input$num_rmin,
                                                                num_rmax = input$num_rmax,
@@ -7056,7 +7066,7 @@ function(input, output, session) {
                                                  lon_loc_vec = lon_loc_vec(),
                                                  lat_loc_vec = lat_loc_vec(),
                                                  name_loc_vec = name_loc_vec(),
-                                                 timestep = input$timestep,
+                                                 timestep = timestep_c(),
                                                  num_tick = input$num_tick,
                                                  num_rmin = input$num_rmin,
                                                  num_rmax = input$num_rmax,
@@ -7223,7 +7233,7 @@ function(input, output, session) {
                                                                   division = input$division,
                                                                   selectedRegion = input$region,
                                                                   region_data = region_data(),
-                                                                  timestep = input$timestep,
+                                                                  timestep = timestep_c(),
                                                                   num_tick = input$num_tick,
                                                                   num_rmin = input$num_rmin,
                                                                   num_rmax = input$num_rmax,
@@ -7255,7 +7265,7 @@ function(input, output, session) {
                                                            lon_loc_vec = lon_loc_vec(),
                                                            lat_loc_vec = lat_loc_vec(),
                                                            name_loc_vec = name_loc_vec(),
-                                                           timestep = input$timestep,
+                                                           timestep = timestep_c(),
                                                            num_tick = input$num_tick,
                                                            num_rmin = input$num_rmin,
                                                            num_rmax = input$num_rmax,
@@ -7297,7 +7307,7 @@ function(input, output, session) {
     # Requirements
     req(input$lonPoint)
     req(input$latPoint)
-    req(input$timestep)
+    req(timestep_c())
     req(visualizeVariables()$date.time)
     req(visualizeDataMax())
     req(visualizeVariables()$plot_dim == 2)
@@ -7379,12 +7389,12 @@ function(input, output, session) {
     cat("This tool helps you to visualize 1D-timeseries and 2D-maps.", "\n")
     cat("\n")
     cat("This version ('Just Read The Instructions') was tested with the cmsaf", "\n")
-    cat("R-package in version 3.4.1.", "\n")
+    cat("R-package in version 3.4.2.", "\n")
     cat("\n")
     cat("Suggestions for improvements and praise for the developers", "\n")
     cat("can be send to contact.cmsaf@dwd.de.", "\n")
     cat("\n")
-    cat("                              - Steffen Kothe - 2022-02-15 -", "\n")
+    cat("                              - Steffen Kothe - 2022-03-16 -", "\n")
     cat("\n")
     cat("\n")
   })

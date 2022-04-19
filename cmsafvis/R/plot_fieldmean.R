@@ -189,9 +189,9 @@ plot_fieldmean <- function(variable,
 
       # Compute y limit dependent on accumulation process
       if (adjustAccumulation) {
-        limit <- max(limit, var_ensemble[length(var_ensemble)])
+        limit <- max(limit, c(var_ensemble[length(var_ensemble)], var_current[length(var_current)]))
       } else {
-        limit <- max(limit, max(var_ensemble, na.rm = TRUE))
+        limit <- max(limit, max(c(var_ensemble, var_current), na.rm = TRUE))
       }
     }
 

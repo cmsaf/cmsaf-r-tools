@@ -1,5 +1,9 @@
 # Release notes for cmsaf
 
+## 3.4.2
+- Bug fix: wrong assignment of time step
+- lon / lat default for visualization changed from integer to double
+
 ## 3.4.1
 
 - Minor adaptation to stripe plots
