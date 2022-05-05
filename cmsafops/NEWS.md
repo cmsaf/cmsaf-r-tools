@@ -1,5 +1,8 @@
 # Changelog for cmsafops package
 
+## 1.2.5
+- Suppress warning message due to undefined time bounds dimension
+
 ## 1.2.4
 - Adaptation of time sorting in box_mergetime 
 - Minor bug fix for timcumsum, which might occur in rare cases

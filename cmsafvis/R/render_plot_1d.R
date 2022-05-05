@@ -13,6 +13,8 @@
 #' 1 for Line, 2 for Points, 3 for Line and Points, 4 for steps, 5 for histogram.
 #' @param text1_1d Title text (character).
 #' @param text2_1d Text to be passed to graphics::mtext (character).
+#' @param text3_1d X-label (character).
+#' @param text4_1d Y-label (character).
 #' @param col A color chosen via colourpicker::colourInput.
 #'
 #' @export
@@ -30,6 +32,8 @@ render_plot_1d <- function(outfile = NULL,
                            imageheight,
                            text1_1d,
                            text2_1d,
+                           text3_1d,
+                           text4_1d,
                            textsize,
                            linesize,
                            col) {
@@ -334,8 +338,8 @@ render_plot_1d <- function(outfile = NULL,
         ylim = slidery,
         col = "white",
         main = text1_1d,
-        xlab = "time",
-        ylab = y_label,
+        xlab = text3_1d,
+        ylab = text4_1d,
         axes = FALSE
       )
       graphics::abline(h = 0, lwd = 1, col = "gray")
@@ -468,8 +472,8 @@ render_plot_1d <- function(outfile = NULL,
         ylim = slidery,
         col = "white",
         main = text1_1d,
-        xlab = "time",
-        ylab = y_label,
+        xlab = text3_1d,
+        ylab = text4_1d,
         axes = FALSE
       )
       graphics::abline(h = 0, lwd = 1, col = "gray")
@@ -602,8 +606,8 @@ render_plot_1d <- function(outfile = NULL,
         ylim = slidery,
         col = "white",
         main = text1_1d,
-        xlab = "time",
-        ylab = y_label,
+        xlab = text3_1d,
+        ylab = text4_1d,
         axes = FALSE
       )
       graphics::abline(h = 0, lwd = 1, col = "gray")
@@ -736,8 +740,8 @@ render_plot_1d <- function(outfile = NULL,
         ylim = slidery,
         col = "white",
         main = text1_1d,
-        xlab = "time",
-        ylab = y_label,
+        xlab = text3_1d,
+        ylab = text4_1d,
         axes = FALSE
       )
       graphics::abline(h = 0, lwd = 1, col = "gray")
@@ -871,8 +875,8 @@ render_plot_1d <- function(outfile = NULL,
         ylim = slidery,
         col = "white",
         main = text1_1d,
-        xlab = "time",
-        ylab = y_label,
+        xlab = text3_1d,
+        ylab = text4_1d,
         axes = FALSE
       )
       graphics::abline(h = 0, lwd = 1, col = "gray")

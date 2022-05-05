@@ -13,8 +13,11 @@ get_dimensions <- function(id, dimnames) {
   t <- NULL
 
   for (i in seq_along(dimnames)) {
-    sn <- ncatt_get(id, dimnames[i], ATTR_NAMES$STANDARD_NAME)
-    ln <- ncatt_get(id, dimnames[i], ATTR_NAMES$LONG_NAME)
+    # sn <- ncatt_get(id, dimnames[i], ATTR_NAMES$STANDARD_NAME)
+    # ln <- ncatt_get(id, dimnames[i], ATTR_NAMES$LONG_NAME)
+    # Suppress warnings due to missing definition of 'bnds' dimension
+    invisible(capture.output(sn <- ncatt_get(id, dimnames[i], ATTR_NAMES$STANDARD_NAME)))
+    invisible(capture.output(ln <- ncatt_get(id, dimnames[i], ATTR_NAMES$LONG_NAME)))
     dn <- dimnames[i]
 
     is_x_dim <- any(c(sn, ln, dn) %in% X_NAMES)

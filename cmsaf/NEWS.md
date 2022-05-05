@@ -1,5 +1,9 @@
 # Release notes for cmsaf
 
+## 3.4.3
+- Bug fix: Missing 'pattern' in 'Compare Data'
+- Bug fix: Conversion of time could lead to 'NA'
+
 ## 3.4.2
 - Bug fix: wrong assignment of time step
 - lon / lat default for visualization changed from integer to double

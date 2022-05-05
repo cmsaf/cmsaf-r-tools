@@ -57,8 +57,11 @@ ncinfo <- function(infile, info = "s", verbose = FALSE, nc = NULL) {
 
   # get file information
 
-  if (!is.null(nc)) nc_in <- nc
-  else nc_in <- nc_open(infile)
+  if (!is.null(nc)) { 
+    nc_in <- nc
+  } else {
+    nc_in <- nc_open(infile)
+  }
 
   dimnames <- names(nc_in$dim)
   varnames <- names(nc_in$var)
@@ -86,7 +89,8 @@ ncinfo <- function(infile, info = "s", verbose = FALSE, nc = NULL) {
 
     # check standard_names of dimensions
     for (i in seq_along(dimnames)) {
-      sn <- ncatt_get(nc_in, dimnames[i], ATTR_NAMES$STANDARD_NAME)
+      invisible(capture.output(sn <- ncatt_get(nc_in, dimnames[i], ATTR_NAMES$STANDARD_NAME)))
+      # sn <- ncatt_get(nc_in, dimnames[i], ATTR_NAMES$STANDARD_NAME)
       if (length(sn) > 0) {
         sn <- sn$value
         if (sn == TIME_NAMES$DEFAULT) t_name <- dimnames[i]

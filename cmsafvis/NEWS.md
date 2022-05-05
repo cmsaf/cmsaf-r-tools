@@ -3,6 +3,7 @@
 ## 1.1.12
 
 - Adapt y-limit for fieldmean
+- Add option for x and y label of 1d plots
 
 ## 1.1.11
 

@@ -3,7 +3,7 @@
 # You should not use this R-script on its own!
 #
 # Have fun with the CM SAF R TOOLBOX!
-#                                              (Steffen Kothe / CM SAF 2022-03-17)
+#                                              (Steffen Kothe / CM SAF 2022-05-03)
 #__________________________________________________________________________________
 
 # Function to compute first of month
@@ -1655,7 +1655,7 @@ function(input, output, session) {
                     "Please choose a variable.",
                     choices = vars)
       })
-      
+     
       # Extracting date range and lat/lon range from functions
       extractedDates <- extractDateRangeNc(nc_path(), nc_flag = 1)
       timestep(extractedDates$timestep)
@@ -1767,7 +1767,7 @@ function(input, output, session) {
     result.fileslist <- sort(result.fileslist)
     return(result.fileslist)
   }
-  
+
   #### Function to calculate date range of .nc-files and give variable names. ####
   ncFilelist_dateRange <- function(path_to_nc, startDate, endDate, timestep, nc_flag = 1) {
     # Get important values.
@@ -2261,7 +2261,7 @@ function(input, output, session) {
 		shinyjs::hide("spinner_prepare3")
 		resetToAnalyzePanel()
 	} else {
-	
+
 		# Get first of month if timestep == m
 		if (timestep() == "m") {
 			dateRange_prep(firstOfMonth(input$dateRange_prepare_nc))
@@ -4802,7 +4802,7 @@ function(input, output, session) {
       time_bound0 <- ncdf4::ncvar_get(id, "time_bnds", collapse_degen = FALSE)
       time_bound1 <- as.character(cmsafops::get_time(t_unit, time_bound0[1,]))
       time_bound2 <- as.character(cmsafops::get_time(t_unit, time_bound0[2,]))
-      if (startsWith(t_unit, "hours")) {
+      if (startsWith(t_unit, "hours") & nchar(time_bound1) > 10) {
         time_bound1 <- as.POSIXct(time_bound1, format = "%Y-%m-%d %R")
         time_bound2 <- as.POSIXct(time_bound2, format = "%Y-%m-%d %R")
       } else {
@@ -5034,7 +5034,7 @@ function(input, output, session) {
       x_range <- length(data)
       ltype <- c("l", "p", "o", "s", "h")
       
-      if (startsWith(t_unit, "hours")) {
+      if (startsWith(t_unit, "hours") & nchar(date.time) > 10) {
         date.time <- as.POSIXct(date.time, format = "%Y-%m-%d %R")
       } else {
         date.time <- as.Date(date.time)
@@ -5079,7 +5079,7 @@ function(input, output, session) {
       visualizeDataMin(min(data, na.rm = TRUE))
       visualizeDataMax(max(data, na.rm = TRUE))
       
-      if (startsWith(t_unit, "hours")) {
+      if (startsWith(t_unit, "hours") & nchar(date.time) > 10)) {
         date.time <- as.POSIXct(date.time, format = "%Y-%m-%d %R")
       } else {
         date.time <- as.Date(date.time)
@@ -5400,7 +5400,7 @@ function(input, output, session) {
                           value = visualizeVariables()$varname2)
               })
               
-              # pattern <- "[^\\/]+(\\.nc)$" # regular exp. to extract filenames
+              pattern <- "[^\\/]+(\\.nc)$" # regular exp. to extract filenames
               # regex1 <- regmatches( analyze_file1_plot(), regexpr(pattern, analyze_file1_plot()))
               # Replace with cmsafops::get_basename() which also accounts for URLs
               regex1 <- cmsafops::get_basename(analyze_file1_plot())
@@ -5571,7 +5571,19 @@ function(input, output, session) {
                         label = "Subtitle",
                         value = " ")
             })
-            
+			
+			output$x_axis_text_1d <- renderUI({
+                textInput("x_axis_label_1d",
+                          label = "X-Label",
+                          value = "time")
+              })
+              
+            output$y_axis_text_1d <- renderUI({
+                textInput("y_axis_label_1d",
+                          label = "Y-Label",
+                          value = visualizeVariables()$varname)
+            })
+	            
             if((endsWith(infile2_analyze_value(), ".csv")) || (endsWith(infile2_analyze_value(), ".RData"))){
               if("time" %in% colnames(station_data_compare())){
                 station_time_first <- station_data_compare()$time[1]
@@ -5608,7 +5620,7 @@ function(input, output, session) {
               shinyjs::hide("dropdown_station_number")
             }
             
-            # pattern <- "[^\\/]+(\\.nc)$" # regular exp. to extract filenames
+            pattern <- "[^\\/]+(\\.nc)$" # regular exp. to extract filenames
             # regex1 <- regmatches( analyze_file1_plot(), regexpr(pattern, analyze_file1_plot()))
             # Replace with cmsafops::get_basename() which also accounts for URLs
             regex1 <- cmsafops::get_basename(analyze_file1_plot())
@@ -5655,7 +5667,7 @@ function(input, output, session) {
             shinyjs::hide("date_dropdown_visualize")
             shinyjs::hide("dropdown_station_number")
             
-            # pattern <- "[^\\/]+(\\.nc)$" # regular exp. to extract filenames
+            pattern <- "[^\\/]+(\\.nc)$" # regular exp. to extract filenames
             # regex1 <- regmatches( analyze_file1_plot(), regexpr(pattern, analyze_file1_plot()))
             # Replace with cmsafops::get_basename() which also accounts for URLs
             regex1 <- cmsafops::get_basename(analyze_file1_plot())
@@ -5678,8 +5690,8 @@ function(input, output, session) {
                         value = paste0(visualizeVariables()$ylabel, " (", regex2, ")"))
             })
             
-            shinyjs::show("x_axis_text_1d")
-            shinyjs::show("y_axis_text_1d")
+            shinyjs::hide("x_axis_text_1d")
+            shinyjs::hide("y_axis_text_1d")
             
             shinyjs::hide("x_visualize")
             shinyjs::hide("y_visualize")
@@ -5708,6 +5720,7 @@ function(input, output, session) {
                           selected = visualizeVariables()$date.time[1],
                           selectize = FALSE)
             })
+            
             shinyjs::show("date_dropdown_visualize")
             
             output$title_text_1d <- renderUI({
@@ -5721,9 +5734,24 @@ function(input, output, session) {
                         label = "Subtitle",
                         value = " ")
             })
+			
+			output$x_axis_text_1d <- renderUI({
+                textInput("x_axis_label_1d",
+                          label = "X-Label",
+                          value = "time")
+              })
+              
+            output$y_axis_text_1d <- renderUI({
+                textInput("y_axis_label_1d",
+                          label = "Y-Label",
+                          value = visualizeVariables()$varname)
+            })
+			              
+              shinyjs::show("x_axis_text_1d")
+              shinyjs::show("y_axis_text_1d")
             
             if(checkboxCompareData_dropdown() == "cmsaf.scatter") {
-              # pattern <- "[^\\/]+(\\.nc)$" # regular exp. to extract filenames
+              pattern <- "[^\\/]+(\\.nc)$" # regular exp. to extract filenames
               # regex1 <- regmatches( analyze_file1_plot(), regexpr(pattern, analyze_file1_plot()))
               # Replace with cmsafops::get_basename() which also accounts for URLs
               regex1 <- cmsafops::get_basename(analyze_file1_plot())
@@ -5751,7 +5779,7 @@ function(input, output, session) {
             } else if(checkboxCompareData_dropdown() == "cmsaf.hist"){
                 shinyjs::hide("dropdown_station_number")
               
-              # pattern <- "[^\\/]+(\\.nc)$" # regular exp. to extract filenames
+              pattern <- "[^\\/]+(\\.nc)$" # regular exp. to extract filenames
               # regex1 <- regmatches( analyze_file1_plot(), regexpr(pattern, analyze_file1_plot()))
               # Replace with cmsafops::get_basename() which also accounts for URLs
               regex1 <- cmsafops::get_basename(analyze_file1_plot())
@@ -5836,6 +5864,21 @@ function(input, output, session) {
                         label = "Subtitle",
                         value = " ")
             })
+			
+			      output$x_axis_text_1d <- renderUI({
+                textInput("x_axis_label_1d",
+                          label = "X-Label",
+                          value = "time")
+              })
+              
+            output$y_axis_text_1d <- renderUI({
+                textInput("y_axis_label_1d",
+                          label = "Y-Label",
+                          value = visualizeVariables()$varname)
+            })
+			              
+              #shinyjs::show("x_axis_text_1d")
+              #shinyjs::show("y_axis_text_1d")
           } else if((length(visualizeVariables()$lon) == 1 && length(visualizeVariables()$lat) != 1) ||
                     (length(visualizeVariables()$lon) != 1 && length(visualizeVariables()$lat) == 1)){
             # 1D-Plot (x-axis: lat or lon and y-axis: variable)
@@ -6830,6 +6873,8 @@ function(input, output, session) {
                                                  imageheight = imageheight(),
                                                  text1_1d = input$text1_1d,   # title
                                                  text2_1d = input$text2_1d,   # subtitle
+                                                 text3_1d = input$x_axis_label_1d, # X-Label
+                                                 text4_1d = input$y_axis_label_1d, # Y-Label
                                                  textsize = textsize,
                                                  linesize = linesize,
                                                  col = input$integer))   # color
@@ -7389,12 +7434,12 @@ function(input, output, session) {
     cat("This tool helps you to visualize 1D-timeseries and 2D-maps.", "\n")
     cat("\n")
     cat("This version ('Just Read The Instructions') was tested with the cmsaf", "\n")
-    cat("R-package in version 3.4.2.", "\n")
+    cat("R-package in version 3.4.3.", "\n")
     cat("\n")
     cat("Suggestions for improvements and praise for the developers", "\n")
     cat("can be send to contact.cmsaf@dwd.de.", "\n")
     cat("\n")
-    cat("                              - Steffen Kothe - 2022-03-16 -", "\n")
+    cat("                              - Steffen Kothe - 2022-05-03 -", "\n")
     cat("\n")
     cat("\n")
   })

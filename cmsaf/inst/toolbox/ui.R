@@ -3,13 +3,13 @@
 # You should not use this R-script on its own!
 #
 # Have fun with the CM SAF R TOOLBOX!
-#                                              (Steffen Kothe / CM SAF 2022-03-15)
+#                                              (Steffen Kothe / CM SAF 2022-05-03)
 #__________________________________________________________________________________
 
 descriptionString <-
   "
 
-The CM SAF R TOOLBOX 3.4.2 -- 'Just Read the Instructions'
+The CM SAF R TOOLBOX 3.4.3 -- 'Just Read the Instructions'
 
 The intention of the CM SAF R Toolbox is to help you using
 CM SAF NetCDF formatted climate data

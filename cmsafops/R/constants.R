@@ -61,7 +61,9 @@ TIME_BOUNDS_NAMES <- list(
   "Tb",
   DEFAULT = "time_bnds",
   "Time_bnds",
-  "bndsize"
+  "bndsize",
+  "time_bnds",
+  "bnds"
 )
 
 DIM_NAMES <- c(

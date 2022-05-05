@@ -19,6 +19,8 @@ render_plot_1d(
   imageheight,
   text1_1d,
   text2_1d,
+  text3_1d,
+  text4_1d,
   textsize,
   linesize,
   col
@@ -54,6 +56,10 @@ If NULL is passed a file is created in the R session temporary directory.}
 \item{text1_1d}{Title text (character).}
 
 \item{text2_1d}{Text to be passed to graphics::mtext (character).}
+
+\item{text3_1d}{X-label (character).}
+
+\item{text4_1d}{Y-label (character).}
 
 \item{textsize}{Textsize to be used (cex).}
 
