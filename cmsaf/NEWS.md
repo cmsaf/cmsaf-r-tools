@@ -3,6 +3,7 @@
 ## 3.4.3
 - Bug fix: Missing 'pattern' in 'Compare Data'
 - Bug fix: Conversion of time could lead to 'NA'
+- Bug fix: Visualization did not update in some cases
 
 ## 3.4.2
 - Bug fix: wrong assignment of time step

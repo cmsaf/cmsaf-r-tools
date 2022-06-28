@@ -89,7 +89,7 @@ ncinfo <- function(infile, info = "s", verbose = FALSE, nc = NULL) {
 
     # check standard_names of dimensions
     for (i in seq_along(dimnames)) {
-      invisible(capture.output(sn <- ncatt_get(nc_in, dimnames[i], ATTR_NAMES$STANDARD_NAME)))
+      invisible(utils::capture.output(sn <- ncatt_get(nc_in, dimnames[i], ATTR_NAMES$STANDARD_NAME)))
       # sn <- ncatt_get(nc_in, dimnames[i], ATTR_NAMES$STANDARD_NAME)
       if (length(sn) > 0) {
         sn <- sn$value

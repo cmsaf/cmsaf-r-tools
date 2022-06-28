@@ -3,7 +3,7 @@
 # You should not use this R-script on its own!
 #
 # Have fun with the CM SAF R TOOLBOX!
-#                                              (Steffen Kothe / CM SAF 2022-05-03)
+#                                              (Steffen Kothe / CM SAF 2022-06-28)
 #__________________________________________________________________________________
 
 # Function to compute first of month
@@ -5079,7 +5079,7 @@ function(input, output, session) {
       visualizeDataMin(min(data, na.rm = TRUE))
       visualizeDataMax(max(data, na.rm = TRUE))
       
-      if (startsWith(t_unit, "hours") & nchar(date.time) > 10)) {
+      if (startsWith(t_unit, "hours") & nchar(date.time) > 10) {
         date.time <- as.POSIXct(date.time, format = "%Y-%m-%d %R")
       } else {
         date.time <- as.Date(date.time)
@@ -5452,6 +5452,8 @@ function(input, output, session) {
           observeEvent(input$timestep, {
             if (!is.null(visualizeVariables()$time_bounds)){
               timestep_c(visualizeVariables()$date.time[which(visualizeVariables()$time_bounds == input$timestep)])
+            } else {
+              timestep_c(visualizeVariables()$date.time[which(visualizeVariables()$date.time == input$timestep)])
             }
           })
           
@@ -6931,7 +6933,7 @@ function(input, output, session) {
     # isolate( req(imagewidth()) )    # image width (triggering is done by lat_lon_trigger)
     # isolate( req(imageheight()) )   # image height (triggering is done by lat_lon_trigger)
     
-    # Non-required triggers (some are required but will be caught in vilidation of numeric inputs.)
+    # Non-required triggers (some are required but will be caught in validation of numeric inputs.)
     c(name_loc_vec(),    # new location
       db_checkGroup(),  # colorbar
       db_text2(),        # sub-title
