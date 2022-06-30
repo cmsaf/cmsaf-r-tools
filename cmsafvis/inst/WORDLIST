@@ -63,11 +63,14 @@ kml
 loc
 lon
 maximium 
+maptools
 mtext
 ortho
 outfile
 quicklook
 rescaling
+rgdal
+rworldxtra
 temporaly 
 tif
 timeseries 

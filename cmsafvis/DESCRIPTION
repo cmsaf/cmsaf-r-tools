@@ -26,18 +26,17 @@ License: GPL (>= 3)
 Depends: R (>= 3.6)
 Imports: animation (>= 2.6), assertthat (>= 0.2.1), cmsafops (>=
         1.2.1), colorspace (>= 1.4), countrycode (>= 1.1), fields (>=
-        10.3), mapproj (>= 1.2.7), maps (>= 3.3.0), maptools (>= 0.9),
-        methods (>= 3.6), ncdf4 (>= 1.17), png (>= 0.1), progress (>=
-        1.2.2), raster (>= 3.0), rworldxtra (>= 1.01), sp (>= 1.4),
-        yaml (>= 2.2), RColorBrewer, rasterVis, gridExtra, SearchTrees,
-        rgdal, utils
+        10.3), mapproj (>= 1.2.7), maps (>= 3.3.0), methods (>= 3.6), 
+        ncdf4 (>= 1.17), png (>= 0.1), progress (>= 1.2.2), raster (>= 3.0), 
+        sp (>= 1.4), yaml (>= 2.2), RColorBrewer, rasterVis, gridExtra, 
+        SearchTrees, utils
 NeedsCompilation: no
 Repository: CRAN
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.0
 Encoding: UTF-8
 Language: en-US
 Suggests: plotKML (>= 0.8), rnaturalearth (>= 0.1), spelling (>= 2.1),
         testthat (>= 2.3)
-Packaged: 2022-03-15 12:30:00 UTC
+Packaged: 2022-06-30 12:30:00 UTC
 Maintainer: Steffen Kothe <Steffen.Kothe@dwd.de>
