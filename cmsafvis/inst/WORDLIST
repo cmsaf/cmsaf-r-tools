@@ -62,12 +62,15 @@ instat
 kml
 loc
 lon
+maptools
 maximium 
 mtext
 ortho
 outfile
 quicklook
 rescaling
+rgdal
+rworldxtra
 temporaly 
 tif
 timeseries 

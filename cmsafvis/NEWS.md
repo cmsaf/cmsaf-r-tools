@@ -4,6 +4,7 @@
 
 - Adapt y-limit for fieldmean
 - Add option for x and y label of 1d plots
+- Unused packages removed from Imports: rworldxtra, rgdal, maptools
 
 ## 1.1.11
 
