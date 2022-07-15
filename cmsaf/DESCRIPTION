@@ -1,5 +1,5 @@
 Package: cmsaf
-Version: 3.4.3
+Version: 3.4.4
 Title: A Toolbox for CM SAF NetCDF Data
 Authors@R: 
     c(person(given = "Steffen",

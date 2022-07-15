@@ -1,5 +1,8 @@
 # Release notes for cmsaf
 
+## 3.4.4
+- Bug fix: error for t_unit = "hours" and time_bounds > 1
+
 ## 3.4.3
 - Bug fix: Missing 'pattern' in 'Compare Data'
 - Bug fix: Conversion of time could lead to 'NA'

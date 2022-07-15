@@ -4802,7 +4802,7 @@ function(input, output, session) {
       time_bound0 <- ncdf4::ncvar_get(id, "time_bnds", collapse_degen = FALSE)
       time_bound1 <- as.character(cmsafops::get_time(t_unit, time_bound0[1,]))
       time_bound2 <- as.character(cmsafops::get_time(t_unit, time_bound0[2,]))
-      if (startsWith(t_unit, "hours") & nchar(time_bound1) > 10) {
+      if (startsWith(t_unit, "hours") & nchar(time_bound1[1]) > 10) {
         time_bound1 <- as.POSIXct(time_bound1, format = "%Y-%m-%d %R")
         time_bound2 <- as.POSIXct(time_bound2, format = "%Y-%m-%d %R")
       } else {
@@ -5034,7 +5034,7 @@ function(input, output, session) {
       x_range <- length(data)
       ltype <- c("l", "p", "o", "s", "h")
       
-      if (startsWith(t_unit, "hours") & nchar(date.time) > 10) {
+      if (startsWith(t_unit, "hours") & nchar(date.time[1]) > 10) {
         date.time <- as.POSIXct(date.time, format = "%Y-%m-%d %R")
       } else {
         date.time <- as.Date(date.time)
@@ -5079,7 +5079,7 @@ function(input, output, session) {
       visualizeDataMin(min(data, na.rm = TRUE))
       visualizeDataMax(max(data, na.rm = TRUE))
       
-      if (startsWith(t_unit, "hours") & nchar(date.time) > 10) {
+      if (startsWith(t_unit, "hours") & nchar(date.time[1]) > 10) {
         date.time <- as.POSIXct(date.time, format = "%Y-%m-%d %R")
       } else {
         date.time <- as.Date(date.time)
