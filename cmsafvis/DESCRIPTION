@@ -23,6 +23,7 @@ Description: The Satellite Application Facility on Climate Monitoring (CM SAF)
     Detailed information and test data are provided on the CM SAF webpage 
     (<http://www.cmsaf.eu/R_toolbox>).
 License: GPL (>= 3)
+BugReports: https://github.com/cmsaf/cmsaf-r-tools/issues
 Depends: R (>= 3.6)
 Imports: animation (>= 2.6), assertthat (>= 0.2.1), cmsafops (>=
         1.2.1), colorspace (>= 1.4), countrycode (>= 1.1), fields (>=
@@ -38,5 +39,9 @@ Encoding: UTF-8
 Language: en-US
 Suggests: plotKML (>= 0.8), rnaturalearth (>= 0.1), spelling (>= 2.1),
         testthat (>= 2.3)
+<<<<<<< HEAD
 Packaged: 2022-07-05 12:30:00 UTC
+=======
+Packaged: 2022-06-30 12:30:00 UTC
+>>>>>>> 764d1d4326aba1c020cc850f7ef7218913619a71
 Maintainer: Steffen Kothe <Steffen.Kothe@dwd.de>
