@@ -105,7 +105,7 @@ cmsaf.stats <- function(var1, var2, infile1, infile2, outfile, nc34 = 4, overwri
   dum_dat <- ncvar_get(nc_in, var1, collapse_degen = FALSE)
   date <- ncdf4::ncvar_get(nc_in, "time")
   t_unit <- ncdf4::ncatt_get(nc_in, "time", "units")$value
-  date.time <- as.character(cmsafops::get_time(t_unit, date))
+  date.time <- format(cmsafops::get_time(t_unit, date))
   nc_close(nc_in)
   
   rmse <- c()   # RMSE (root mean squared error)

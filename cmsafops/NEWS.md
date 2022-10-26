@@ -1,5 +1,8 @@
 # Changelog for cmsafops package
 
+## 1.2.6
+- Adaptation due to changes in R-devel: as.character(dates) changed to format(dates)
+
 ## 1.2.5
 - Suppress warning message due to undefined time bounds dimension
 

@@ -31,6 +31,8 @@
 #'  \item{legend: }{TRUE / FALSE}
 #'  \item{colorscale: }{character (e.g., Viridis)}
 #'  \item{unit: }{character (e.g., Percent / '%')}
+#'  \item{var_name: }{character (e.g., Percent / '%')}
+#'  \item{bluemarble: }{TRUE / FALSE}
 #' }
 #'@export
 #'@importFrom assertthat assert_that is.count is.flag is.readable is.writeable
@@ -80,8 +82,12 @@ quicklook <- function(config,
   assert_that(is.flag(bluemarble))
   
   # define some global variables, which are part of the bluemarble data
-  nc_crs <- blue_marble <- NULL
-  
+  if (exists("blue_marble")) {
+    nc_crs <- NULL  
+  } else {
+      nc_crs <- blue_marble <- NULL
+  }
+
   ### Build colorpalettes ###
   
   palettes <- GetPaletteConfig(gui = TRUE)
@@ -108,7 +114,8 @@ quicklook <- function(config,
   rownames(palettes)[85] <- "albedo2"
   
   cloud_mask1 <- c("black", "transparent", "gray60", "white")
-  cloud_mask2 <- c("black", "transparent", "gray60", "white", "pink")
+  # cloud_mask2 <- c("black", "transparent", "gray60", "white", "pink")
+  cloud_mask2 <- c("transparent", "transparent", "gray60", "white", "white")
   
   ### Read and format logo ###
   
@@ -207,6 +214,7 @@ quicklook <- function(config,
   
   varnames <- c()
   units <- c()
+  bluemarbles <- c()
   
   plot_lim <- c()
   col_from_config <- c()
@@ -215,16 +223,15 @@ quicklook <- function(config,
   slots <- c()
   invert <- c()
   set_unit <- c()
+  set_vname <- c()
+  marble <- c()
+  sysd <- c()
   
   # define plotting area in case of polar projection
   area <- ""
   if (grepl("North", file_info$area)) area <- "NP"
   if (grepl("South", file_info$area)) area <- "SP"
   if (grepl("Global", file_info$area)) area <- "GL"
-  
-  if (bluemarble && !file_info$grid == "Satellite projection MSG/Seviri") {
-    stop("Bluemarble plotting is only available for CLAAS data on MSG grid.")
-  }
   
   vars <- names(configParams[[file_info$product_type]][[file_info$id]])[names(configParams[[file_info$product_type]][[file_info$id]]) != "Dataset"]
   nvars <- length(vars)
@@ -241,6 +248,9 @@ quicklook <- function(config,
     legends <- c(legends, configParams[[file_info$product_type]][[file_info$id]][[vars[i]]]$legend)
     slots <- c(slots, configParams[[file_info$product_type]][[file_info$id]][[vars[i]]]$slot)
     set_unit <- c(set_unit, configParams[[file_info$product_type]][[file_info$id]][[vars[i]]]$unit)
+    set_vname <- c(set_vname, configParams[[file_info$product_type]][[file_info$id]][[vars[i]]]$var_name)
+    marble <- c(marble, configParams[[file_info$product_type]][[file_info$id]][[vars[i]]]$bluemarble)
+    sysd <- c(sysd, configParams[[file_info$product_type]][[file_info$id]][[vars[i]]]$sysdata)
     iinvert <- configParams[[file_info$product_type]][[file_info$id]][[vars[i]]]$invert_col
     if (is.null(iinvert)) {
       iinvert <- FALSE
@@ -263,9 +273,23 @@ quicklook <- function(config,
   for (k in seq_along(vars)) {
     varnames <- c(varnames, ncdf4::ncatt_get(nc, vars[k], "long_name")$value)
     units <- c(units, ncdf4::ncatt_get(nc, vars[k], "units")$value)
+    bluemarbles <- c(bluemarbles, bluemarble)
+
     if (!is.null(set_unit)){
       if (!is.na(set_unit[k])){
         units[k] <- set_unit[k]
+      }
+    }
+    
+    if (!is.null(set_vname)){
+      if (!is.na(set_vname[k])){
+        varnames[k] <- set_vname[k]
+      }
+    }
+    
+    if (!is.null(marble)){
+      if (!is.na(marble[k])){
+        bluemarbles[k] <- marble[k]
       }
     }
   }
@@ -459,6 +483,11 @@ quicklook <- function(config,
 
     for (j in seq_along(vars)) {
       
+      # Check bluemarble 
+      if (bluemarbles[j] && !file_info$grid == "Satellite projection MSG/Seviri") {
+        stop("Bluemarble plotting is only available for CLAAS data on MSG grid.")
+      }
+      
       # Set color palette
       if (col_from_config[[1]] == "clouds") {
         stacks[[j]][[1]][is.na(stacks[[j]][[1]])] <- 0
@@ -637,7 +666,16 @@ quicklook <- function(config,
       } else {
         
       # bluemarble plot
-       if (bluemarble) {
+       if (bluemarbles[j]) {
+         if (!is.null(sysd[j])) {
+           if (file.exists(sysd[j])) {
+             load(file=sysd[j])
+           } else {
+              cat("No valid bluemarble data found!", "\n")
+           } 
+         } else {
+            cat("No valid bluemarble data found!", "\n")
+         }
          if (!is.null(blue_marble)) {
           raster::extent(stacks[[j]]) <- c(-1, 1, -1, 1)
           fields::quilt.plot(
@@ -647,7 +685,7 @@ quicklook <- function(config,
           blue_marble$data_values,
           xlim = c(-1, 1),
           ylim = c(-1, 1),
-          zlim = plot_lim[j,],
+          # zlim = plot_lim[j,],
           nx = blue_marble$n_lon_unique / blue_marble$xf,
           ny = blue_marble$n_lat_unique / blue_marble$yf,
           xlab = " ",
@@ -712,7 +750,7 @@ quicklook <- function(config,
          if (file_info$grid == "Satellite projection MSG/Seviri") {
            raster::extent(stacks[[j]]) <- c(-1, 1, -1, 1)
            suppressWarnings(
-             maps::map("world", projection = "orthographic", fill = TRUE, border = NA, 
+             maps::map("world", projection = "orthographic", fill = TRUE, border = NA,
                        col = "gray75", orientation = c(0,0,0), add = TRUE)
            )
          } else if (area == "GL") {
@@ -769,11 +807,11 @@ quicklook <- function(config,
         
         # borderline plot
         if (file_info$grid == "Satellite projection MSG/Seviri") {
-          raster::extent(stacks[[j]]) <- c(-1, 1, -1, 1)
-          suppressWarnings(
-            maps::map("world", projection = "orthographic", interior = FALSE, 
-                      col = "gray20", orientation = c(0,0,0), add = TRUE)
-          )
+          # raster::extent(stacks[[j]]) <- c(-1, 1, -1, 1)
+          # suppressWarnings(
+          #   maps::map("world", projection = "orthographic", interior = FALSE, 
+          #             col = "gray20", orientation = c(0,0,0), add = TRUE)
+          # )
         } else if (area == "GL") {
             if (lon_max >= 359) {
               maps::map("world2", interior = FALSE, xlim = c(lon_min, lon_max), 
