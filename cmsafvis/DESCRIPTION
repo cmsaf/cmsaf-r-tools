@@ -34,14 +34,10 @@ Imports: animation (>= 2.6), assertthat (>= 0.2.1), cmsafops (>=
 NeedsCompilation: no
 Repository: CRAN
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.0
+RoxygenNote: 7.2.1
 Encoding: UTF-8
 Language: en-US
 Suggests: plotKML (>= 0.8), rnaturalearth (>= 0.1), spelling (>= 2.1),
         testthat (>= 2.3)
-<<<<<<< HEAD
 Packaged: 2022-07-05 12:30:00 UTC
-=======
-Packaged: 2022-06-30 12:30:00 UTC
->>>>>>> 764d1d4326aba1c020cc850f7ef7218913619a71
 Maintainer: Steffen Kothe <Steffen.Kothe@dwd.de>
