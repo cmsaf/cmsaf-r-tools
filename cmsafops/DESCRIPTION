@@ -38,5 +38,5 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.1
 Encoding: UTF-8
 Language: en-US
-Packaged: 2022-10-26 12:30:00 UTC; SK
+Packaged: 2022-10-28 12:30:00 UTC; SK
 Maintainer: Steffen Kothe <Steffen.Kothe@dwd.de>

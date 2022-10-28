@@ -21,6 +21,7 @@
 #'@family monthly statistics
 #'
 #' @examples
+#' \donttest{
 #'## Create an example NetCDF file with a similar structure as used by CM
 #'## SAF. The file is created with the ncdf4 package.  Alternatively
 #'## example data can be freely downloaded here: <https://wui.cmsaf.eu/>
@@ -30,7 +31,7 @@
 #'lon <- seq(5, 8, 0.5)
 #'lat <- seq(45, 48, 0.5)
 #'time <- seq(ISOdate(2000, 3, 1), ISOdate(2000, 5, 31), "hours")
-#'origin <- as.Date("1983-01-01 00:00:00")
+#'origin <- format("1983-01-01 00:00:00")
 #'time <- as.numeric(difftime(time, origin, units = "hour"))
 #'data <- array(250:272, dim = c(7, 7, 2185))
 #'
@@ -55,6 +56,7 @@
 #'
 #'unlink(c(file.path(tempdir(),"CMSAF_example_file.nc"), 
 #'  file.path(tempdir(),"CMSAF_example_file_mondaymean.nc")))
+#'  }
 mondaymean <- function(var, infile, outfile, nc34 = 4, overwrite = FALSE, verbose = FALSE, nc = NULL) {
   calc_time_start <- Sys.time()
   gc()

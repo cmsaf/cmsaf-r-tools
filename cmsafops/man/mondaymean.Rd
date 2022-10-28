@@ -41,6 +41,7 @@ The function determines mean monthly daily variations values from data of a sing
 NetCDF input file. This function is applicable to 3-dimensional NetCDF data.
 }
 \examples{
+\donttest{
 ## Create an example NetCDF file with a similar structure as used by CM
 ## SAF. The file is created with the ncdf4 package.  Alternatively
 ## example data can be freely downloaded here: <https://wui.cmsaf.eu/>
@@ -50,7 +51,7 @@ library(ncdf4)
 lon <- seq(5, 8, 0.5)
 lat <- seq(45, 48, 0.5)
 time <- seq(ISOdate(2000, 3, 1), ISOdate(2000, 5, 31), "hours")
-origin <- as.Date("1983-01-01 00:00:00")
+origin <- format("1983-01-01 00:00:00")
 time <- as.numeric(difftime(time, origin, units = "hour"))
 data <- array(250:272, dim = c(7, 7, 2185))
 
@@ -75,6 +76,7 @@ mondaymean(var = "SIS", infile = file.path(tempdir(), "CMSAF_example_file.nc"),
 
 unlink(c(file.path(tempdir(),"CMSAF_example_file.nc"), 
  file.path(tempdir(),"CMSAF_example_file_mondaymean.nc")))
+ }
 }
 \seealso{
 Other monthly statistics: 

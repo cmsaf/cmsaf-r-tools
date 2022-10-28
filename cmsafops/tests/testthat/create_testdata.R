@@ -9,7 +9,7 @@ create_examples_normal <- function() {
   lon <- seq(5, 8, 0.5)
   lat <- seq(45, 48, 0.5)
   time <- c(as.Date("2000-01-01"), as.Date("2001-02-01"))
-  origin <- as.Date("1983-01-01 00:00:00")
+  origin <- format("1983-01-01 00:00:00")
   time <- as.numeric(difftime(time, origin, units = "hour"))
   data1 <- array(250:272, dim = c(7, 7, 1))
   data2 <- array(230:252, dim = c(7, 7, 1))
@@ -51,7 +51,7 @@ create_examples_time <- function() {
   lat <- seq(45, 48, 0.5)
   time <- c(as.Date("2000-01-01"), as.Date("2001-02-01"), as.Date("2002-03-01"),
             as.Date("2003-04-01"))
-  origin <- as.Date("1983-01-01 00:00:00")
+  origin <- format("1983-01-01 00:00:00")
   time <- as.numeric(difftime(time, origin, units = "hour"))
   data1 <- array(250:272, dim = c(7, 7, 2))
   data2 <- array(230:252, dim = c(7, 7, 2))
@@ -92,7 +92,7 @@ create_example_time2 <- function() {
   lat <- seq(45, 48, 0.5)
   time <- c(as.Date("2005-01-01"), as.Date("2006-02-01"), as.Date("2007-03-01"),
             as.Date("2008-04-01"))
-  origin <- as.Date("1983-01-01 00:00:00")
+  origin <- format("1983-01-01 00:00:00")
   time <- as.numeric(difftime(time, origin, units = "hour"))
   data <- array(250:272, dim = c(7, 7, 4))
 
@@ -118,7 +118,7 @@ create_different_lon_length <- function() {
   lat <- seq(45, 48, 0.5)
   time <- c(as.Date("2000-01-01"), as.Date("2001-02-01"), as.Date("2002-03-01"),
             as.Date("2003-04-01"))
-  origin <- as.Date("1983-01-01 00:00:00")
+  origin <- format("1983-01-01 00:00:00")
   time <- as.numeric(difftime(time, origin, units = "hour"))
   data <- array(250:272, dim = c(7, 5, 4))
 
@@ -143,7 +143,7 @@ create_additional_attr <- function() {
   lon <- seq(5, 8, 0.5)
   lat <- seq(45, 48, 0.5)
   time <- c(as.Date("2000-01-01"))
-  origin <- as.Date("1983-01-01 00:00:00")
+  origin <- format("1983-01-01 00:00:00")
   time <- as.numeric(difftime(time, origin, units = "hour"))
   data <- array(250:272, dim = c(7, 7, 1))
 
@@ -170,7 +170,7 @@ create_examples_v4 <- function() {
   lon <- seq(5, 8, 0.5)
   lat <- seq(45, 48, 0.5)
   time <- c(as.Date("2000-01-01"), as.Date("2001-02-01"))
-  origin <- as.Date("1983-01-01 00:00:00")
+  origin <- format("1983-01-01 00:00:00")
   time <- as.numeric(difftime(time, origin, units = "hour"))
   data1 <- array(250:272, dim = c(7, 7, 1))
   data2 <- array(230:252, dim = c(7, 7, 1))
@@ -211,7 +211,7 @@ create_run_data <- function() {
   lon <- seq(5, 7, 0.5)
   lat <- seq(45, 47, 0.5)
   time <- seq(as.Date("2000-01-01"), as.Date("2000-03-31"), "month")
-  origin <- as.Date("1983-01-01 00:00:00")
+  origin <- format("1983-01-01 00:00:00")
   time <- as.numeric(difftime(time, origin, units = "hour"))
   data <- array(10:100, dim = c(5, 5, 3))
   
@@ -236,7 +236,7 @@ create_cmsaf.abs <- function() {
   lon <- seq(5, 7, 1)
   lat <- seq(45, 49, 1)
   time <- seq(as.Date("2000-01-01"), as.Date("2000-03-31"), "month")
-  origin <- as.Date("1983-01-01 00:00:00")
+  origin <- format("1983-01-01 00:00:00")
   time <- as.numeric(difftime(time, origin, units = "hour"))
   data <- array(-10:50, dim = c(3, 5, 3))
   
@@ -261,7 +261,7 @@ create_dayrange <- function() {
   lon <- seq(5, 8, 0.5)
   lat <- seq(45, 48, 0.5)
   time <- seq(ISOdate(2000, 1, 1), ISOdate(2000, 1, 3), "hours")
-  origin <- as.Date("1983-01-01 00:00:00")
+  origin <- format("1983-01-01 00:00:00")
   time <- as.numeric(difftime(time, origin, units = "hour"))
   data <- array(250:272, dim = c(7, 7, 49))
 
@@ -286,7 +286,7 @@ create_dayx <- function() {
   lon <- seq(5, 8, 0.5)
   lat <- seq(45, 48, 0.5)
   time <- seq(ISOdate(2000, 1, 1), ISOdate(2000, 1, 3), "hours")
-  origin <- as.Date("1983-01-01 00:00:00")
+  origin <- format("1983-01-01 00:00:00")
   time <- as.numeric(difftime(time, origin, units = "hour"))
   data <- array(250:272, dim = c(7, 7, 49))
   
@@ -312,7 +312,7 @@ create_hourx <- function() {
   lat <- seq(45, 48, 0.5)
   
   time <- seq(ISOdate(2000, 1, 1), ISOdate(2000, 1, 2), "mins")
-  origin <- as.Date("1983-01-01 00:00:00")
+  origin <- format("1983-01-01 00:00:00")
   time <- as.numeric(difftime(time, origin, units = "min"))
   data <- array(250:350, dim = c(7, 7, 1441))
   
@@ -337,7 +337,7 @@ create_gridboxx <- function() {
   lon <- seq(5, 15, 0.5)
   lat <- seq(45, 55, 0.5)
   time <- seq(as.Date("2000-03-01"), as.Date("2000-05-31"), "month")
-  origin <- as.Date("1983-01-01 00:00:00")
+  origin <- format("1983-01-01 00:00:00")
   time <- as.numeric(difftime(time, origin, units = "hour"))
   data <- array(250:350, dim = c(21, 21, 3))
   
@@ -364,7 +364,7 @@ create_mon_day_mean <- function() {
   lon <- seq(5, 8, 0.5)
   lat <- seq(45, 48, 0.5)
   time <- seq(ISOdate(2000, 3, 1), ISOdate(2000, 5, 31), "hours")
-  origin <- as.Date("1983-01-01 00:00:00")
+  origin <- format("1983-01-01 00:00:00")
   time <- as.numeric(difftime(time, origin, units = "hour"))
   data <- array(250:272, dim = c(7, 7, 2185))
   
@@ -391,7 +391,7 @@ create_divdpm <- function() {
   lon <- seq(5, 6, 0.5)
   lat <- seq(45, 46, 0.5)
   time <- seq(as.Date("2000-01-01"), as.Date("2000-02-28"), "month")
-  origin <- as.Date("1983-01-01 00:00:00")
+  origin <- format("1983-01-01 00:00:00")
   time <- as.numeric(difftime(time, origin, units = "hour"))
   data <- array(250:272, dim = c(3, 3, 2))
 
@@ -417,7 +417,7 @@ create_extract.level <- function() {
   lat <- seq(45, 46, 0.5)
   height <- seq(0, 200, 100)
   time <- seq(as.Date("2000-01-01"), as.Date("2000-02-28"), "month")
-  origin <- as.Date("1983-01-01 00:00:00")
+  origin <- format("1983-01-01 00:00:00")
   time <- as.numeric(difftime(time, origin, units = "hour"))
   data <- array(250:272, dim = c(3, 3, 3, 2))
 
@@ -445,7 +445,7 @@ create_extract.level2 <- function() {
   lat <- seq(45, 47, 0.5)
   height <- seq(0, 200, 100)
   time <- seq(as.Date("2000-01-01"), as.Date("2000-02-28"), "month")
-  origin <- as.Date("1983-01-01 00:00:00")
+  origin <- format("1983-01-01 00:00:00")
   time <- as.numeric(difftime(time, origin, units = "hour"))
   data <- array(250:272, dim = c(5, 5, 3, 2))
 
@@ -476,7 +476,7 @@ create_add_grid_info <- function() {
   x <- seq(0, 150, 25)
   y <- seq(0, 100, 25)
   time <- as.Date("2000-01-01")
-  origin <- as.Date("1970-01-01 00:00:00")
+  origin <- format("1970-01-01 00:00:00")
   time <- as.numeric(difftime(time, origin, units = "day"))
   lat <- aperm(array(c(
     NA, NA, NA, NA, NA, 48.4687004089355, 48.6366996765137,
@@ -557,7 +557,7 @@ create_extract_period <- function() {
   lon <- seq(5, 6, 0.5)
   lat <- seq(45, 46, 0.5)
   time <- seq(as.Date("2000-01-01"), as.Date("2000-05-28"), "month")
-  origin <- as.Date("1983-01-01 00:00:00")
+  origin <- format("1983-01-01 00:00:00")
   time <- as.numeric(difftime(time, origin, units = "hour"))
   data <- aperm(array(250:272, dim = c(3, 3, 5)), c(2, 1, 3))
 
@@ -584,7 +584,7 @@ create_remap <- function() {
   x <- seq(0, 150, 25)
   y <- seq(0, 150, 25)
   time <- as.Date("2000-01-01")
-  origin <- as.Date("1970-01-01 00:00:00")
+  origin <- format("1970-01-01 00:00:00")
   time <- as.numeric(difftime(time, origin, units = "day"))
   lat <- array(c(
     NA, NA, NA, NA, NA, NA, NA,
@@ -656,7 +656,7 @@ create_examples_levels <- function() {
   lon <- seq(5, 8, 0.5)
   lat <- seq(45, 48, 0.5)
   time <- c(as.Date("2000-01-01"), as.Date("2001-02-01"))
-  origin <- as.Date("1983-01-01 00:00:00")
+  origin <- format("1983-01-01 00:00:00")
   time <- as.numeric(difftime(time, origin, units = "hour"))
   level <- c(1:5)
   data1 <- array(250:272, dim = c(7, 7, 5, 1))
@@ -697,7 +697,7 @@ create_examples_levels_time <- function() {
   lon <- seq(5, 8, 0.5)
   lat <- seq(45, 48, 0.5)
   time <- c(as.Date("2007-01-01"), as.Date("2008-02-01"))
-  origin <- as.Date("1983-01-01 00:00:00")
+  origin <- format("1983-01-01 00:00:00")
   time <- as.numeric(difftime(time, origin, units = "hour"))
   level <- c(1:5)
   data1 <- array(250:272, dim = c(7, 7, 5, 2))
@@ -725,7 +725,7 @@ create_fld <- function() {
   lon <- seq(5, 6, 0.5)
   lat <- seq(45, 46, 0.5)
   time <- seq(as.Date("2000-01-01"), as.Date("2000-05-28"), "month")
-  origin <- as.Date("1983-01-01 00:00:00")
+  origin <- format("1983-01-01 00:00:00")
   time <- as.numeric(difftime(time, origin, units = "hour"))
   data <- aperm(array(250:272, dim = c(3, 3, 5)), c(2, 1, 3))
 
@@ -750,7 +750,7 @@ create_mon <- function() {
   lon <- seq(5, 6, 0.5)
   lat <- seq(45, 47, 0.5)
   time <- seq(as.Date("2000-01-01"), as.Date("2000-03-31"), "days")
-  origin <- as.Date("1983-01-01 00:00:00")
+  origin <- format("1983-01-01 00:00:00")
   time <- as.numeric(difftime(time, origin, units = "hour"))
   data <- aperm(array(c(1:1000), dim = c(3, 5, 91)), c(2, 1, 3))
 
@@ -776,7 +776,7 @@ create_examples_timestamp <- function() {
   lon <- seq(5, 8, 0.5)
   lat <- seq(45, 48, 0.5)
   time <- seq(ISOdate(2000, 1, 1), ISOdate(2000, 1, 3), "hours")
-  origin <- as.Date("1983-01-01 00:00:00")
+  origin <- format("1983-01-01 00:00:00")
   time <- as.numeric(difftime(time, origin, units = "hour"))
   data1 <- array(250:272, dim = c(7, 7, 24))
   data2 <- array(230:252, dim = c(7, 7, 5))
@@ -816,7 +816,7 @@ create_examples_na <- function() {
   lon <- seq(5, 8, 0.5)
   lat <- seq(45, 48, 0.5)
   time <- c(as.Date("2012-01-01"), as.Date("2013-02-01"))
-  origin <- as.Date("1983-01-01 00:00:00")
+  origin <- format("1983-01-01 00:00:00")
   time <- as.numeric(difftime(time, origin, units = "hour"))
   data1 <- array(c(250:271, NA), dim = c(7, 7, 2))
 
@@ -846,7 +846,7 @@ create_examples_non_regular <- function() {
   lon <- array(lon, dim = c(7, 7, 1))
   lat <- array(lat, dim = c(7, 7, 1))
   time <- c(as.Date("2016-06-01"), as.Date("2018-08-01"))
-  origin <- as.Date("1983-01-01 00:00:00")
+  origin <- format("1983-01-01 00:00:00")
   time <- as.numeric(difftime(time, origin, units = "hour"))
   data1 <- array(250:272, dim = c(7, 7, 1))
   data2 <- array(230:252, dim = c(7, 7, 1))
@@ -893,7 +893,7 @@ create_examples_tb <- function() {
   lon <- seq(5, 8, 0.5)
   lat <- seq(45, 48, 0.5)
   time <- c(as.Date("2007-07-01"), as.Date("2007-08-01"), as.Date("2007-09-01"))
-  origin <- as.Date("1983-01-01 00:00:00")
+  origin <- format("1983-01-01 00:00:00")
   time <- as.numeric(difftime(time, origin, units = "hour"))
   data1 <- array(250:272, dim = c(7, 7, 1))
   data2 <- array(230:252, dim = c(7, 7, 1))
@@ -949,7 +949,7 @@ create_wfldmean <- function() {
   lon <- seq(5, 6, 0.5)
   lat <- seq(45, 46.5, 0.5)
   time <- seq(as.Date("2000-01-01"), as.Date("2000-05-28"), "month")
-  origin <- as.Date("1983-01-01 00:00:00")
+  origin <- format("1983-01-01 00:00:00")
   time <- as.numeric(difftime(time, origin, units = "hour"))
   data <- aperm(array(1:51, dim = c(3, 4, 5)), c(2, 1, 3))
 
@@ -974,7 +974,7 @@ create_yday <- function() {
   lon <- seq(5, 6, 0.5)
   lat <- seq(45, 47, 0.5)
   time <- seq(as.Date("2000-01-30"), as.Date("2002-02-01"), "days")
-  origin <- as.Date("1983-01-01 00:00:00")
+  origin <- format("1983-01-01 00:00:00")
   time <- as.numeric(difftime(time, origin, units = "hour"))
   data <- aperm(array(c(1:123), dim = c(3, 5, 734)), c(2, 1, 3))
 
@@ -999,7 +999,7 @@ create_year <- function() {
   lon <- seq(5, 6, 0.5)
   lat <- seq(45, 47, 0.5)
   time <- seq(as.Date("2000-01-01"), as.Date("2002-12-31"), "month")
-  origin <- as.Date("1983-01-01 00:00:00")
+  origin <- format("1983-01-01 00:00:00")
   time <- as.numeric(difftime(time, origin, units = "hour"))
   data <- aperm(array(c(1:369), dim = c(3, 5, 36)), c(2, 1, 3))
 
@@ -1028,7 +1028,7 @@ create_ymon <- function() {
             seq(as.Date("2002-01-01"), as.Date("2002-03-31"), "month"),
             seq(as.Date("2003-01-01"), as.Date("2003-03-31"), "month")
   )
-  origin <- as.Date("1983-01-01 00:00:00")
+  origin <- format("1983-01-01 00:00:00")
   time <- as.numeric(difftime(time, origin, units = "hour"))
   data <- aperm(array(c(1:150), dim = c(3, 5, 12)), c(2, 1, 3))
 
@@ -1078,7 +1078,7 @@ create_ymon_irregular <- function() {
             seq(as.Date("2002-01-01"), as.Date("2002-03-31"), "month"),
             seq(as.Date("2003-01-01"), as.Date("2003-03-31"), "month")
   )
-  origin <- as.Date("1983-01-01 00:00:00")
+  origin <- format("1983-01-01 00:00:00")
   time <- as.numeric(difftime(time, origin, units = "hour"))
   set.seed(119)
   data1_values <- sample(seq_len(200), 6 * 7 * 12, replace = TRUE)
@@ -1133,7 +1133,7 @@ create_yseas <- function() {
   lon <- seq(5, 6, 0.5)
   lat <- seq(45, 47, 0.5)
   time <- seq(as.Date("2000-01-01"), as.Date("2003-12-31"), "month")
-  origin <- as.Date("1983-01-01 00:00:00")
+  origin <- format("1983-01-01 00:00:00")
   time <- as.numeric(difftime(time, origin, units = "hour"))
   data <- aperm(array(c(1:631), dim = c(3, 5, 48)), c(2, 1, 3))
 
@@ -1159,7 +1159,7 @@ create_mon2 <- function() {
   lon <- seq(5, 7, 0.5)
   lat <- seq(45, 47, 0.5)
   time <- seq(as.Date("2000-01-01"), as.Date("2002-12-31"), "month")
-  origin <- as.Date("1983-01-01 00:00:00")
+  origin <- format("1983-01-01 00:00:00")
   time <- as.numeric(difftime(time, origin, units = "hour"))
   data <- array(1:70, dim = c(5, 5, 36))
 
@@ -1202,7 +1202,7 @@ create_examples_remap <- function() {
   lon4 <- array(lon, dim = c(6, 6, 1))
   lat4 <- array(lat, dim = c(6, 6, 1))
   time <- c(as.Date("2015-08-01"), as.Date("2016-08-01"), as.Date("2017-08-01"), as.Date("2018-08-01"), as.Date("2019-08-01"), as.Date("2020-08-01"), as.Date("2021-08-01"))
-  origin <- as.Date("1983-01-01 00:00:00")
+  origin <- format("1983-01-01 00:00:00")
   time <- as.numeric(difftime(time, origin, units = "hour"))
 
   time_bnds1 <- array(NA, dim = c(2, 2))
@@ -1318,7 +1318,7 @@ create_examples_timcumsum <- function() {
   time <- c(as.Date("2000-01-01"), as.Date("2000-01-02"), as.Date("2001-02-01"), as.Date("2001-02-02"),
             as.Date("2002-03-01"), as.Date("2002-03-02"), as.Date("2003-04-01"), as.Date("2003-04-02"),
             as.Date("2004-05-01"), as.Date("2004-05-02"), as.Date("2005-06-01"), as.Date("2005-06-02"))
-  origin <- as.Date("1983-01-01 00:00:00")
+  origin <- format("1983-01-01 00:00:00")
   time <- as.numeric(difftime(time, origin, units = "days"))
 
   data1 <- array(250:272, dim = c(3, 3, 4))
@@ -1375,7 +1375,7 @@ create_tim_cor_covar <- function() {
   lon <- seq(5, 15, 0.5)
   lat <- seq(45, 55, 0.5)
   time <- seq(as.Date("2000-03-01"), as.Date("2000-05-31"), "month")
-  origin <- as.Date("1983-01-01 00:00:00")
+  origin <- format("1983-01-01 00:00:00")
   time <- as.numeric(difftime(time, origin, units = "hour"))
   data1 <- get_cor_data(1, 21, 21, 3)
   data2 <- get_cor_data(2, 21, 21, 3)
@@ -1412,7 +1412,7 @@ create_fld_cor_covar <- function() {
   lon <- seq(5, 15, 0.5)
   lat <- seq(45, 55, 0.5)
   time <- seq(as.Date("2000-03-01"), as.Date("2000-05-31"), "month")
-  origin <- as.Date("1983-01-01 00:00:00")
+  origin <- format("1983-01-01 00:00:00")
   time <- as.numeric(difftime(time, origin, units = "hour"))
   data1 <- get_cor_data_fld(1, 21, 21, 3)
   data2 <- get_cor_data_fld(2, 21, 21, 3)
