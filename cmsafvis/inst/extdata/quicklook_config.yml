@@ -405,6 +405,34 @@
         colorscale: Blues
         logo: black
         unit: "%"
+    CFCdm004SVMSG01:
+      Dataset: CLAAS-3
+      CFC:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: Blues
+        logo: black
+    CFCmd004SVMSG01:
+      Dataset: CLAAS-3
+      CFC_MMDC:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: Blues
+        logo: black
+        slot: 13
+    CFCmm004SVMSG01:
+      Dataset: CLAAS-3
+      CFC:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: Blues
+        logo: black
   CFL:
   CFS:
   CMA:
@@ -426,6 +454,17 @@
         legend: FALSE
         colorscale: clouds
         logo: black
+    CMAin004SVMSG01:
+      Dataset: CLAAS-3
+      CMA:
+        limits:
+          min: 0
+          max: 2
+        legend: FALSE
+        colorscale: Tropic
+        logo: black
+        bluemarble: FALSE
+        sysdata: /home/stkothe/R/sysdata.rda
   COT:
   CPH:
     CPHmm400AVPOS01:
@@ -448,7 +487,74 @@
         colorscale: Blues
         logo: black
         unit: "%"
+    CPHdm004SVMSG01:
+      Dataset: CLAAS-3
+      CPH:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: Blues
+        logo: black
+        var_name: fraction of liquid water clouds
+    CPHmd004SVMSG01:
+      Dataset: CLAAS-3
+      CPH_MMDC:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: Blues
+        logo: black
+        slot: 13
+        var_name: fraction of liquid water clouds monthly mean diurnal cycle
+    CPHmm004SVMSG01:
+      Dataset: CLAAS-3
+      CPH:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: Blues
+        logo: black
+        var_name: fraction of liquid water clouds
   CPP:
+    CPPin004SVMSG01:
+      Dataset: CLAAS-3
+      CWP:
+        limits:
+          min: 0
+          max: 3
+        legend: TRUE
+        colorscale: Oslo
+        logo: black 
+        sysdata: /home/stkothe/R/sysdata.rda
+      CPH:
+        limits:
+          min: 0
+          max: 2
+        legend: TRUE
+        colorscale: Berlin
+        logo: black 
+        sysdata: /home/stkothe/R/sysdata.rda
+      COT:
+        limits:
+          min: 0
+          max: 150
+        legend: TRUE
+        colorscale: Blues 2
+        invert_col: TRUE
+        logo: black
+        sysdata: /home/stkothe/R/sysdata.rda
+      CRE:
+        limits:
+          min: 0
+          max: 0.00005
+        legend: TRUE
+        colorscale: Purples 2
+        logo: black
+        invert_col: TRUE
+        sysdata: /home/stkothe/R/sysdata.rda      
 # CTH:
   CTO:
     CTOdm003SVMSG01:
@@ -598,6 +704,81 @@
         legend: TRUE
         colorscale: terrain.colors
         logo: black
+    CTOdm004SVMSG01:
+      Dataset: CLAAS-3
+      CTT:
+        limits:
+          min: 190
+          max: 300
+        legend: TRUE
+        colorscale: terrain.colors
+        logo: black
+      CTH:
+        limits:
+          min: 1
+          max: 18600
+        legend: TRUE
+        colorscale: terrain.colors
+        logo: black
+        invert_col: TRUE
+      CTP:
+        limits:
+          min: 100
+          max: 1000
+        legend: TRUE
+        colorscale: terrain.colors
+        logo: black
+    CTOmd004SVMSG01:
+      Dataset: CLAAS-3
+      CTT_MMDC:
+        limits:
+          min: 190
+          max: 300
+        legend: TRUE
+        colorscale: terrain.colors
+        logo: black
+        slot: 13
+      CTH_MMDC:
+        limits:
+          min: 1
+          max: 18600
+        legend: TRUE
+        colorscale: terrain.colors
+        logo: black
+        invert_col: TRUE
+        slot: 13
+      CTP_MMDC:
+        limits:
+          min: 100
+          max: 1000
+        legend: TRUE
+        colorscale: terrain.colors
+        logo: black
+        slot: 13
+    CTOmm004SVMSG01:
+      Dataset: CLAAS-3
+      CTT:
+        limits:
+          min: 190
+          max: 300
+        legend: TRUE
+        colorscale: terrain.colors
+        logo: black
+      CTH:
+        limits:
+          min: 1
+          max: 18600
+        legend: TRUE
+        colorscale: terrain.colors
+        logo: black
+        invert_col: TRUE
+      CTP:
+        limits:
+          min: 100
+          max: 1000
+        legend: TRUE
+        colorscale: terrain.colors
+        logo: black
 # CTP:      
 # CTT:
   CTX:
@@ -624,6 +805,33 @@
         legend: TRUE
         colorscale: Greens
         logo: black
+    CTXin004SVMSG01:
+      Dataset: CLAAS-3
+      CTT:
+        limits:
+          min: 190
+          max: 300
+        legend: TRUE
+        colorscale: terrain.colors
+        logo: black
+        sysdata: /home/stkothe/R/sysdata.rda
+      CTH:
+        limits:
+          min: 1
+          max: 18600
+        legend: TRUE
+        colorscale: terrain.colors
+        logo: black
+        invert_col: TRUE
+        sysdata: /home/stkothe/R/sysdata.rda
+      CTP:
+        limits:
+          min: 100
+          max: 1000
+        legend: TRUE
+        colorscale: terrain.colors
+        logo: black
+        sysdata: /home/stkothe/R/sysdata.rda
 # CTY:
   CWP:
   DAL:
@@ -720,6 +928,85 @@
         legend: TRUE
         colorscale: Plasma
         logo: black
+    IWPdm004SVMSG01:
+      Dataset: CLAAS-3
+      IWP:
+        limits:
+          min: 0
+          max: 4
+        legend: TRUE
+        colorscale: Plasma
+        logo: black
+        var_name: cloud ice water path
+      IWP_ALLSKY:
+        limits:
+          min: 0
+          max: 3
+        legend: TRUE
+        colorscale: Plasma
+        logo: black
+        var_name: all sky cloud ice water path
+      CRE_ICE:
+        limits:
+          min: 0
+          max: 0.00005
+        legend: TRUE
+        colorscale: Plasma
+        logo: black
+        var_name: effective radius of ice particles
+      COT_ICE:
+        limits:
+          min: 0
+          max: 150
+        legend: TRUE
+        colorscale: Plasma
+        logo: black
+        var_name: ice cloud optical thickness
+    IWPmd004SVMSG01:
+      Dataset: CLAAS-3
+      IWP_MMDC:
+        limits:
+          min: 0
+          max: 0.5
+        legend: TRUE
+        colorscale: Plasma
+        logo: black
+        slot: 13
+        var_name: cloud ice water path monthly mean diurnal cycle
+    IWPmm004SVMSG01:
+      Dataset: CLAAS-3
+      IWP:
+        limits:
+          min: 0
+          max: 0.5
+        legend: TRUE
+        colorscale: Plasma
+        logo: black
+        var_name: cloud ice water path
+      IWP_ALLSKY:
+        limits:
+          min: 0
+          max: 3
+        legend: TRUE
+        colorscale: Plasma
+        logo: black
+        var_name: all sky cloud ice water path
+      CRE_ICE:
+        limits:
+          min: 0
+          max: 0.00005
+        legend: TRUE
+        colorscale: Plasma
+        logo: black
+        var_name: effective radius of ice particles
+      COT_ICE:
+        limits:
+          min: 0
+          max: 150
+        legend: TRUE
+        colorscale: Plasma
+        logo: black
+        var_name: ice cloud optical thickness
   JCH:
     JCHmh002AVPOS01:
       Dataset: CLARA-A2.1, AVHRR on polar orbiting satellites
@@ -780,6 +1067,85 @@
         legend: TRUE
         colorscale: Plasma
         logo: black
+    LWPdm004SVMSG01:
+      Dataset: CLAAS-3
+      LWP:
+        limits:
+          min: 0
+          max: 0.5
+        legend: TRUE
+        colorscale: Plasma
+        logo: black
+        var_name: cloud liquid water path
+      LWP_ALLSKY:
+        limits:
+          min: 0
+          max: 3
+        legend: TRUE
+        colorscale: Plasma
+        logo: black
+        var_name: all sky cloud liquid water path
+      CRE_LIQ:
+        limits:
+          min: 0
+          max: 0.00005
+        legend: TRUE
+        colorscale: Plasma
+        logo: black
+        var_name: effective radius of liquid droplets
+      COT_LIQ:
+        limits:
+          min: 0
+          max: 150
+        legend: TRUE
+        colorscale: Plasma
+        logo: black
+        var_name: water cloud optical thickness
+    LWPmd004SVMSG01:
+      Dataset: CLAAS-3
+      LWP_MMDC:
+        limits:
+          min: 0
+          max: 0.5
+        legend: TRUE
+        colorscale: Plasma
+        logo: black
+        slot: 13
+        var_name: cloud liquid water path monthly mean diurnal cycle
+    LWPmm004SVMSG01:
+      Dataset: CLAAS-3
+      LWP:
+        limits:
+          min: 0
+          max: 0.4
+        legend: TRUE
+        colorscale: Plasma
+        logo: black
+        var_name: cloud liquid water path
+      LWP_ALLSKY:
+        limits:
+          min: 0
+          max: 3
+        legend: TRUE
+        colorscale: Plasma
+        logo: black
+        var_name: all sky cloud liquid water path
+      CRE_LIQ:
+        limits:
+          min: 0
+          max: 0.00005
+        legend: TRUE
+        colorscale: Plasma
+        logo: black
+        var_name: effective radius of liquid droplets
+      COT_LIQ:
+        limits:
+          min: 0
+          max: 150
+        legend: TRUE
+        colorscale: Plasma
+        logo: black
+        var_name: water cloud optical thickness
   NSH:
     NSHmm002SCPOS01:
       Dataset: HOAPS, version 4.0
@@ -920,6 +1286,15 @@
         logo: black
     SISdm400AVPOS01:
       Dataset: ICDR AVHRR
+      SIS:
+        limits:
+          min: 0
+          max: 450
+        legend: TRUE
+        colorscale: Viridis
+        logo: black
+    SISdm00310001E1:
+      Dataset: SARAH-2.1
       SIS:
         limits:
           min: 0

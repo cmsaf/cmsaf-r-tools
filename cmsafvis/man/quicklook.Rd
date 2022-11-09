@@ -62,5 +62,7 @@ parameters can be defined:
 \item{legend: }{TRUE / FALSE}
 \item{colorscale: }{character (e.g., Viridis)}
 \item{unit: }{character (e.g., Percent / '\%')}
+\item{var_name: }{character (e.g., Percent / '\%')}
+\item{bluemarble: }{TRUE / FALSE}
 }
 }

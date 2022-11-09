@@ -39,5 +39,5 @@ Encoding: UTF-8
 Language: en-US
 Suggests: plotKML (>= 0.8), rnaturalearth (>= 0.1), spelling (>= 2.1),
         testthat (>= 2.3)
-Packaged: 2022-10-26 12:30:00 UTC
+Packaged: 2022-11-08 12:30:00 UTC
 Maintainer: Steffen Kothe <Steffen.Kothe@dwd.de>

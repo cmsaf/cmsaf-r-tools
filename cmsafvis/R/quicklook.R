@@ -264,7 +264,7 @@ quicklook <- function(config,
   
   nc    <- ncdf4::nc_open(ref_file)
   vars2 <- names(nc$var)[toupper(names(nc$var)) %in% vars]
-  vars  <- vars2[order(match(toupper(vars),toupper(vars2)))]
+  vars  <- vars2[order(match(toupper(vars2),toupper(vars)))]
   nvars <- length(vars)
   
   # no plot variables found
@@ -709,6 +709,11 @@ quicklook <- function(config,
        } else {
         # borderline plots for scale
         if (file_info$grid == "Satellite projection MSG/Seviri") {
+          if (!is.null(sysd[j])) {
+            if (file.exists(sysd[j])) {
+              load(file=sysd[j])
+            } 
+          }
           if (!is.null(blue_marble)) {
             graphics::par(pty = "s")
             raster::extent(stacks[[j]]) <- c(-1, 1, -1, 1)
@@ -729,7 +734,7 @@ quicklook <- function(config,
             axes = FALSE
             )
           } else {
-              stop("Bluemarble plotting is not available. See https://www.cmsaf.eu/R_toolbox")
+              stop("Bluemarble plotting is not available. No valid bluemarble data found! See https://www.cmsaf.eu/R_toolbox")
             }
         } else {
           graphics::image((lon_min*0.998):(lon_max*1.002),
@@ -807,11 +812,11 @@ quicklook <- function(config,
         
         # borderline plot
         if (file_info$grid == "Satellite projection MSG/Seviri") {
-          # raster::extent(stacks[[j]]) <- c(-1, 1, -1, 1)
-          # suppressWarnings(
-          #   maps::map("world", projection = "orthographic", interior = FALSE, 
-          #             col = "gray20", orientation = c(0,0,0), add = TRUE)
-          # )
+           raster::extent(stacks[[j]]) <- c(-1, 1, -1, 1)
+           suppressWarnings(
+             maps::map("world", projection = "orthographic", interior = FALSE, 
+                       col = "gray20", orientation = c(0,0,0), add = TRUE)
+           )
         } else if (area == "GL") {
             if (lon_max >= 359) {
               maps::map("world2", interior = FALSE, xlim = c(lon_min, lon_max), 
