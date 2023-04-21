@@ -19,31 +19,28 @@ calc_trend <- function(infile, file_data, option, nc = NULL) {
 
     for (i in seq_along(file_data$dimension_data$x)) {
       prog <- round((100 / length.dimension.x) * i)
+      cat("\r", "Progress trend calculation: ", prog, " %", sep ="")
       for (j in seq_along(file_data$dimension_data$y)) {
         dum_dat <- ncvar_get(nc_in, file_data$variable$name, start = c(i, j, 1),
                              count = c(1, 1, -1))
-        ifelse(length.dimension.t - (sum(is.na(dum_dat))) >= 2,
-          {
+        if (length.dimension.t - (sum(is.na(dum_dat))) >= 2) {
             dummy <- which(is.finite(dum_dat))
             fit <- simplelm(x[dummy], dum_dat[dummy])
             val <- fit[1] * length.dimension.t
             val2 <- fit[1]
             sig <- 0
-            ifelse(!is.na(fit[2]) & !is.na(fit[3]),
-              {
+            if (!is.na(fit[2]) & !is.na(fit[3])) {
                 if (fit[2] * fit[3] < 0) (sig <- 0)
                 if (fit[2] < 0 & fit[3] < 0) (sig <- -1)
                 if (fit[2] > 0 & fit[3] > 0) (sig <- 1)
-              },
-              {
+            } else {
                 sig <- NA
-              })
-          },
-          {
+              } 
+         } else {
             val <- NA
             val2 <- NA
             sig <- NA
-          })
+           }
         
         target[i, j, 1] <- val
         target2[i, j, 1] <- val2

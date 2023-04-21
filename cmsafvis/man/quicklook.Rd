@@ -64,5 +64,6 @@ parameters can be defined:
 \item{unit: }{character (e.g., Percent / '\%')}
 \item{var_name: }{character (e.g., Percent / '\%')}
 \item{bluemarble: }{TRUE / FALSE}
+\item{mirror_data: }{TRUE / FALSE / NP / SP}
 }
 }

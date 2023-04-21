@@ -33,6 +33,7 @@
 #'  \item{unit: }{character (e.g., Percent / '%')}
 #'  \item{var_name: }{character (e.g., Percent / '%')}
 #'  \item{bluemarble: }{TRUE / FALSE}
+#'  \item{mirror_data: }{TRUE / FALSE / NP / SP}
 #' }
 #'@export
 #'@importFrom assertthat assert_that is.count is.flag is.readable is.writeable
@@ -226,6 +227,7 @@ quicklook <- function(config,
   set_vname <- c()
   marble <- c()
   sysd <- c()
+  mirror <- c()
   
   # define plotting area in case of polar projection
   area <- ""
@@ -256,14 +258,21 @@ quicklook <- function(config,
       iinvert <- FALSE
     }
     invert <- append(invert, iinvert)
+    imirror <- configParams[[file_info$product_type]][[file_info$id]][[vars[i]]]$mirror_data
+    if (is.null(imirror)) {
+      imirror <- FALSE
+    }
+    mirror <- append(mirror, imirror)
     col_from_config <- c(col_from_config, configParams[[file_info$product_type]][[file_info$id]][[vars[i]]]$colorscale)
     if (logo) logos <- c(logos, configParams[[file_info$product_type]][[file_info$id]][[vars[i]]]$logo)
   }
   
+  mirror <- toupper(mirror)
+  
   ### Read infiles ###
   
   nc    <- ncdf4::nc_open(ref_file)
-  vars2 <- names(nc$var)[toupper(names(nc$var)) %in% vars]
+  vars2 <- names(nc$var)[toupper(names(nc$var)) %in% toupper(vars)]
   vars  <- vars2[order(match(toupper(vars2),toupper(vars)))]
   nvars <- length(vars)
   
@@ -430,7 +439,6 @@ quicklook <- function(config,
       raster::extent(stacks[[l]]) <- c(lon_min, lon_max, lat_min, lat_max)
     }
     
-    
     # filename and timestamp for title
     filename <- unlist(strsplit(basename(plotfile[1]), "\\."))
     outfile <- file.path(outpath, paste0(filename[1], ".jpg"))
@@ -517,10 +525,27 @@ quicklook <- function(config,
         # for some reason the data are mirrored; this has to be corrected
         datav <- rotate_cc(datav)
         if (area == "NP") {
-          datav <- datav[dim(datav)[1]:1,dim(datav)[2]:1]
+          if (!is.null(mirror)) {
+            if (mirror[j] == "NP" | mirror[j] == "TRUE") {
+              datav <- datav[,dim(datav)[2]:1]
+            } else {
+              datav <- datav[dim(datav)[1]:1,dim(datav)[2]:1]
+            }
+          } else {
+            datav <- datav[dim(datav)[1]:1,dim(datav)[2]:1]
+          }
         }
+        
         if (area == "SP") {
-          datav <- datav[,dim(datav)[2]:1]
+          if (!is.null(mirror)) {
+            if (mirror[j] == "SP" | mirror[j] == "TRUE") {
+              datav <- datav[,dim(datav)[2]:1]
+            } else {
+              datav <- datav[dim(datav)[1]:1,dim(datav)[2]:1]
+            }
+          } else {
+            datav <- datav[dim(datav)[1]:1,dim(datav)[2]:1]
+          }
         }
         datav <- as.vector(datav)
         

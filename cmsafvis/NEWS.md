@@ -1,5 +1,10 @@
 # Changelog for cmsafvis package
 
+## 1.1.14
+
+- Bug fix in quicklook: variable was not recognized correctly due to missing `toupper` command
+- New config-parameter in quicklook: `mirror_data` to mirror data at south or north pole 
+
 ## 1.1.13
 
 - Minor adaptations to quicklook: new config parameters (var_name, bluemarble, sysdata);

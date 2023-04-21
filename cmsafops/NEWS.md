@@ -1,5 +1,8 @@
 # Changelog for cmsafops package
 
+## 1.2.7
+- Bug fix: trend calculation for option = 2 had an issue
+
 ## 1.2.6
 - Adaptation due to changes in R-devel: as.character(dates) changed to format(dates)
 
