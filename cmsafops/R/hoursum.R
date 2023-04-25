@@ -21,6 +21,7 @@
 #'@family hourly statistics
 #'
 #' @examples
+#' \donttest{
 #'## Create an example NetCDF file with a similar structure as used by CM
 #'## SAF. The file is created with the ncdf4 package.  Alternatively
 #'## example data can be freely downloaded here: <https://wui.cmsaf.eu/>
@@ -33,7 +34,7 @@
 #'lat <- seq(45, 55, 0.5)
 #'
 #'time <- seq(ISOdate(2000, 1, 1), ISOdate(2000, 1, 2), "mins")
-#'origin <- as.Date("1983-01-01 00:00:00")
+#'origin <- format("1983-01-01 00:00:00")
 #'time <- as.numeric(difftime(time, origin, units = "min"))
 #'data <- array(250:350, dim = c(21, 21, 1441))
 #'## create example NetCDF
@@ -57,6 +58,7 @@
 #'
 #'unlink(c(file.path(tempdir(),"CMSAF_example_file.nc"), file.path(tempdir(),
 #'  "CMSAF_example_file_hoursum.nc")))
+#'  }
 hoursum <- function(var, infile, outfile, nc34 = 4, overwrite = FALSE, 
                     verbose = FALSE, nc = NULL) {
   hourx_wrapper(2, var, infile, outfile, nc34, overwrite, verbose, nc = nc)

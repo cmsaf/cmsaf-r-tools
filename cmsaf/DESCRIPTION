@@ -1,5 +1,5 @@
 Package: cmsaf
-Version: 3.4.3
+Version: 3.4.4
 Title: A Toolbox for CM SAF NetCDF Data
 Authors@R: 
     c(person(given = "Steffen",
@@ -28,6 +28,7 @@ Description: The Satellite Application Facility on Climate Monitoring (CM SAF)
     (<http://www.cmsaf.eu/R_toolbox>).
 URL: https://www.cmsaf.eu
 License: GPL (>= 3)
+BugReports: https://github.com/cmsaf/cmsaf-r-tools/issues
 Depends: R (>= 3.6), cmsafops (>= 1.2.0), cmsafvis (>= 1.1.5)
 Imports: 
     colourpicker (>= 1.0),
@@ -54,8 +55,8 @@ Imports:
 NeedsCompilation: no
 Repository: CRAN
 Suggests: spelling (>= 2.1), testthat (>= 2.3)
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.1
 Encoding: UTF-8
 Language: en-US
-Packaged: 2022-03-16 12:34:00 UTC; SK
+Packaged: 2022-08-15 12:34:00 UTC; SK
 Maintainer: Steffen Kothe <Steffen.Kothe@dwd.de>

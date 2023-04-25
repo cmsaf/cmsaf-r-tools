@@ -1,5 +1,16 @@
 # Changelog for cmsafvis package
 
+## 1.1.14
+
+- Bug fix in quicklook: variable was not recognized correctly due to missing `toupper` command
+- New config-parameter in quicklook: `mirror_data` to mirror data at south or north pole 
+
+## 1.1.13
+
+- Minor adaptations to quicklook: new config parameters (var_name, bluemarble, sysdata);
+  bluemarble plots are now available if the path to corresponding sysdata-file is given
+  in config-file (file will be available via CM SAF R Toolbox Website)
+
 ## 1.1.12
 
 - Adapt y-limit for fieldmean

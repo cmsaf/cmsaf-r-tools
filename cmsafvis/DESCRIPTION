@@ -1,6 +1,6 @@
 Package: cmsafvis
 Title: Tools to Visualize CM SAF NetCDF Data
-Version: 1.1.12
+Version: 1.1.14
 Authors@R: 
     c(person(given = "Steffen",
            family = "Kothe",
@@ -39,5 +39,9 @@ Encoding: UTF-8
 Language: en-US
 Suggests: plotKML (>= 0.8), rnaturalearth (>= 0.1), spelling (>= 2.1),
         testthat (>= 2.3)
+<<<<<<< HEAD
 Packaged: 2022-07-05 12:30:00 UTC
+=======
+Packaged: 2023-04-21 12:30:00 UTC
+>>>>>>> origin/master
 Maintainer: Steffen Kothe <Steffen.Kothe@dwd.de>

@@ -385,6 +385,62 @@
         legend: TRUE
         colorscale: Blues
         logo: black
+    CFCdm004SVMSG01:
+      Dataset: CLAAS-3
+      CFC:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: Blues
+        logo: black
+    CFCdm004SVMSGI1:
+      Dataset: CLAAS-3 ICDR
+      CFC:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: Blues
+        logo: black
+    CFCmm004SVMSG01:
+      Dataset: CLAAS-3
+      CFC:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: Blues
+        logo: black
+    CFCmm004SVMSGI1:
+      Dataset: CLAAS-3 ICDR
+      CFC:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: Blues
+        logo: black
+    CFCmd004SVMSG01:
+      Dataset: CLAAS-3
+      CFC_MMDC:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: Blues
+        logo: black
+        slot: 13
+    CFCmd004SVMSGI1:
+      Dataset: CLAAS-3 ICDR
+      CFC_MMDC:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: Blues
+        logo: black
+        slot: 13
     CFCmm002AVPOSE1:
       Dataset: CLARA-A2.1, AVHRR on polar orbiting satellites
       CFC:
@@ -397,6 +453,26 @@
         unit: "%"
     CFCdm002AVPOSE1:
       Dataset: CLARA-A2.1, AVHRR on polar orbiting satellites
+      CFC:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: Blues
+        logo: black
+        unit: "%"
+    CFCdm003AVPOSI1:
+      Dataset: CLARA-A3 ICDR
+      CFC:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: Blues
+        logo: black
+        unit: "%"
+    CFCmm003AVPOSI1:
+      Dataset: CLARA-A3 ICDR
       CFC:
         limits:
           min: 0
@@ -448,6 +524,88 @@
         colorscale: Blues
         logo: black
         unit: "%"
+    CPHdm003AVPOSI1:
+      Dataset: CLARA-A3 ICDR
+      CPH:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: Blues
+        logo: black
+        unit: "%"
+    CPHmm003AVPOSI1:
+      Dataset: CLARA-A3 ICDR
+      CPH:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: Blues
+        logo: black
+        unit: "%"
+    CPHdm004SVMSG01:
+      Dataset: CLAAS-3
+      CPH:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: Blues
+        logo: black
+        var_name: fraction of liquid water clouds
+    CPHdm004SVMSGI1:
+      Dataset: CLAAS-3 ICDR
+      CPH:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: Blues
+        logo: black
+        var_name: fraction of liquid water clouds
+    CPHmm004SVMSG01:
+      Dataset: CLAAS-3
+      CPH:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: Blues
+        logo: black
+        var_name: fraction of liquid water clouds
+    CPHmm004SVMSGI1:
+      Dataset: CLAAS-3 ICDR
+      CPH:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: Blues
+        logo: black
+        var_name: fraction of liquid water clouds
+    CPHmd004SVMSG01:
+      Dataset: CLAAS-3
+      CPH_MMDC:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: Blues
+        logo: black
+        slot: 13
+        var_name: fraction of liquid water clouds monthly mean diurnal cycle
+    CPHmd004SVMSGI1:
+      Dataset: CLAAS-3 ICDR
+      CPH_MMDC:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: Blues
+        logo: black
+        slot: 13
+        var_name: frac. of liquid water clouds monthly mean diurnal cycle
   CPP:
 # CTH:
   CTO:
@@ -598,6 +756,204 @@
         legend: TRUE
         colorscale: terrain.colors
         logo: black
+    CTOdm004SVMSG01:
+      Dataset: CLAAS-3
+      CTT:
+        limits:
+          min: 190
+          max: 300
+        legend: TRUE
+        colorscale: terrain.colors
+        logo: black
+      CTH:
+        limits:
+          min: 1
+          max: 18600
+        legend: TRUE
+        colorscale: terrain.colors
+        logo: black
+        invert_col: TRUE
+      CTP:
+        limits:
+          min: 100
+          max: 1000
+        legend: TRUE
+        colorscale: terrain.colors
+        logo: black
+    CTOdm004SVMSGI1:
+      Dataset: CLAAS-3 ICDR
+      CTT:
+        limits:
+          min: 190
+          max: 300
+        legend: TRUE
+        colorscale: terrain.colors
+        logo: black
+      CTH:
+        limits:
+          min: 1
+          max: 18600
+        legend: TRUE
+        colorscale: terrain.colors
+        logo: black
+        invert_col: TRUE
+      CTP:
+        limits:
+          min: 100
+          max: 1000
+        legend: TRUE
+        colorscale: terrain.colors
+        logo: black
+    CTOmm004SVMSG01:
+      Dataset: CLAAS-3
+      CTT:
+        limits:
+          min: 190
+          max: 300
+        legend: TRUE
+        colorscale: terrain.colors
+        logo: black
+      CTH:
+        limits:
+          min: 1
+          max: 18600
+        legend: TRUE
+        colorscale: terrain.colors
+        logo: black
+        invert_col: TRUE
+      CTP:
+        limits:
+          min: 100
+          max: 1000
+        legend: TRUE
+        colorscale: terrain.colors
+        logo: black
+    CTOmm004SVMSGI1:
+      Dataset: CLAAS-3 ICDR
+      CTT:
+        limits:
+          min: 190
+          max: 300
+        legend: TRUE
+        colorscale: terrain.colors
+        logo: black
+      CTH:
+        limits:
+          min: 1
+          max: 18600
+        legend: TRUE
+        colorscale: terrain.colors
+        logo: black
+        invert_col: TRUE
+      CTP:
+        limits:
+          min: 100
+          max: 1000
+        legend: TRUE
+        colorscale: terrain.colors
+        logo: black
+    CTOmd004SVMSG01:
+      Dataset: CLAAS-3
+      CTT_MMDC:
+        limits:
+          min: 190
+          max: 300
+        legend: TRUE
+        colorscale: terrain.colors
+        logo: black
+        slot: 13
+      CTH_MMDC:
+        limits:
+          min: 1
+          max: 18600
+        legend: TRUE
+        colorscale: terrain.colors
+        logo: black
+        invert_col: TRUE
+        slot: 13
+      CTP_MMDC:
+        limits:
+          min: 100
+          max: 1000
+        legend: TRUE
+        colorscale: terrain.colors
+        logo: black
+        slot: 13
+    CTOmd004SVMSGI1:
+      Dataset: CLAAS-3 ICDR
+      CTT_MMDC:
+        limits:
+          min: 190
+          max: 300
+        legend: TRUE
+        colorscale: terrain.colors
+        logo: black
+        slot: 13
+      CTH_MMDC:
+        limits:
+          min: 1
+          max: 18600
+        legend: TRUE
+        colorscale: terrain.colors
+        logo: black
+        invert_col: TRUE
+        slot: 13
+      CTP_MMDC:
+        limits:
+          min: 100
+          max: 1000
+        legend: TRUE
+        colorscale: terrain.colors
+        logo: black
+        slot: 13
+    CTOdm003AVPOSI1:
+      Dataset: CLARA-A3 ICDR
+      CTT:
+        limits:
+          min: 190
+          max: 300
+        legend: TRUE
+        colorscale: terrain.colors
+        logo: black
+      CTH:
+        limits:
+          min: 1
+          max: 18600
+        legend: TRUE
+        colorscale: terrain.colors
+        logo: black
+        invert_col: TRUE
+      CTP:
+        limits:
+          min: 100
+          max: 1000
+        legend: TRUE
+        colorscale: terrain.colors
+        logo: black
+    CTOmm003AVPOSI1:
+      Dataset: CLARA-A3 ICDR
+      CTT:
+        limits:
+          min: 190
+          max: 300
+        legend: TRUE
+        colorscale: terrain.colors
+        logo: black
+      CTH:
+        limits:
+          min: 1
+          max: 18600
+        legend: TRUE
+        colorscale: terrain.colors
+        logo: black
+        invert_col: TRUE
+      CTP:
+        limits:
+          min: 100
+          max: 1000
+        legend: TRUE
+        colorscale: terrain.colors
+        logo: black
 # CTP:      
 # CTT:
   CTX:
@@ -720,6 +1076,24 @@
         legend: TRUE
         colorscale: Plasma
         logo: black
+    IWPmm003AVPOSI1:
+      Dataset: CLARA-A3 ICDR
+      IWP:
+        limits:
+          min: 0
+          max: 0.4
+        legend: TRUE
+        colorscale: Plasma
+        logo: black
+    IWPdm003AVPOSI1:
+      Dataset: ICDR AVHRR
+      IWP:
+        limits:
+          min: 0
+          max: 0.5
+        legend: TRUE
+        colorscale: Plasma
+        logo: black
   JCH:
     JCHmh002AVPOS01:
       Dataset: CLARA-A2.1, AVHRR on polar orbiting satellites
@@ -744,6 +1118,24 @@
   LTP:
   LTS:
   LWP:
+    LWPmm003AVPOSI1:
+      Dataset: CLARA-A3 ICDR
+      LWP:
+        limits:
+          min: 0
+          max: 0.4
+        legend: TRUE
+        colorscale: Plasma
+        logo: black
+    LWPdm003AVPOSI1:
+      Dataset: CLARA-A3 ICDR
+      LWP:
+        limits:
+          min: 0
+          max: 0.5
+        legend: TRUE
+        colorscale: Plasma
+        logo: black
     LWPmm400AVPOS01:
       Dataset: ICDR AVHRR
       LWP:
@@ -802,6 +1194,27 @@
         colorscale: Oslo
         logo: black
   SAL:
+    SALmm003AVPOSI1:
+      Dataset: CLARA-A3 ICDR
+      black_sky_albedo_all_mean:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: albedo
+        logo: black
+        unit: "%"
+        mirror_data: FALSE
+    SALpm003AVPOSI1:
+      Dataset: CLARA-A3 ICDR
+      black_sky_albedo_all_mean:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: albedo
+        logo: black
+        unit: "%"
     SALmm400AVPOS01:
       Dataset: ICDR AVHRR
       SAL:
@@ -902,6 +1315,24 @@
         slot: 25
     SISmm4101000101:
       Dataset: ICDR Seviri Radiation
+      SIS:
+        limits:
+          min: 0
+          max: 450
+        legend: TRUE
+        colorscale: Viridis
+        logo: black
+    SISmm003AVPOSI1:
+      Dataset: CLARA-A3 ICDR
+      SIS:
+        limits:
+          min: 0
+          max: 450
+        legend: TRUE
+        colorscale: Viridis
+        logo: black
+    SISdm003AVPOSI1:
+      Dataset: CLARA-A3 ICDR
       SIS:
         limits:
           min: 0

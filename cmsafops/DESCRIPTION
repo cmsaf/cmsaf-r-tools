@@ -1,6 +1,6 @@
 Package: cmsafops
 Title: Tools for CM SAF NetCDF Data
-Version: 1.2.5
+Version: 1.2.7
 Authors@R: 
     c(person(given = "Steffen",
            family = "Kothe",
@@ -26,6 +26,7 @@ Description: The Satellite Application Facility on Climate Monitoring (CM SAF)
     (<http://www.cmsaf.eu/R_toolbox>).
 URL: https://www.cmsaf.eu
 License: GPL (>= 3)
+BugReports: https://github.com/cmsaf/cmsaf-r-tools/issues
 Depends: R (>= 3.6)
 Imports: assertthat (>= 0.2.1), fields (>= 10.3), FNN (>= 1.1), ncdf4
         (>= 1.17), rainfarmr (>= 0.1), raster (>= 3.0), sp (>= 1.4),
@@ -34,8 +35,8 @@ NeedsCompilation: no
 Repository: CRAN
 Suggests: cmsaf, cmsafvis, spelling (>= 2.1), testthat (>= 2.3)
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.1
 Encoding: UTF-8
 Language: en-US
-Packaged: 2022-03-15 12:30:00 UTC; SK
+Packaged: 2022-10-28 12:30:00 UTC; SK
 Maintainer: Steffen Kothe <Steffen.Kothe@dwd.de>

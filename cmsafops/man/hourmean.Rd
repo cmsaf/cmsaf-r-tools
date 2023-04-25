@@ -41,6 +41,7 @@ The function determines hourly means from data of a single CM SAF NetCDF input
 file.
 }
 \examples{
+\donttest{
 ## Create an example NetCDF file with a similar structure as used by CM
 ## SAF. The file is created with the ncdf4 package.  Alternatively
 ## example data can be freely downloaded here: <https://wui.cmsaf.eu/>
@@ -53,7 +54,7 @@ lon <- seq(5, 15, 0.5)
 lat <- seq(45, 55, 0.5)
 
 time <- seq(ISOdate(2000, 1, 1), ISOdate(2000, 1, 2), "mins")
-origin <- as.Date("1983-01-01 00:00:00")
+origin <- format("1983-01-01 00:00:00")
 time <- as.numeric(difftime(time, origin, units = "min"))
 data <- array(250:350, dim = c(21, 21, 1441))
 ## create example NetCDF
@@ -77,6 +78,7 @@ hourmean(var = "SIS", infile = file.path(tempdir(),"CMSAF_example_file.nc"),
 
 unlink(c(file.path(tempdir(),"CMSAF_example_file.nc"), 
  file.path(tempdir(),"CMSAF_example_file_hourmean.nc")))
+ }
 }
 \seealso{
 Other hourly statistics: 

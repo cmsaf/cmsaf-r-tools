@@ -1,5 +1,8 @@
 # Release notes for cmsaf
 
+## 3.4.4
+- Bug fix: error for t_unit = "hours" and time_bounds > 1
+
 ## 3.4.3
 - Bug fix: Missing 'pattern' in 'Compare Data'
 - Bug fix: Conversion of time could lead to 'NA'
@@ -69,6 +72,6 @@
 - Add new operator timcumsum
 - For older versions of the package see [cmsaf package](https://cran.r-project.org/package=cmsaf).
 
-## Older versions
+## 2.0.1
 
 For older versions, check the changelog of the [cmsafops package](https://cran.r-project.org/package=cmsafops). Note that the toolbox used to be separate from any package before 2.0.1.

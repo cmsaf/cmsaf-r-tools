@@ -45,7 +45,7 @@ cmsaf.stats.station.data <- function(var, infile, data_station, outfile, overwri
   
   date <- ncdf4::ncvar_get(id, "time")
   t_unit <- ncdf4::ncatt_get(id, "time", "units")$value
-  date.time <- as.character(cmsafops::get_time(t_unit, date))
+  date.time <- format(cmsafops::get_time(t_unit, date))
   data2 <- data_station
   
   # Assume this needs to be added as id wasn't closed

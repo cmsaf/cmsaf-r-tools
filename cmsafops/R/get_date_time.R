@@ -20,7 +20,7 @@ get_date_time <- function(times, unit) {
 
   date_time <- get_time(unit, times)
   date <- as.Date(date_time)
-  date_string <- as.character(date)
+  date_string <- format(date)
 
   years <- as.numeric(substr(date_string, 1, 4))
   months <- as.numeric(substr(date_string, 6, 7))

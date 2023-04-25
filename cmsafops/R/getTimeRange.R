@@ -36,5 +36,5 @@ getTimeRange <- function(infile, nc = NULL){
   }
   
   if (is.null(nc)) nc_close(nc_in)
-  return(as.character(date.time))
+  return(format(date.time))
 }

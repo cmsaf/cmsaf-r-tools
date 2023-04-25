@@ -110,7 +110,7 @@ ncinfo <- function(infile, info = "s", verbose = FALSE, nc = NULL) {
         }
         time1 <- ncvar_get(nc_in, TIME_NAMES$DEFAULT)
         date.time <- as.Date(get_time(t_units, time1))
-        cat("time with length ", length(time1), " (range ", as.character(min(date.time)), " to ", as.character(max(date.time)), ")", sep = "", "\n")
+        cat("time with length ", length(time1), " (range ", format(min(date.time)), " to ", format(max(date.time)), ")", sep = "", "\n")
       } else {
         cat(dimnames[i], " with length ", nc_in$dim[[i]]$len, " (range ", min(nc_in$dim[[i]]$vals), " to ", max(nc_in$dim[[i]]$vals), ")", sep = "", "\n")
       }

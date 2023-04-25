@@ -336,7 +336,7 @@ box_mergetime <- function(var, path, pattern, outfile, lon1 = -180, lon2 = 180,
 
       dt_dum <- get_time(dum_t_units, dum_time)
 
-      if (as.character(dt_ref) == "-4712-01-01 12:00:00") {
+      if (format(dt_ref) == "-4712-01-01 12:00:00") {
         dum_time2 <- (as.numeric(dt_dum) / 86400) + 2440587.5
       } else {
         if (unit_ref == "months") {
