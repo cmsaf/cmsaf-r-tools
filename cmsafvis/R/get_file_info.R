@@ -12,7 +12,7 @@ get_file_info <- function(filename) {
   source <- substr(basename(filename), 23, 27)
   level <- substr(basename(filename), 28, 29)
   ar <- substr(basename(filename), 30, 31)
-  id <- paste0(product, interval, stats, version_number, source, level)
+  id <- paste0(product, interval, stats, version_number, source, level, ar)
   # `naming_conventions` is generated in data-raw/generate_internal_data.R
   return(list(
     product_type = product,

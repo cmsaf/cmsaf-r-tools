@@ -228,6 +228,7 @@ quicklook <- function(config,
   marble <- c()
   sysd <- c()
   mirror <- c()
+  logsc <- c()
   
   # define plotting area in case of polar projection
   area <- ""
@@ -263,6 +264,13 @@ quicklook <- function(config,
       imirror <- FALSE
     }
     mirror <- append(mirror, imirror)
+    
+    ilogsc <- configParams[[file_info$product_type]][[file_info$id]][[vars[i]]]$log_scale
+    if (is.null(ilogsc)) {
+      ilogsc <- FALSE
+    }
+    logsc <- append(logsc, ilogsc)
+    
     col_from_config <- c(col_from_config, configParams[[file_info$product_type]][[file_info$id]][[vars[i]]]$colorscale)
     if (logo) logos <- c(logos, configParams[[file_info$product_type]][[file_info$id]][[vars[i]]]$logo)
   }
@@ -506,7 +514,22 @@ quicklook <- function(config,
         }
         plot_lim[j,] <- range(raster::values(stacks[[j]][[1]]),na.rm = TRUE)
       } else {
-        col <- getColors(col_from_config[[j]], palettes, 32, FALSE)
+        if (logsc[j]) {
+          get_breaks <- function(x) {
+            lo <- floor(log10(min(x, na.rm = TRUE)))
+            hi <- ceiling(log10(max(x, na.rm = TRUE)))
+            as.vector(10 ^ (lo:hi) %o% 1:9)
+          }
+          
+          if (plot_lim[j,1] == 0) {
+            plot_lim[j,1] <- 0.001
+          }
+          
+          ticks <- get_breaks(plot_lim[j,])
+          col = getColors(col_from_config[[j]], palettes, length(ticks) - 1L, FALSE)
+        } else {
+              col <- getColors(col_from_config[[j]], palettes, 32, FALSE)
+        }
       }
       
       # invert colors if invert_col is TRUE
@@ -772,6 +795,7 @@ quicklook <- function(config,
                           ylab = " ",
                           col = "gray85",
                           axes = FALSE,
+                          useRaster = TRUE,
                           asp = 1
           )
         }
@@ -820,19 +844,52 @@ quicklook <- function(config,
                         add = TRUE
           )
         } else {
-            raster::image(stacks[[j]], y = slot_i,
-                          main = "",
-                          xlim = c(lon_min, lon_max),
-                          ylim = c(lat_min, lat_max),
-                          axes = FALSE,
-                          xlab = "",
-                          ylab = "",
-                          zlim = plot_lim[j,],
-                          col = col,
-                          colNA = "gray85",
-                          asp = 1,
-                          add = TRUE
-            )
+            if (logsc[j]) {
+              nc    <- ncdf4::nc_open(ref_file)
+                lond <- ncdf4::ncvar_get(nc, lonvar)
+                latd <- ncdf4::ncvar_get(nc, latvar)
+              ncdf4::nc_close(nc)
+              
+              lonv  <- as.vector(lond)
+              latv  <- as.vector(latd)
+              lonv  <- seq(min(lonv), max(lonv), length.out = length(lonv))
+              latv  <- seq(min(latv), max(latv), length.out = length(latv))
+              rotate <- function(x) t(apply(x, 2, rev))
+              
+              datav <- raster::as.matrix(stacks[[j]][[slot_i]])
+              
+              # For log-scale values below or equal 0 are not allowed 
+              datav[datav <= 0] <- plot_lim[j,1]
+              
+              graphics::image(lonv, latv, log(rotate(datav)), 
+                    axis.args=list( at=log(ticks), labels=ticks), 
+                    main = "",
+                    xlim = c(lon_min, lon_max),
+                    ylim = c(lat_min, lat_max),
+                    axes = FALSE,
+                    xlab = "",
+                    ylab = "",
+                    col = col,
+                    colNA = "gray85",
+                    asp = 1,
+                    useRaster = TRUE,
+                    add = TRUE
+              )
+            } else {
+                raster::image(stacks[[j]], y = slot_i,
+                            main = "",
+                            xlim = c(lon_min, lon_max),
+                            ylim = c(lat_min, lat_max),
+                            axes = FALSE,
+                            xlab = "",
+                            ylab = "",
+                            zlim = plot_lim[j,],
+                            col = col,
+                            colNA = "gray85",
+                            asp = 1,
+                            add = TRUE
+              )
+            }
         }
         
         # borderline plot
@@ -928,26 +985,46 @@ quicklook <- function(config,
       # plot legend
 
       if (legends[j]) {
-        raster::plot(stacks[[j]], y = slot_i,
-                     main = "",
-                     axes = FALSE,
-                     xlab = "",
-                     ylab = "",
-                     zlim = plot_lim[j,],
-                     legend.only = TRUE,
-                     legend.shrink = 0.9,
-                     legend.width = 1.5,
-                     legend.mar = 5.1,
-                     legend.args=list(text = units[j], 
-                                      side = 2, 
-                                      font = 2, 
-                                      line = 0.2, 
-                                      cex = 1.25*fsf),
-                     axis.args=list(cex.axis = 1*fsf),
-                     col = col,
-                     add = TRUE)
+        if (logsc[j]) {
+          fields::image.plot(lonv, latv, log(rotate(datav)), 
+                             main = "",
+                             axes = FALSE,
+                             xlab = "",
+                             ylab = "",
+                             legend.only = TRUE,
+                             legend.shrink = 0.9,
+                             legend.width = 1.5,
+                             legend.mar = 5.1,
+                             legend.args=list(text = units[j], 
+                                              side = 2, 
+                                              font = 2, 
+                                              line = 0.2, 
+                                              cex = 1.25*fsf),
+                             axis.args=list(cex.axis = 1*fsf,
+                                            at=log(ticks), labels=ticks),
+                             col = col,
+                             add = TRUE)
+        } else {
+            raster::plot(stacks[[j]], y = slot_i,
+                       main = "",
+                       axes = FALSE,
+                       xlab = "",
+                       ylab = "",
+                       zlim = plot_lim[j,],
+                       legend.only = TRUE,
+                       legend.shrink = 0.9,
+                       legend.width = 1.5,
+                       legend.mar = 5.1,
+                       legend.args=list(text = units[j], 
+                                        side = 2, 
+                                        font = 2, 
+                                        line = 0.2, 
+                                        cex = 1.25*fsf),
+                       axis.args=list(cex.axis = 1*fsf),
+                       col = col,
+                       add = TRUE)
+        }
       }
-      
       
       # figure title
       if (is_multiplot) {

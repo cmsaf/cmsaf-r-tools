@@ -1,5 +1,9 @@
 # Changelog for cmsafvis package
 
+## 1.1.15
+
+- New config-parameter in quicklook: `log_scale` for logarithmic colorscales
+
 ## 1.1.14
 
 - Bug fix in quicklook: variable was not recognized correctly due to missing `toupper` command
