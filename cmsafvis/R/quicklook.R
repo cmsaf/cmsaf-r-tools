@@ -866,6 +866,7 @@ quicklook <- function(config,
                     main = "",
                     xlim = c(lon_min, lon_max),
                     ylim = c(lat_min, lat_max),
+                    zlim = log(plot_lim[j,]),
                     axes = FALSE,
                     xlab = "",
                     ylab = "",
@@ -986,7 +987,8 @@ quicklook <- function(config,
 
       if (legends[j]) {
         if (logsc[j]) {
-          fields::image.plot(lonv, latv, log(rotate(datav)), 
+          fields::image.plot(lonv, latv, log(rotate(datav)),
+                             zlim = log(plot_lim[j,]),
                              main = "",
                              axes = FALSE,
                              xlab = "",
