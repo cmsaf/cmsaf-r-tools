@@ -29,6 +29,7 @@
         legend: TRUE
         colorscale: Blues
         logo: black
+<<<<<<< HEAD
     CALdm0041000101MA:
       Dataset: SARAH-3
       CAL:
@@ -57,6 +58,8 @@
         legend: TRUE
         colorscale: Blues
         logo: black
+=======
+>>>>>>> origin/master
   CFC:
     CFCmm002AVPOS01GL:
       Dataset: CLARA-2, AVHRR on polar orbiting satellites
@@ -570,6 +573,76 @@
         unit: "%"
     CFCdm003AVPOSI1NP:
       Dataset: CLARA-A3 ICDR
+      CFC_DAY:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: Blues
+        logo: black
+        unit: "%"
+    CFCdm003AVPOSI1SP:
+      Dataset: CLARA-A3 ICDR
+      CFC_DAY:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: Blues
+        logo: black
+        unit: "%"
+    CFCmm003AVPOSI1GL:
+      Dataset: CLARA-A3 ICDR
+      CFC:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: Blues
+        logo: black
+        unit: "%"
+    CFCmm003AVPOSI1NP:
+      Dataset: CLARA-A3 ICDR
+      CFC_DAY:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: Blues
+        logo: black
+        unit: "%"
+    CFCmm003AVPOSI1SP:
+      Dataset: CLARA-A3 ICDR
+      CFC_DAY:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: Blues
+        logo: black
+        unit: "%"
+    CFCmm003AVPOS01GL:
+      Dataset: CLARA-A3
+      CFC:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: Blues
+        logo: black
+        unit: "%"
+    CFCmm003AVPOS01NP:
+      Dataset: CLARA-A3
+      CFC:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: Blues
+        logo: black
+        unit: "%"
+    CFCmm003AVPOS01SP:
+      Dataset: CLARA-A3
       CFC:
         limits:
           min: 0
@@ -691,6 +764,7 @@
         colorscale: Blues
         logo: black
         unit: "%"
+<<<<<<< HEAD
     CPHmm400AVPOS01SP:
       Dataset: ICDR AVHRR
       CPH:
@@ -733,6 +807,8 @@
         logo: black
         unit: "%"
         mirror_data: TRUE
+=======
+>>>>>>> origin/master
     CPHdm003AVPOSI1GL:
       Dataset: CLARA-A3 ICDR
       CPH:
@@ -793,6 +869,7 @@
         colorscale: Blues
         logo: black
         unit: "%"
+<<<<<<< HEAD
     CPHdm003AVPOS01GL:
       Dataset: CLARA-A3
       CPH:
@@ -853,6 +930,8 @@
         colorscale: Blues
         logo: black
         unit: "%"
+=======
+>>>>>>> origin/master
     CPHdm004SVMSG01MA:
       Dataset: CLAAS-3
       CPH:
@@ -1149,6 +1228,7 @@
         legend: TRUE
         colorscale: terrain.colors
         logo: black
+<<<<<<< HEAD
     CTOmm400AVPOS01NP:
       Dataset: ICDR AVHRR
       CTT:
@@ -1200,6 +1280,8 @@
         colorscale: terrain.colors
         logo: black
         mirror_data: TRUE
+=======
+>>>>>>> origin/master
     CTOdm004SVMSG01MA:
       Dataset: CLAAS-3
       CTT:
@@ -1351,6 +1433,7 @@
         logo: black
         slot: 13
     CTOdm003AVPOSI1GL:
+<<<<<<< HEAD
       Dataset: CLARA-A3 ICDR
       CTT:
         limits:
@@ -1423,6 +1506,8 @@
         colorscale: terrain.colors
         logo: black
     CTOmm003AVPOSI1GL:
+=======
+>>>>>>> origin/master
       Dataset: CLARA-A3 ICDR
       CTT:
         limits:
@@ -1446,7 +1531,11 @@
         legend: TRUE
         colorscale: terrain.colors
         logo: black
+<<<<<<< HEAD
     CTOmm003AVPOSI1NP:
+=======
+    CTOdm003AVPOSI1NP:
+>>>>>>> origin/master
       Dataset: CLARA-A3 ICDR
       CTT_LIQ_DAY:
         limits:
@@ -1518,16 +1607,26 @@
         legend: TRUE
         colorscale: terrain.colors
         logo: black
+<<<<<<< HEAD
     CTOmm003AVPOS01NP:
       Dataset: CLARA-A3
       CTT_LIQ_DAY:
+=======
+    CTOdm003AVPOSI1SP:
+      Dataset: CLARA-A3 ICDR
+      CTT:
+>>>>>>> origin/master
         limits:
           min: 190
           max: 300
         legend: TRUE
         colorscale: terrain.colors
         logo: black
+<<<<<<< HEAD
       CTH_LIQ_DAY:
+=======
+      CTH:
+>>>>>>> origin/master
         limits:
           min: 1
           max: 18600
@@ -1535,7 +1634,131 @@
         colorscale: terrain.colors
         logo: black
         invert_col: TRUE
+<<<<<<< HEAD
       CTP_LIQ_DAY:
+=======
+      CTP:
+        limits:
+          min: 100
+          max: 1000
+        legend: TRUE
+        colorscale: terrain.colors
+        logo: black
+    CTOmm003AVPOSI1GL:
+      Dataset: CLARA-A3 ICDR
+      CTT:
+        limits:
+          min: 190
+          max: 300
+        legend: TRUE
+        colorscale: terrain.colors
+        logo: black
+      CTH:
+        limits:
+          min: 1
+          max: 18600
+        legend: TRUE
+        colorscale: terrain.colors
+        logo: black
+        invert_col: TRUE
+      CTP:
+        limits:
+          min: 100
+          max: 1000
+        legend: TRUE
+        colorscale: terrain.colors
+        logo: black
+    CTOmm003AVPOSI1NP:
+      Dataset: CLARA-A3 ICDR
+      CTT:
+        limits:
+          min: 190
+          max: 300
+        legend: TRUE
+        colorscale: terrain.colors
+        logo: black
+      CTH:
+        limits:
+          min: 1
+          max: 18600
+        legend: TRUE
+        colorscale: terrain.colors
+        logo: black
+        invert_col: TRUE
+      CTP:
+        limits:
+          min: 100
+          max: 1000
+        legend: TRUE
+        colorscale: terrain.colors
+        logo: black
+    CTOmm003AVPOSI1SP:
+      Dataset: CLARA-A3 ICDR
+      CTT:
+        limits:
+          min: 190
+          max: 300
+        legend: TRUE
+        colorscale: terrain.colors
+        logo: black
+      CTH:
+        limits:
+          min: 1
+          max: 18600
+        legend: TRUE
+        colorscale: terrain.colors
+        logo: black
+        invert_col: TRUE
+      CTP:
+        limits:
+          min: 100
+          max: 1000
+        legend: TRUE
+        colorscale: terrain.colors
+        logo: black
+    CTOmm003AVPOS01GL:
+      Dataset: CLARA-A3
+      CTT:
+        limits:
+          min: 190
+          max: 300
+        legend: TRUE
+        colorscale: terrain.colors
+        logo: black
+      CTH:
+        limits:
+          min: 1
+          max: 18600
+        legend: TRUE
+        colorscale: terrain.colors
+        logo: black
+        invert_col: TRUE
+      CTP:
+        limits:
+          min: 100
+          max: 1000
+        legend: TRUE
+        colorscale: terrain.colors
+        logo: black
+    CTOmm003AVPOS01NP:
+      Dataset: CLARA-A3
+      CTT:
+        limits:
+          min: 190
+          max: 300
+        legend: TRUE
+        colorscale: terrain.colors
+        logo: black
+      CTH:
+        limits:
+          min: 1
+          max: 18600
+        legend: TRUE
+        colorscale: terrain.colors
+        logo: black
+        invert_col: TRUE
+      CTP:
+>>>>>>> origin/master
         limits:
           min: 100
           max: 1000
@@ -1544,14 +1767,22 @@
         logo: black
     CTOmm003AVPOS01SP:
       Dataset: CLARA-A3
+<<<<<<< HEAD
       CTT_LIQ_DAY:
+=======
+      CTT:
+>>>>>>> origin/master
         limits:
           min: 190
           max: 300
         legend: TRUE
         colorscale: terrain.colors
         logo: black
+<<<<<<< HEAD
       CTH_LIQ_DAY:
+=======
+      CTH:
+>>>>>>> origin/master
         limits:
           min: 1
           max: 18600
@@ -1559,7 +1790,11 @@
         colorscale: terrain.colors
         logo: black
         invert_col: TRUE
+<<<<<<< HEAD
       CTP_LIQ_DAY:
+=======
+      CTP:
+>>>>>>> origin/master
         limits:
           min: 100
           max: 1000
@@ -1623,6 +1858,7 @@
         legend: TRUE
         colorscale: sunny
         logo: black
+<<<<<<< HEAD
     DALdm0041000101MA:
       Dataset: SARAH-3
       DAL:
@@ -1651,6 +1887,8 @@
         legend: TRUE
         colorscale: sunny
         logo: black
+=======
+>>>>>>> origin/master
   DNI:
     DNIdm4101000101MA:
       Dataset: ICDR Seviri Radiation
@@ -1689,7 +1927,10 @@
         legend: TRUE
         colorscale: YlOrRd
         logo: black
+<<<<<<< HEAD
         var_name: surface normalized downwelling shortwave radiation
+=======
+>>>>>>> origin/master
     DNIin00410001I1MA:
       Dataset: SARAH-3 ICDR
       DNI:
@@ -1709,6 +1950,7 @@
         legend: TRUE
         colorscale: YlOrRd
         logo: black
+<<<<<<< HEAD
         var_name: surface normalized downwelling shortwave radiation
     DNIdm0041000101MA:
       Dataset: SARAH-3
@@ -1740,6 +1982,8 @@
         colorscale: YlOrRd
         logo: black
         var_name: surface normalized downwelling shortwave radiation
+=======
+>>>>>>> origin/master
   EMP:
     EMPmm002SCPOS01GL:
       Dataset: HOAPS, version 4.0
@@ -1823,6 +2067,7 @@
         legend: TRUE
         colorscale: Plasma
         logo: black
+<<<<<<< HEAD
     IWPdm400AVPOS01NP:
       Dataset: ICDR AVHRR
       IWP:
@@ -1842,10 +2087,13 @@
         colorscale: Plasma
         logo: black
         mirror_data: TRUE
+=======
+>>>>>>> origin/master
     IWPmm003AVPOSI1GL:
       Dataset: CLARA-A3 ICDR
       IWP:
         limits:
+<<<<<<< HEAD
           min: 0.001
           max: 3
         legend: TRUE
@@ -1854,6 +2102,23 @@
         invert_col: TRUE
         log_scale: TRUE
     IWPmm003AVPOSI1NP:
+=======
+          min: 0
+          max: 0.4
+        legend: TRUE
+        colorscale: Plasma
+        logo: black
+    IWPmm003AVPOSI1NP:
+      Dataset: CLARA-A3 ICDR
+      IWP:
+        limits:
+          min: 0
+          max: 0.4
+        legend: TRUE
+        colorscale: Plasma
+        logo: black
+    IWPmm003AVPOSI1SP:
+>>>>>>> origin/master
       Dataset: CLARA-A3 ICDR
       IWP:
         limits:
@@ -2086,6 +2351,7 @@
   LTS:
   LWP:
     LWPmm003AVPOSI1GL:
+<<<<<<< HEAD
       Dataset: CLARA-A3 ICDR
       LWP:
         limits:
@@ -2097,6 +2363,8 @@
         invert_col: TRUE
         log_scale: TRUE
     LWPmm003AVPOSI1NP:
+=======
+>>>>>>> origin/master
       Dataset: CLARA-A3 ICDR
       LWP:
         limits:
@@ -2106,6 +2374,18 @@
         colorscale: Plasma
         invert_col: TRUE
         logo: black
+<<<<<<< HEAD
+=======
+    LWPmm003AVPOSI1NP:
+      Dataset: CLARA-A3 ICDR
+      LWP:
+        limits:
+          min: 0
+          max: 0.4
+        legend: TRUE
+        colorscale: Plasma
+        logo: black
+>>>>>>> origin/master
     LWPmm003AVPOSI1SP:
       Dataset: CLARA-A3 ICDR
       LWP:
@@ -2114,6 +2394,7 @@
           max: 0.4
         legend: TRUE
         colorscale: Plasma
+<<<<<<< HEAD
         invert_col: TRUE
         logo: black
     LWPmm003AVPOS01GL:
@@ -2127,10 +2408,14 @@
         logo: black
         invert_col: TRUE
         log_scale: TRUE
+=======
+        logo: black
+>>>>>>> origin/master
     LWPdm003AVPOSI1GL:
       Dataset: CLARA-A3 ICDR
       LWP:
         limits:
+<<<<<<< HEAD
           min: 0.001
           max: 3
         legend: TRUE
@@ -2139,6 +2424,23 @@
         invert_col: TRUE
         log_scale: TRUE
     LWPdm003AVPOSI1NP:
+=======
+          min: 0
+          max: 0.5
+        legend: TRUE
+        colorscale: Plasma
+        logo: black
+    LWPdm003AVPOSI1NP:
+      Dataset: CLARA-A3 ICDR
+      LWP:
+        limits:
+          min: 0
+          max: 0.5
+        legend: TRUE
+        colorscale: Plasma
+        logo: black
+    LWPdm003AVPOSI1SP:
+>>>>>>> origin/master
       Dataset: CLARA-A3 ICDR
       LWP:
         limits:
@@ -2329,6 +2631,7 @@
           min: 0
           max: 350
         legend: TRUE
+<<<<<<< HEAD
         colorscale: Red-Yellow
         invert_col: TRUE
         logo: black
@@ -2361,6 +2664,9 @@
         legend: TRUE
         colorscale: Red-Yellow
         invert_col: TRUE
+=======
+        colorscale: Viridis
+>>>>>>> origin/master
         logo: black
         
   PAR:
@@ -2395,6 +2701,7 @@
         colorscale: Green-Yellow
         invert_col: TRUE
         logo: black
+<<<<<<< HEAD
     PARdm0041000101MA:
       Dataset: SARAH-3
       PAR:
@@ -2426,6 +2733,8 @@
         colorscale: Green-Yellow
         invert_col: TRUE
         logo: black
+=======
+>>>>>>> origin/master
     
   PRE:
     PREmm002SCPOS01GL:
@@ -2438,6 +2747,10 @@
         colorscale: Oslo
         logo: black
   RSF:
+<<<<<<< HEAD
+=======
+    RSF:
+>>>>>>> origin/master
     RSFmm003AVPOS01GL:
       Dataset: CLARA-A3
       SW_flux:
@@ -2445,6 +2758,7 @@
           min: 0
           max: 350
         legend: TRUE
+<<<<<<< HEAD
         colorscale: Rocket
         invert_col: TRUE
         logo: black
@@ -2477,6 +2791,9 @@
         legend: TRUE
         colorscale: Rocket
         invert_col: TRUE
+=======
+        colorscale: Viridis
+>>>>>>> origin/master
         logo: black
   SAL:
     SALmm003AVPOSI1GL:
@@ -2490,8 +2807,54 @@
         logo: black
         unit: "%"
         mirror_data: FALSE
+<<<<<<< HEAD
         var_name: Mean of black-sky albedo
     SALmm003AVPOSI1NP:
+=======
+    SALmm003AVPOSI1NP:
+      Dataset: CLARA-A3 ICDR
+      black_sky_albedo_all_mean:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: albedo
+        logo: black
+        unit: "%"
+        mirror_data: FALSE
+    SALmm003AVPOSI1SP:
+      Dataset: CLARA-A3 ICDR
+      black_sky_albedo_all_mean:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: albedo
+        logo: black
+        unit: "%"
+        mirror_data: FALSE
+    SALpm003AVPOSI1GL:
+      Dataset: CLARA-A3 ICDR
+      black_sky_albedo_all_mean:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: albedo
+        logo: black
+        unit: "%"
+    SALpm003AVPOSI1NP:
+      Dataset: CLARA-A3 ICDR
+      black_sky_albedo_all_mean:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: albedo
+        logo: black
+        unit: "%"
+    SALpm003AVPOSI1SP:
+>>>>>>> origin/master
       Dataset: CLARA-A3 ICDR
       black_sky_albedo_all_mean:
         limits:
@@ -2718,7 +3081,11 @@
         legend: TRUE
         colorscale: Plasma
         logo: black
+<<<<<<< HEAD
     SDUds00410001I1MA:
+=======
+    SDUds00410001I1:
+>>>>>>> origin/master
       Dataset: SARAH-3 ICDR
       SDU:
         limits:
@@ -2736,6 +3103,7 @@
         legend: TRUE
         colorscale: Plasma
         logo: black
+<<<<<<< HEAD
     SDUds0041000101MA:
       Dataset: SARAH-3
       SDU:
@@ -2754,6 +3122,8 @@
         legend: TRUE
         colorscale: Plasma
         logo: black
+=======
+>>>>>>> origin/master
   SID:
     SIDdm4101000101MA:
       Dataset: ICDR Seviri Radiation
@@ -2811,6 +3181,7 @@
         legend: TRUE
         colorscale: YlOrRd
         logo: black
+<<<<<<< HEAD
     SIDdm0041000101MA:
       Dataset: SARAH-3
       SID:
@@ -2839,6 +3210,8 @@
         legend: TRUE
         colorscale: YlOrRd
         logo: black
+=======
+>>>>>>> origin/master
   SIS:
     SISdm4101000101MA:
       Dataset: ICDR Seviri Radiation
@@ -2896,6 +3269,7 @@
         legend: TRUE
         colorscale: Viridis
         logo: black
+<<<<<<< HEAD
     SISdm0041000101MA:
       Dataset: SARAH-3
       SIS:
@@ -2924,6 +3298,8 @@
         legend: TRUE
         colorscale: Viridis
         logo: black
+=======
+>>>>>>> origin/master
     SISmm003AVPOSI1GL:
       Dataset: CLARA-A3 ICDR
       SIS:

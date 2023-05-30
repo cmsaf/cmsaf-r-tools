@@ -19,7 +19,11 @@
 
 - Adapt y-limit for fieldmean
 - Add option for x and y label of 1d plots
+<<<<<<< HEAD
+- Packages removed from Imports: rgdal, rworldxtra, maptools
+=======
 - Unused packages removed from Imports: rworldxtra, rgdal, maptools
+>>>>>>> 764d1d4326aba1c020cc850f7ef7218913619a71
 
 ## 1.1.11
 
