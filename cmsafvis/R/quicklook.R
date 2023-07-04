@@ -36,6 +36,7 @@
 #'  \item{bluemarble: }{TRUE / FALSE}
 #'  \item{mirror_data: }{TRUE / FALSE / NP / SP}
 #'  \item{scale_factor: }{numeric (e.g., 1)}
+#'  \item{smooth_factor: }{numeric (e.g., 1)}
 #' }
 #'@export
 #'@importFrom assertthat assert_that is.count is.flag is.readable is.writeable
