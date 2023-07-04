@@ -1,5 +1,11 @@
 # Changelog for cmsafvis package
 
+## 1.1.16
+
+- New quicklook parameter: `aux_file` for optional aux file
+- New quicklook parameter: `smooth_factor` to smooth figures
+- New quicklook parameter: `scale_factor` to multiply with data 
+
 ## 1.1.15
 
 - New config-parameter in quicklook: `log_scale` for logarithmic colorscales

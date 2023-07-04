@@ -16,6 +16,7 @@
 #'@param bluemarble logical; should the data be plotted onto a NASA bluemarble (only available for MSG/Seviri based data)?
 #'   Due to data size this option is not available for the cmsafvis package on CRAN. Please have a look at
 #'   our website https://www.cmsaf.eu/R_toolbox
+#'@param aux_file path to optional sysdata.rda file, which includes bluemarble data 
 #'@param verbose logical; if TRUE, progress messages are shown
 #'
 #'@return A jpeg file with the same name as the original NetCDF file.
@@ -34,6 +35,7 @@
 #'  \item{var_name: }{character (e.g., Percent / '%')}
 #'  \item{bluemarble: }{TRUE / FALSE}
 #'  \item{mirror_data: }{TRUE / FALSE / NP / SP}
+#'  \item{scale_factor: }{numeric (e.g., 1)}
 #' }
 #'@export
 #'@importFrom assertthat assert_that is.count is.flag is.readable is.writeable
@@ -47,6 +49,7 @@ quicklook <- function(config,
                       logo = TRUE,
                       copyright = TRUE,
                       bluemarble = FALSE,
+                      aux_file = NULL,
                       verbose = TRUE) {
   # Make sure that any user settings are reset when the function exits
   # This is a requirement by CRAN
@@ -81,8 +84,20 @@ quicklook <- function(config,
   assert_that(is.flag(logo))
   assert_that(is.flag(copyright))
   assert_that(is.flag(bluemarble))
+  assert_that(is.character(aux_file) || is.null(aux_file))
   
   # define some global variables, which are part of the bluemarble data
+  if (!is.null(aux_file)) {
+    if (file.exists(aux_file)) {
+      cat("Loading aux_file...")
+      attach(aux_file)
+    } else {
+        cat("WARNING, aux_file not found!")
+    }
+  } else {
+    cat("aux_file = NULL")
+  }
+  
   if (exists("blue_marble")) {
     nc_crs <- NULL  
   } else {
@@ -229,6 +244,8 @@ quicklook <- function(config,
   sysd <- c()
   mirror <- c()
   logsc <- c()
+  scalef <- c()
+  smoothf <- c()
   
   # define plotting area in case of polar projection
   area <- ""
@@ -250,21 +267,40 @@ quicklook <- function(config,
     plot_lim <- rbind(plot_lim, c(limits$min, limits$max))
     legends <- c(legends, configParams[[file_info$product_type]][[file_info$id]][[vars[i]]]$legend)
     slots <- c(slots, configParams[[file_info$product_type]][[file_info$id]][[vars[i]]]$slot)
-    set_unit <- c(set_unit, configParams[[file_info$product_type]][[file_info$id]][[vars[i]]]$unit)
     set_vname <- c(set_vname, configParams[[file_info$product_type]][[file_info$id]][[vars[i]]]$var_name)
     marble <- c(marble, configParams[[file_info$product_type]][[file_info$id]][[vars[i]]]$bluemarble)
     sysd <- c(sysd, configParams[[file_info$product_type]][[file_info$id]][[vars[i]]]$sysdata)
+    
     iinvert <- configParams[[file_info$product_type]][[file_info$id]][[vars[i]]]$invert_col
     if (is.null(iinvert)) {
       iinvert <- FALSE
     }
     invert <- append(invert, iinvert)
+    
     imirror <- configParams[[file_info$product_type]][[file_info$id]][[vars[i]]]$mirror_data
     if (is.null(imirror)) {
       imirror <- FALSE
     }
     mirror <- append(mirror, imirror)
     
+    scfa <- configParams[[file_info$product_type]][[file_info$id]][[vars[i]]]$scale_factor
+    if (is.null(scfa)) {
+      scfa <- 1.0
+    }
+    scalef <- append(scalef, scfa)
+    
+    smfa <- configParams[[file_info$product_type]][[file_info$id]][[vars[i]]]$smooth_factor
+    if (is.null(smfa)) {
+      smfa <- NA
+    }
+    smoothf <- append(smoothf, smfa)
+    
+    iunit <- configParams[[file_info$product_type]][[file_info$id]][[vars[i]]]$unit
+    if (is.null(iunit)) {
+      iunit <- NA
+    }
+    set_unit <- append(set_unit, iunit)
+
     ilogsc <- configParams[[file_info$product_type]][[file_info$id]][[vars[i]]]$log_scale
     if (is.null(ilogsc)) {
       ilogsc <- FALSE
@@ -538,13 +574,15 @@ quicklook <- function(config,
           col <- rev(col)
         }
       }
-      
+
       # Polar Projection Plot
       if (area == "NP" | area == "SP") {
        
         rotate_cc <- function(x) {apply(t(x), 2, rev)}
         
         datav <- raster::as.matrix(stacks[[j]][[1]])
+        # Apply scale factor
+        datav <- datav * scalef[j]
         # for some reason the data are mirrored; this has to be corrected
         datav <- rotate_cc(datav)
         if (area == "NP") {
@@ -744,7 +782,7 @@ quicklook <- function(config,
           axes = FALSE
           )
         
-          raster::image(stacks[[j]], y = slot_i,
+          raster::image(stacks[[j]] * scalef[j], y = slot_i,
           main = "",
           axes = FALSE,
           xlab = "",
@@ -830,7 +868,7 @@ quicklook <- function(config,
         # but the solution on Windows did not work on Linux
         if (ind360) {
         #  raster::image(raster::rotate(stacks[[j]]),
-            raster::image(stacks[[j]], y = slot_i,
+            raster::image(stacks[[j]] * scalef[j], y = slot_i,
                         main = "",
                         xlim = c(lon_min, lon_max),
                         ylim = c(lat_min, lat_max),
@@ -845,51 +883,70 @@ quicklook <- function(config,
           )
         } else {
             if (logsc[j]) {
-              nc    <- ncdf4::nc_open(ref_file)
-                lond <- ncdf4::ncvar_get(nc, lonvar)
-                latd <- ncdf4::ncvar_get(nc, latvar)
-              ncdf4::nc_close(nc)
+              raster::values(stacks[[j]])[raster::values(stacks[[j]]) == 0] <- plot_lim[j,1]
               
-              lonv  <- as.vector(lond)
-              latv  <- as.vector(latd)
-              lonv  <- seq(min(lonv), max(lonv), length.out = length(lonv))
-              latv  <- seq(min(latv), max(latv), length.out = length(latv))
-              rotate <- function(x) t(apply(x, 2, rev))
-              
-              datav <- raster::as.matrix(stacks[[j]][[slot_i]])
-              
-              # For log-scale values below or equal 0 are not allowed 
-              datav[datav <= 0] <- plot_lim[j,1]
-              
-              graphics::image(lonv, latv, log(rotate(datav)), 
-                    axis.args=list( at=log(ticks), labels=ticks), 
-                    main = "",
-                    xlim = c(lon_min, lon_max),
-                    ylim = c(lat_min, lat_max),
-                    zlim = log(plot_lim[j,]),
-                    axes = FALSE,
-                    xlab = "",
-                    ylab = "",
-                    col = col,
-                    colNA = "gray85",
-                    asp = 1,
-                    useRaster = TRUE,
-                    add = TRUE
-              )
+              if (slot_i == 1) {
+                raster::image(raster::calc(stacks[[j]], fun=log) * scalef[j],
+                              main = "",
+                              xlim = c(lon_min, lon_max),
+                              ylim = c(lat_min, lat_max),
+                              axes = FALSE,
+                              xlab = "",
+                              ylab = "",
+                              zlim = log(plot_lim[j,]),
+                              col = col,
+                              colNA = "gray85",
+                              asp = 1,
+                              add = TRUE
+                )  
+              } else {
+                raster::image(raster::calc(stacks[[j]], fun=log) * scalef[j], y = slot_i,
+                              main = "",
+                              xlim = c(lon_min, lon_max),
+                              ylim = c(lat_min, lat_max),
+                              axes = FALSE,
+                              xlab = "",
+                              ylab = "",
+                              zlim = log(plot_lim[j,]),
+                              col = col,
+                              colNA = "gray85",
+                              asp = 1,
+                              add = TRUE
+                )
+              }
             } else {
-                raster::image(stacks[[j]], y = slot_i,
-                            main = "",
-                            xlim = c(lon_min, lon_max),
-                            ylim = c(lat_min, lat_max),
-                            axes = FALSE,
-                            xlab = "",
-                            ylab = "",
-                            zlim = plot_lim[j,],
-                            col = col,
-                            colNA = "gray85",
-                            asp = 1,
-                            add = TRUE
-              )
+                if (!is.na(smoothf[j])) {
+                  smp <- raster::disaggregate(stacks[[j]], fact = smoothf[j], method='bilinear')
+                  
+                  raster::image(smp,
+                                main = "",
+                                xlim = c(lon_min, lon_max),
+                                ylim = c(lat_min, lat_max),
+                                axes = FALSE,
+                                xlab = "",
+                                ylab = "",
+                                zlim = plot_lim[j,],
+                                col = col,
+                                colNA = "gray85",
+                                asp = 1,
+                                add = TRUE
+                  )
+                } else {
+                    raster::image(stacks[[j]] * scalef[j], y = slot_i,
+                                main = "",
+                                xlim = c(lon_min, lon_max),
+                                ylim = c(lat_min, lat_max),
+                                axes = FALSE,
+                                xlab = "",
+                                ylab = "",
+                                zlim = plot_lim[j,],
+                                col = col,
+                                colNA = "gray85",
+                                asp = 1,
+                                add = TRUE
+                  )
+                }
+                
             }
         }
         
@@ -987,27 +1044,71 @@ quicklook <- function(config,
 
       if (legends[j]) {
         if (logsc[j]) {
-          fields::image.plot(lonv, latv, log(rotate(datav)),
-                             zlim = log(plot_lim[j,]),
-                             main = "",
-                             axes = FALSE,
-                             xlab = "",
-                             ylab = "",
-                             legend.only = TRUE,
-                             legend.shrink = 0.9,
-                             legend.width = 1.5,
-                             legend.mar = 5.1,
-                             legend.args=list(text = units[j], 
-                                              side = 2, 
-                                              font = 2, 
-                                              line = 0.2, 
-                                              cex = 1.25*fsf),
-                             axis.args=list(cex.axis = 1*fsf,
-                                            at=log(ticks), labels=ticks),
-                             col = col,
-                             add = TRUE)
+          # First try
+          # fields::image.plot(lonv, latv, log(rotate(datav)),
+          #                    zlim = log(plot_lim[j,]),
+          #                    main = "",
+          #                    axes = FALSE,
+          #                    xlab = "",
+          #                    ylab = "",
+          #                    legend.only = TRUE,
+          #                    legend.shrink = 0.9,
+          #                    legend.width = 1.5,
+          #                    legend.mar = 5.1,
+          #                    legend.args=list(text = units[j], 
+          #                                     side = 2, 
+          #                                     font = 2, 
+          #                                     line = 0.2, 
+          #                                     cex = 1.25*fsf),
+          #                    axis.args=list(cex.axis = 1*fsf,
+          #                                   at=log(ticks), labels=ticks),
+          #                    col = col,
+          #                    add = TRUE)
+          # Second try
+          if (slot_i == 1) {
+            raster::plot(raster::calc(stacks[[j]], fun=log) * scalef[j],
+                         main = "",
+                         axes = FALSE,
+                         xlab = "",
+                         ylab = "",
+                         zlim = log(plot_lim[j,]),
+                         legend.only = TRUE,
+                         legend.shrink = 0.9,
+                         legend.width = 1.5,
+                         legend.mar = 5.1,
+                         legend.args=list(text = units[j], 
+                                          side = 2, 
+                                          font = 2, 
+                                          line = 0.2, 
+                                          cex = 1.25*fsf),
+                         axis.args=list(cex.axis = 1*fsf,
+                                        at=log(ticks), labels=ticks),
+                         col = col,
+                         add = TRUE)  
+          } else {
+            raster::plot(raster::calc(stacks[[j]], fun=log) * scalef[j], y = slot_i,
+                         main = "",
+                         axes = FALSE,
+                         xlab = "",
+                         ylab = "",
+                         zlim = log(plot_lim[j,]),
+                         legend.only = TRUE,
+                         legend.shrink = 0.9,
+                         legend.width = 1.5,
+                         legend.mar = 5.1,
+                         legend.args=list(text = units[j], 
+                                          side = 2, 
+                                          font = 2, 
+                                          line = 0.2, 
+                                          cex = 1.25*fsf),
+                         axis.args=list(cex.axis = 1*fsf,
+                                        at=log(ticks), labels=ticks),
+                         col = col,
+                         add = TRUE) 
+          }
+          
         } else {
-            raster::plot(stacks[[j]], y = slot_i,
+            raster::plot(stacks[[j]] * scalef[j], y = slot_i,
                        main = "",
                        axes = FALSE,
                        xlab = "",
