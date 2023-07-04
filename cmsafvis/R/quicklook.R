@@ -736,7 +736,7 @@ quicklook <- function(config,
             add = TRUE,
             interior = FALSE,
             col = outcol,
-            lwd = 0.5,
+            lwd = 0.75,
             resolution = 0
           )
         )
@@ -955,23 +955,23 @@ quicklook <- function(config,
            raster::extent(stacks[[j]]) <- c(-1, 1, -1, 1)
            suppressWarnings(
              maps::map("world", projection = "orthographic", interior = FALSE, 
-                       col = "gray20", orientation = c(0,0,0), add = TRUE)
+                       col = "gray10", orientation = c(0,0,0), lwd = 1.5, add = TRUE)
            )
         } else if (area == "GL") {
             if (lon_max >= 359) {
               maps::map("world2", interior = FALSE, xlim = c(lon_min, lon_max), 
-                        col = "gray20", ylim = c(lat_min, lat_max), wrap = c(-180, 180), add = TRUE)
+                        col = "gray10", ylim = c(lat_min, lat_max), lwd = 1.5, wrap = c(-180, 180), add = TRUE)
             } else {
                 maps::map("world", interior = FALSE, xlim = c(lon_min, lon_max), 
-                          col = "gray20", ylim = c(lat_min, lat_max), wrap = c(-180, 180), add = TRUE)
+                          col = "gray10", ylim = c(lat_min, lat_max), lwd = 1.5, wrap = c(-180, 180), add = TRUE)
             }
         } else {
             if (lon_max >= 359) {
               maps::map("world2", interior = FALSE, xlim = c(lon_min, lon_max), 
-                        col = "gray20", ylim = c(lat_min, lat_max), add = TRUE)
+                        col = "gray10", ylim = c(lat_min, lat_max), lwd = 1.5, add = TRUE)
             } else {
                 maps::map("world", interior = FALSE, xlim = c(lon_min, lon_max), 
-                          col = "gray20", ylim = c(lat_min, lat_max), add = TRUE)
+                          col = "gray10", ylim = c(lat_min, lat_max), lwd = 1.5, add = TRUE)
             }
         }
        }
