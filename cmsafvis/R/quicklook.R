@@ -16,7 +16,6 @@
 #'@param bluemarble logical; should the data be plotted onto a NASA bluemarble (only available for MSG/Seviri based data)?
 #'   Due to data size this option is not available for the cmsafvis package on CRAN. Please have a look at
 #'   our website https://www.cmsaf.eu/R_toolbox
-#'@param aux_file path to optional sysdata.rda file, which includes bluemarble data 
 #'@param verbose logical; if TRUE, progress messages are shown
 #'
 #'@return A jpeg file with the same name as the original NetCDF file.
@@ -37,6 +36,8 @@
 #'  \item{mirror_data: }{TRUE / FALSE / NP / SP}
 #'  \item{scale_factor: }{numeric (e.g., 1)}
 #'  \item{smooth_factor: }{numeric (e.g., 1)}
+#'  \item{aux_file} path to optional aux-file, including CLAAS level 2 lon/ lat data
+#'  \item{sysd} path to optional sysdata.rda file, which includes bluemarble data  
 #' }
 #'@export
 #'@importFrom assertthat assert_that is.count is.flag is.readable is.writeable
@@ -50,7 +51,6 @@ quicklook <- function(config,
                       logo = TRUE,
                       copyright = TRUE,
                       bluemarble = FALSE,
-                      aux_file = NULL,
                       verbose = TRUE) {
   # Make sure that any user settings are reset when the function exits
   # This is a requirement by CRAN
@@ -85,26 +85,46 @@ quicklook <- function(config,
   assert_that(is.flag(logo))
   assert_that(is.flag(copyright))
   assert_that(is.flag(bluemarble))
-  assert_that(is.character(aux_file) || is.null(aux_file))
   
-  # define some global variables, which are part of the bluemarble data
-  if (!is.null(aux_file)) {
-    if (file.exists(aux_file)) {
-      cat("Loading aux_file...")
-      attach(aux_file)
-    } else {
-        cat("WARNING, aux_file not found!")
+  ### Define helper function: Code from R-package plotrix 3.8-2
+  ### Plotrix: a package in the red light district of R
+  ### Author: J. Lemon
+  getYmult <- function() {
+    if(grDevices::dev.cur() == 1) {
+      warning("No graphics device open.")
+      ymult <- 1
     }
-  } else {
-    cat("aux_file = NULL")
+    else {
+      # get the plot aspect ratio
+      xyasp <- graphics::par("pin")
+      # get the plot coordinate ratio
+      xycr <- diff(graphics::par("usr"))[c(1,3)]
+      ymult <- xyasp[1]/xyasp[2]*xycr[2]/xycr[1]
+    }
+    return(ymult)
   }
   
-  if (exists("blue_marble")) {
-    nc_crs <- NULL  
-  } else {
-      nc_crs <- blue_marble <- NULL
+  draw.circle <- function(x, y, radius, nv=100, border=NULL, col=NA,
+                          lty=1, density=NULL, angle=45, lwd = 1) {
+    
+    xylim <- graphics::par("usr")
+    plotdim <- graphics::par("pin")
+    ymult <- getYmult()
+    angle.inc <- 2*pi/nv
+    angles <- seq(0,2*pi-angle.inc, by = angle.inc)
+    if(length(col) < length(radius)) 
+      col <- rep(col, length.out = length(radius))
+    for(circle in 1:length(radius)) {
+      xv <- cos(angles)*radius[circle]+x
+      yv <- sin(angles)*radius[circle]*ymult+y
+      graphics::polygon(xv, yv, border = border, col = col[circle], lty = lty,
+                        density = density, angle = angle, lwd = lwd)
+    }
+    invisible(list(x = xv, y = yv))
   }
-
+  ### End of code from plotrix R-package
+  
+  
   ### Build colorpalettes ###
   
   palettes <- GetPaletteConfig(gui = TRUE)
@@ -243,10 +263,12 @@ quicklook <- function(config,
   set_vname <- c()
   marble <- c()
   sysd <- c()
+  auxf <- c()
   mirror <- c()
   logsc <- c()
   scalef <- c()
   smoothf <- c()
+  tick_lab <- vector(mode = "list", length = 1)
   
   # define plotting area in case of polar projection
   area <- ""
@@ -270,7 +292,12 @@ quicklook <- function(config,
     slots <- c(slots, configParams[[file_info$product_type]][[file_info$id]][[vars[i]]]$slot)
     set_vname <- c(set_vname, configParams[[file_info$product_type]][[file_info$id]][[vars[i]]]$var_name)
     marble <- c(marble, configParams[[file_info$product_type]][[file_info$id]][[vars[i]]]$bluemarble)
-    sysd <- c(sysd, configParams[[file_info$product_type]][[file_info$id]][[vars[i]]]$sysdata)
+    
+    isysd <- configParams[[file_info$product_type]][[file_info$id]][[vars[i]]]$sysdata
+    if (!is.null(isysd)) sysd <- isysd
+    
+    iauxf <- configParams[[file_info$product_type]][[file_info$id]][[vars[i]]]$aux_file
+    if (!is.null(iauxf)) auxf <- iauxf
     
     iinvert <- configParams[[file_info$product_type]][[file_info$id]][[vars[i]]]$invert_col
     if (is.null(iinvert)) {
@@ -289,6 +316,12 @@ quicklook <- function(config,
       scfa <- 1.0
     }
     scalef <- append(scalef, scfa)
+    
+    tl <- configParams[[file_info$product_type]][[file_info$id]][[vars[i]]]$tick_lab
+    if (is.null(tl)) {
+      tl <- NA
+    }
+    tick_lab[[i]] <- tl
     
     smfa <- configParams[[file_info$product_type]][[file_info$id]][[vars[i]]]$smooth_factor
     if (is.null(smfa)) {
@@ -346,6 +379,16 @@ quicklook <- function(config,
         bluemarbles[k] <- marble[k]
       }
     }
+    
+    # define some global variables, which are part of the bluemarble data
+    if (!is.null(sysd)) {
+      if (file.exists(sysd)) {
+        cat("Loading sysdata file...", "\n")
+        attach(sysd)
+      } else {
+        cat("WARNING, sysdata file not found!", "\n")
+      }
+    } 
   }
   
   # check lon lat names (not elegant, but should work for now)
@@ -440,6 +483,12 @@ quicklook <- function(config,
       logo.scale_color <- lsc
     } 
   }
+  
+  if (exists("blue_marble")) {
+    nc_crs <- NULL  
+  } else {
+    nc_crs <- blue_marble <- NULL
+  }
 
   # factor for font size
   hcor <- (iheight / 750) - 1
@@ -469,7 +518,9 @@ quicklook <- function(config,
   }
   
   ### Plot ###
-  
+  oldw <- getOption("warn")
+  options(warn = -1)
+    
     # read data
     stacks <- c()
     for (k in seq_along(vars)) {
@@ -483,6 +534,28 @@ quicklook <- function(config,
     for (l in seq_along(stacks)) {
       raster::extent(stacks[[l]]) <- c(lon_min, lon_max, lat_min, lat_max)
     }
+    
+    if (!is.null(auxf)) {
+      if (file.exists(auxf)) {
+        nc <- ncdf4::nc_open(auxf)
+          clon <- ncdf4::ncvar_get(nc, "lon")
+          clat <- ncdf4::ncvar_get(nc, "lat")
+        ncdf4::nc_close(nc)
+        
+        gc()
+        
+        carray <- array(0, dim = dim(clon))
+        carray <- carray[!is.na(clon)]
+        clat <- clat[!is.na(clon)]
+        clon <- clon[!is.na(clon)]
+        
+      } else {
+          cat(paste("Couldn't find aux_file: ", auxf, sep=""), "\n")
+      }
+    }
+  
+    
+  options(warn = oldw)
     
     # filename and timestamp for title
     filename <- unlist(strsplit(basename(plotfile[1]), "\\."))
@@ -541,6 +614,9 @@ quicklook <- function(config,
         stop("Bluemarble plotting is only available for CLAAS data on MSG grid.")
       }
       
+      # Get raster dimensions
+      figdim <- dim(stacks[[j]])
+      
       # Set color palette
       if (col_from_config[[1]] == "clouds") {
         stacks[[j]][[1]][is.na(stacks[[j]][[1]])] <- 0
@@ -565,7 +641,11 @@ quicklook <- function(config,
           ticks <- get_breaks(plot_lim[j,])
           col = getColors(col_from_config[[j]], palettes, length(ticks) - 1L, FALSE)
         } else {
-              col <- getColors(col_from_config[[j]], palettes, 32, FALSE)
+            if (!is.na(tick_lab[[j]][1])) {
+              col = getColors(col_from_config[[j]], palettes, length(tick_lab[[j]]), FALSE)
+            } else {
+                col <- getColors(col_from_config[[j]], palettes, 32, FALSE)
+            }
         }
       }
       
@@ -754,14 +834,10 @@ quicklook <- function(config,
         
       # bluemarble plot
        if (bluemarbles[j]) {
-         if (!is.null(sysd[j])) {
-           if (file.exists(sysd[j])) {
-             load(file=sysd[j])
-           } else {
+         if (!is.null(sysd)) {
+           if (!file.exists(sysd)) {
               cat("No valid bluemarble data found!", "\n")
            } 
-         } else {
-            cat("No valid bluemarble data found!", "\n")
          }
          if (!is.null(blue_marble)) {
           raster::extent(stacks[[j]]) <- c(-1, 1, -1, 1)
@@ -789,6 +865,7 @@ quicklook <- function(config,
           xlab = "",
           ylab = "",
           col = col,
+          maxpixels = (figdim[1] * figdim[2]),
           add = TRUE)
          } else {
            stop("Bluemarble plotting is not available. See https://www.cmsaf.eu/R_toolbox")
@@ -796,11 +873,6 @@ quicklook <- function(config,
        } else {
         # borderline plots for scale
         if (file_info$grid == "Satellite projection MSG/Seviri") {
-          if (!is.null(sysd[j])) {
-            if (file.exists(sysd[j])) {
-              load(file=sysd[j])
-            } 
-          }
           if (!is.null(blue_marble)) {
             graphics::par(pty = "s")
             raster::extent(stacks[[j]]) <- c(-1, 1, -1, 1)
@@ -821,7 +893,26 @@ quicklook <- function(config,
             axes = FALSE
             )
           } else {
-              stop("Bluemarble plotting is not available. No valid bluemarble data found! See https://www.cmsaf.eu/R_toolbox")
+              if (!is.null(auxf)) {
+                if (file.exists(auxf)) {
+                  graphics::par(pty = "s")
+                  raster::extent(stacks[[j]]) <- c(-1, 1, -1, 1)
+                  fields::quilt.plot(
+                    clon,
+                    clat,
+                    carray,
+                    xlim = c(-1, 1),
+                    ylim = c(-1, 1),
+                    xlab = " ",
+                    ylab = " ",
+                    col = "gray85",
+                    add.legend = FALSE,
+                    axes = FALSE
+                  )
+                }
+              } else {
+                  stop("Bluemarble plotting is not available. No valid bluemarble data found! See https://www.cmsaf.eu/R_toolbox")
+              }
             }
         } else {
           graphics::image((lon_min*0.998):(lon_max*1.002),
@@ -841,11 +932,23 @@ quicklook <- function(config,
          
          # land plot
          if (file_info$grid == "Satellite projection MSG/Seviri") {
-           raster::extent(stacks[[j]]) <- c(-1, 1, -1, 1)
-           suppressWarnings(
-             maps::map("world", projection = "orthographic", fill = TRUE, border = NA,
-                       col = "gray75", orientation = c(0,0,0), add = TRUE)
-           )
+           if (!is.null(auxf)) {
+             raster::extent(stacks[[j]]) <- c(-1, 1, -1, 1)
+             suppressWarnings(
+               maps::map("world", projection = "orthographic", fill = TRUE, border = NA,
+                         col = "gray75", orientation = c(0,0,0), boundary = FALSE, 
+                         xlim = c(min(clon), max(clon)), 
+                         ylim = c(min(clat), max(clat)),
+                         lforce = "e",
+                         add = TRUE)
+             )
+           } else {
+               raster::extent(stacks[[j]]) <- c(-1, 1, -1, 1)
+               suppressWarnings(
+               maps::map("world", projection = "orthographic", fill = TRUE, border = NA,
+                         col = "gray75", orientation = c(0,0,0), add = TRUE)
+               )
+           }
          } else if (area == "GL") {
            if (lon_max >= 359) {
              maps::map("world2", fill = TRUE, border = NA, xlim = c(lon_min, lon_max), 
@@ -880,6 +983,7 @@ quicklook <- function(config,
                         col = col,
                         colNA = "gray85",
                         asp = 1,
+                        maxpixels = if(file_info$grid == "Satellite projection MSG/Seviri") (figdim[1] * figdim[2]) else 100000,
                         add = TRUE
           )
         } else {
@@ -898,6 +1002,7 @@ quicklook <- function(config,
                               col = col,
                               colNA = "gray85",
                               asp = 1,
+                              maxpixels = if(file_info$grid == "Satellite projection MSG/Seviri") (figdim[1] * figdim[2]) else 100000,
                               add = TRUE
                 )  
               } else {
@@ -912,6 +1017,7 @@ quicklook <- function(config,
                               col = col,
                               colNA = "gray85",
                               asp = 1,
+                              maxpixels = if(file_info$grid == "Satellite projection MSG/Seviri") (figdim[1] * figdim[2]) else 100000,
                               add = TRUE
                 )
               }
@@ -944,6 +1050,7 @@ quicklook <- function(config,
                                 col = col,
                                 colNA = "gray85",
                                 asp = 1,
+                                maxpixels = if(file_info$grid == "Satellite projection MSG/Seviri") (figdim[1] * figdim[2]) else 100000,
                                 add = TRUE
                   )
                 }
@@ -953,11 +1060,26 @@ quicklook <- function(config,
         
         # borderline plot
         if (file_info$grid == "Satellite projection MSG/Seviri") {
-           raster::extent(stacks[[j]]) <- c(-1, 1, -1, 1)
-           suppressWarnings(
-             maps::map("world", projection = "orthographic", interior = FALSE, 
-                       col = "gray10", orientation = c(0,0,0), lwd = 1.5, add = TRUE)
-           )
+          if (!is.null(auxf)) {
+            raster::extent(stacks[[j]]) <- c(-1, 1, -1, 1)
+            suppressWarnings(
+              maps::map("world", projection = "orthographic", interior = FALSE, 
+                        col = "gray10", orientation = c(0,0,0), lwd = 1.5,
+                        xlim = c(min(clon), max(clon)), 
+                        ylim = c(min(clat), max(clat)),
+                        lforce = "e",
+                        add = TRUE)
+            )
+            
+            draw.circle(0,0,1, border = "gray85", lwd = 8)
+            draw.circle(0,0,0.985, border = "gray25", lwd = 1)
+          } else {
+              raster::extent(stacks[[j]]) <- c(-1, 1, -1, 1)
+              suppressWarnings(
+              maps::map("world", projection = "orthographic", interior = FALSE, 
+                        col = "gray10", orientation = c(0,0,0), lwd = 1.5, add = TRUE)
+              )
+          }
         } else if (area == "GL") {
             if (lon_max >= 359) {
               maps::map("world2", interior = FALSE, xlim = c(lon_min, lon_max), 
@@ -1045,27 +1167,6 @@ quicklook <- function(config,
 
       if (legends[j]) {
         if (logsc[j]) {
-          # First try
-          # fields::image.plot(lonv, latv, log(rotate(datav)),
-          #                    zlim = log(plot_lim[j,]),
-          #                    main = "",
-          #                    axes = FALSE,
-          #                    xlab = "",
-          #                    ylab = "",
-          #                    legend.only = TRUE,
-          #                    legend.shrink = 0.9,
-          #                    legend.width = 1.5,
-          #                    legend.mar = 5.1,
-          #                    legend.args=list(text = units[j], 
-          #                                     side = 2, 
-          #                                     font = 2, 
-          #                                     line = 0.2, 
-          #                                     cex = 1.25*fsf),
-          #                    axis.args=list(cex.axis = 1*fsf,
-          #                                   at=log(ticks), labels=ticks),
-          #                    col = col,
-          #                    add = TRUE)
-          # Second try
           if (slot_i == 1) {
             raster::plot(raster::calc(stacks[[j]], fun=log) * scalef[j],
                          main = "",
@@ -1109,12 +1210,18 @@ quicklook <- function(config,
           }
           
         } else {
+           if (!is.na(tick_lab[[j]][1])) {
+            breaks <- seq(plot_lim[j,1], plot_lim[j,2], length.out=(length(col) + 1))
+            labstep <- (breaks[2] - breaks[1]) / 2
+            labat <- seq(breaks[1]+labstep, breaks[length(breaks)]-labstep, length.out = length(tick_lab[[j]]))
+            par(cex=1.0)
             raster::plot(stacks[[j]] * scalef[j], y = slot_i,
                        main = "",
                        axes = FALSE,
                        xlab = "",
                        ylab = "",
                        zlim = plot_lim[j,],
+                       breaks = breaks,
                        legend.only = TRUE,
                        legend.shrink = 0.9,
                        legend.width = 1.5,
@@ -1124,9 +1231,32 @@ quicklook <- function(config,
                                         font = 2, 
                                         line = 0.2, 
                                         cex = 1.25*fsf),
+                       axis.args=list(cex.axis = 1*fsf,
+                                      at=labat, 
+                                      labels=tick_lab[[j]],
+                                      las = 3),
+                       col = col,
+                       add = TRUE)
+           } else {
+             raster::plot(stacks[[j]] * scalef[j], y = slot_i,
+                          main = "",
+                          axes = FALSE,
+                          xlab = "",
+                          ylab = "",
+                          zlim = plot_lim[j,],
+                          legend.only = TRUE,
+                          legend.shrink = 0.9,
+                          legend.width = 1.5,
+                          legend.mar = 5.1,
+                          legend.args=list(text = units[j], 
+                                           side = 2, 
+                                           font = 2, 
+                                           line = 0.2, 
+                                           cex = 1.25*fsf),
                        axis.args=list(cex.axis = 1*fsf),
                        col = col,
                        add = TRUE)
+           }
         }
       }
       
@@ -1164,4 +1294,5 @@ quicklook <- function(config,
   if (file.exists("Rplots.pdf")) {
     file.remove("Rplots.pdf")
   }
+  gc()
 }
