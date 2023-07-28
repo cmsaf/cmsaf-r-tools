@@ -1,5 +1,9 @@
 # Changelog for cmsafvis package
 
+## 1.1.17
+
+- New quicklook parameter: `remap` to remap data using lon / lat from aux_file
+
 ## 1.1.16
 
 - New quicklook parameter: `aux_file` for optional aux file

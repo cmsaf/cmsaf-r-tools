@@ -1,6 +1,6 @@
 Package: cmsafvis
 Title: Tools to Visualize CM SAF NetCDF Data
-Version: 1.1.16
+Version: 1.1.17
 Authors@R: 
     c(person(given = "Steffen",
            family = "Kothe",
@@ -37,7 +37,6 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
 Encoding: UTF-8
 Language: en-US
-Suggests: plotKML (>= 0.8), rnaturalearth (>= 0.1), spelling (>= 2.1),
-        testthat (>= 2.3)
-Packaged: 2023-07-11 12:30:00 UTC
+Suggests: testthat (>= 2.3)
+Packaged: 2023-07-27 12:30:00 UTC
 Maintainer: Steffen Kothe <Steffen.Kothe@dwd.de>

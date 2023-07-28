@@ -36,8 +36,9 @@
 #'  \item{mirror_data: }{TRUE / FALSE / NP / SP}
 #'  \item{scale_factor: }{numeric (e.g., 1)}
 #'  \item{smooth_factor: }{numeric (e.g., 1)}
-#'  \item{aux_file} path to optional aux-file, including CLAAS level 2 lon/ lat data
-#'  \item{sysd} path to optional sysdata.rda file, which includes bluemarble data  
+#'  \item{aux_file: } {path to optional aux-file, including CLAAS level 2 lon/ lat data}
+#'  \item{sysd: } {path to optional sysdata.rda file, which includes bluemarble data}  
+#'  \item{remap: } {remap data to regular grid. TRUE / FALSE} 
 #' }
 #'@export
 #'@importFrom assertthat assert_that is.count is.flag is.readable is.writeable
@@ -269,6 +270,7 @@ quicklook <- function(config,
   scalef <- c()
   smoothf <- c()
   tick_lab <- vector(mode = "list", length = 1)
+  remap_q <- FALSE
   
   # define plotting area in case of polar projection
   area <- ""
@@ -295,6 +297,9 @@ quicklook <- function(config,
     
     isysd <- configParams[[file_info$product_type]][[file_info$id]][[vars[i]]]$sysdata
     if (!is.null(isysd)) sysd <- isysd
+    
+    imap <- configParams[[file_info$product_type]][[file_info$id]][[vars[i]]]$remap
+    if (!is.null(imap)) remap_q <- imap
     
     iauxf <- configParams[[file_info$product_type]][[file_info$id]][[vars[i]]]$aux_file
     if (!is.null(iauxf)) auxf <- iauxf
@@ -553,7 +558,6 @@ quicklook <- function(config,
           cat(paste("Couldn't find aux_file: ", auxf, sep=""), "\n")
       }
     }
-  
     
   options(warn = oldw)
     
@@ -653,6 +657,25 @@ quicklook <- function(config,
       if (!is.null(invert)) {
         if (invert[j]) {
           col <- rev(col)
+        }
+      }
+      
+      # remap data if remap_q = TRUE
+      if (remap_q) {
+        if (!is.null(auxf)) {
+          if (file.exists(auxf)) {
+            rdata <- c()
+            if (verbose) {
+              cat("Remapping...", "\n")
+            }
+            rdata <- remap4quicklook(var = vars[j], infile = plotfile, auxfile = auxf)
+            rdata$data <- rdata$data * scalef[j]
+            if (file_info$grid == "Satellite projection MSG/Seviri") {
+              file_info$grid <- "Remapped"
+            }
+          } else {
+            cat("No aux-file found! This file is a requirement for remapping.", "\n")
+          }
         }
       }
 
@@ -987,7 +1010,7 @@ quicklook <- function(config,
                         add = TRUE
           )
         } else {
-            if (logsc[j]) {
+            if (logsc[j] && !remap_q) {
               raster::values(stacks[[j]])[raster::values(stacks[[j]]) == 0] <- plot_lim[j,1]
               
               if (slot_i == 1) {
@@ -1039,20 +1062,54 @@ quicklook <- function(config,
                                 add = TRUE
                   )
                 } else {
-                    raster::image(stacks[[j]] * scalef[j], y = slot_i,
-                                main = "",
-                                xlim = c(lon_min, lon_max),
-                                ylim = c(lat_min, lat_max),
-                                axes = FALSE,
-                                xlab = "",
-                                ylab = "",
-                                zlim = plot_lim[j,],
-                                col = col,
-                                colNA = "gray85",
-                                asp = 1,
-                                maxpixels = if(file_info$grid == "Satellite projection MSG/Seviri") (figdim[1] * figdim[2]) else 100000,
-                                add = TRUE
-                  )
+                    if (remap_q && !is.null(auxf)) {
+                      if (logsc[j]) {
+                        graphics::image(rdata$lon, rdata$lat, log(rdata$data),
+                                        main = "",
+                                        xlim = c(lon_min, lon_max),
+                                        ylim = c(lat_min, lat_max),
+                                        axes = FALSE,
+                                        xlab = "",
+                                        ylab = "",
+                                        zlim = log(plot_lim[j,]),
+                                        col = col,
+                                        colNA = "gray85",
+                                        asp = 1,
+                                        useRaster = TRUE,
+                                        add = TRUE
+                        )
+                      } else {
+                          graphics::image(rdata$lon, rdata$lat, rdata$data,
+                                        main = "",
+                                        xlim = c(lon_min, lon_max),
+                                        ylim = c(lat_min, lat_max),
+                                        axes = FALSE,
+                                        xlab = "",
+                                        ylab = "",
+                                        zlim = plot_lim[j,],
+                                        col = col,
+                                        colNA = "gray85",
+                                        asp = 1,
+                                        useRaster = TRUE,
+                                        add = TRUE
+                          )
+                      }
+                    } else {
+                        raster::image(stacks[[j]] * scalef[j], y = slot_i,
+                                    main = "",
+                                    xlim = c(lon_min, lon_max),
+                                    ylim = c(lat_min, lat_max),
+                                    axes = FALSE,
+                                    xlab = "",
+                                    ylab = "",
+                                    zlim = plot_lim[j,],
+                                    col = col,
+                                    colNA = "gray85",
+                                    asp = 1,
+                                    maxpixels = if(file_info$grid == "Satellite projection MSG/Seviri") (figdim[1] * figdim[2]) else 100000,
+                                    add = TRUE
+                      )
+                    }
                 }
                 
             }
