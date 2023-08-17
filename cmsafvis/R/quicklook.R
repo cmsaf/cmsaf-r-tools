@@ -504,7 +504,7 @@ quicklook <- function(config,
   fsf <- round((iwidth / 1021) + hcor, digits = 2)
   
   # Prepare polar projection
-  
+  ori <- c(0, 0, 0)
   if (area == "NP" | area == "SP") {
     if (area == "NP") {
       ori  <- c(89.9, 0, 0)             # orientation North Pole
@@ -514,13 +514,14 @@ quicklook <- function(config,
     }
     nx <- dim(lond)[1]
     ny <- dim(lond)[2]
+  }
+   
     landcol   <- "gray75"     # "navajowhite3"
     oceancol  <- "gray85"     # "cadetblue3"
     outcol    <- "gray20"
     bordercol <- "gray20"
   
     m <- maps::map("world", plot = FALSE)
-  }
   
   ### Plot ###
   oldw <- getOption("warn")
@@ -672,6 +673,73 @@ quicklook <- function(config,
             rdata$data <- rdata$data * scalef[j]
             if (file_info$grid == "Satellite projection MSG/Seviri") {
               file_info$grid <- "Remapped"
+              
+              rep.row <- function(x, n) {
+                matrix(rep(x, each = n), nrow = n)
+              }
+              
+              lon_l2  <-
+                replicate(length(rdata$lat), rdata$lon)
+              lat_l2  <-
+                rep.row(rdata$lat, length(rdata$lon))
+              
+              datav <- as.vector(rdata$data)
+              
+              
+              a <- mapproj::mapproject(
+                  x = lon_l2,
+                  y = lat_l2,
+                  projection = "orthographic",
+                  orientation = ori
+                )
+              
+              nx <- figdim[1]
+              ny <- figdim[2]
+              
+              if (sum(is.na(a$x)) > 0 | sum(is.na(a$y)) > 0) {
+                dummy <- NULL
+                dummy <- !is.na(a$x)
+                a$x   <- a$x[dummy]
+                a$y   <- a$y[dummy]
+                datav <- datav[dummy]
+                dummy <- NULL
+                dummy <- !is.na(a$y)
+                a$x   <- a$x[dummy]
+                a$y   <- a$y[dummy]
+                datav <- datav[dummy]
+              }
+              
+              # define grid factors
+              xr <-
+                abs(range(lon_l2, na.rm = TRUE)[1]) + abs(range(lon_l2, na.rm = TRUE)[2])
+              yr <-
+                abs(range(lat_l2, na.rm = TRUE)[1]) + abs(range(lat_l2, na.rm = TRUE)[2])
+              l1 <- 3.1  # max value for nx/xf
+              l2 <- 2.0  # max value for ny/yf
+              
+              x1 <- c(40, 360)
+              y1 <- c(1, l1)
+              c1 <- stats::lm(y1 ~ x1)$coeff[[1]]
+              c2 <- stats::lm(y1 ~ x1)$coeff[[2]]
+              
+              if (xr > 40 & xr <= 360) {
+                xf <- c2 * xr + c1
+                xf <- round(xf, digits = 1)
+              } else {
+                xf <- 1
+              }
+              
+              x1 <- c(40, 180)
+              y1 <- c(1, l2)
+              c1 <- stats::lm(y1 ~ x1)$coeff[[1]]
+              c2 <- stats::lm(y1 ~ x1)$coeff[[2]]
+              
+              if (yr > 40 & yr <= 180) {
+                yf <- c2 * yr + c1
+                yf <- round(yf, digits = 1)
+              } else {
+                yf <- 1
+              }
             }
           } else {
             cat("No aux-file found! This file is a requirement for remapping.", "\n")
@@ -938,28 +1006,57 @@ quicklook <- function(config,
               }
             }
         } else {
-          graphics::image((lon_min*0.998):(lon_max*1.002),
-                          lat_min:lat_max,
-                          outer((lon_min*0.998):(lon_max*1.002),lat_min:lat_max,"+"),
-                          main = "",
-                          xlim = c(lon_min, lon_max),
-                          ylim = c(lat_min, lat_max),
-                          xlab = " ",
-                          ylab = " ",
-                          col = "gray85",
-                          axes = FALSE,
-                          useRaster = TRUE,
-                          asp = 1
-          )
+          if (file_info$grid == "Remapped") {
+            fields::quilt.plot(
+              a$x,
+              a$y,
+              datav,
+              xlim = c(-1, 1),
+              ylim = c(-1, 1),
+              zlim = plot_lim[j,],
+              nx = nx / xf,
+              ny = ny / yf,
+              xlab = " ",
+              ylab = " ",
+              main = " ",
+              col = col,
+              add.legend = FALSE,
+              axes = FALSE,
+              useRaster = TRUE,
+              asp = 1
+            )
+            
+            graphics::polygon(
+              sin(seq(0, 2 * pi, length.out = 100)),
+              cos(seq(0, 2 * pi, length.out = 100)),
+              col = oceancol,
+              border = grDevices::rgb(1, 1, 1, 0.5),
+              lwd = 1
+            )
+          } else {
+              graphics::image((lon_min*0.998):(lon_max*1.002),
+                            lat_min:lat_max,
+                            outer((lon_min*0.998):(lon_max*1.002),lat_min:lat_max,"+"),
+                            main = "",
+                            xlim = c(lon_min, lon_max),
+                            ylim = c(lat_min, lat_max),
+                            xlab = " ",
+                            ylab = " ",
+                            col = "gray85",
+                            axes = FALSE,
+                            useRaster = TRUE,
+                            asp = 1
+            ) 
+          }
         }
          
          # land plot
-         if (file_info$grid == "Satellite projection MSG/Seviri") {
+         if (file_info$grid == "Satellite projection MSG/Seviri" || file_info$grid == "Remapped") {
            if (!is.null(auxf)) {
              raster::extent(stacks[[j]]) <- c(-1, 1, -1, 1)
              suppressWarnings(
                maps::map("world", projection = "orthographic", fill = TRUE, border = NA,
-                         col = "gray75", orientation = c(0,0,0), boundary = FALSE, 
+                         col = "gray75", orientation = ori, boundary = FALSE, 
                          xlim = c(min(clon), max(clon)), 
                          ylim = c(min(clat), max(clat)),
                          lforce = "e",
@@ -1064,34 +1161,73 @@ quicklook <- function(config,
                 } else {
                     if (remap_q && !is.null(auxf)) {
                       if (logsc[j]) {
-                        graphics::image(rdata$lon, rdata$lat, log(rdata$data),
-                                        main = "",
-                                        xlim = c(lon_min, lon_max),
-                                        ylim = c(lat_min, lat_max),
-                                        axes = FALSE,
-                                        xlab = "",
-                                        ylab = "",
-                                        zlim = log(plot_lim[j,]),
-                                        col = col,
-                                        colNA = "gray85",
-                                        asp = 1,
-                                        useRaster = TRUE,
-                                        add = TRUE
+                        # graphics::image(rdata$lon, rdata$lat, log(rdata$data),
+                        #                 main = "",
+                        #                 xlim = c(lon_min, lon_max),
+                        #                 ylim = c(lat_min, lat_max),
+                        #                 axes = FALSE,
+                        #                 xlab = "",
+                        #                 ylab = "",
+                        #                 zlim = log(plot_lim[j,]),
+                        #                 col = col,
+                        #                 colNA = "gray85",
+                        #                 asp = 1,
+                        #                 useRaster = TRUE,
+                        #                 add = TRUE
+                        # )
+                        
+                        fields::quilt.plot(
+                          a$x,
+                          a$y,
+                          log(datav),
+                          xlim = c(-1, 1),
+                          ylim = c(-1, 1),
+                          zlim = log(plot_lim[j,]),
+                          nx = nx / xf,
+                          ny = ny / yf,
+                          xlab = " ",
+                          ylab = " ",
+                          main = "text1",
+                          col = col,
+                          add.legend = FALSE,
+                          axes = FALSE,
+                          add = TRUE,
+                          useRaster = TRUE,
+                          asp = 1
                         )
                       } else {
-                          graphics::image(rdata$lon, rdata$lat, rdata$data,
-                                        main = "",
-                                        xlim = c(lon_min, lon_max),
-                                        ylim = c(lat_min, lat_max),
-                                        axes = FALSE,
-                                        xlab = "",
-                                        ylab = "",
-                                        zlim = plot_lim[j,],
-                                        col = col,
-                                        colNA = "gray85",
-                                        asp = 1,
-                                        useRaster = TRUE,
-                                        add = TRUE
+                          # graphics::image(rdata$lon, rdata$lat, rdata$data,
+                          #               main = "",
+                          #               xlim = c(lon_min, lon_max),
+                          #               ylim = c(lat_min, lat_max),
+                          #               axes = FALSE,
+                          #               xlab = "",
+                          #               ylab = "",
+                          #               zlim = plot_lim[j,],
+                          #               col = col,
+                          #               colNA = "gray85",
+                          #               asp = 1,
+                          #               useRaster = TRUE,
+                          #               add = TRUE
+                          # )
+                          fields::quilt.plot(
+                            a$x,
+                            a$y,
+                            datav,
+                            xlim = c(-1, 1),
+                            ylim = c(-1, 1),
+                            zlim = plot_lim[j,],
+                            nx = nx / xf,
+                            ny = ny / yf,
+                            xlab = " ",
+                            ylab = " ",
+                            main = "text1",
+                            col = col,
+                            add.legend = FALSE,
+                            axes = FALSE,
+                            add = TRUE,
+                            useRaster = TRUE,
+                            asp = 1
                           )
                       }
                     } else {
@@ -1116,20 +1252,20 @@ quicklook <- function(config,
         }
         
         # borderline plot
-        if (file_info$grid == "Satellite projection MSG/Seviri") {
+        if (file_info$grid == "Satellite projection MSG/Seviri" || file_info$grid == "Remapped") {
           if (!is.null(auxf)) {
             raster::extent(stacks[[j]]) <- c(-1, 1, -1, 1)
             suppressWarnings(
               maps::map("world", projection = "orthographic", interior = FALSE, 
-                        col = "gray10", orientation = c(0,0,0), lwd = 1.5,
+                        col = "gray10", orientation = ori, lwd = 1.5,
                         xlim = c(min(clon), max(clon)), 
                         ylim = c(min(clat), max(clat)),
                         lforce = "e",
                         add = TRUE)
             )
             
-            draw.circle(0,0,1, border = "gray85", lwd = 8)
-            draw.circle(0,0,0.985, border = "gray25", lwd = 1)
+            draw.circle(0,0,0.992, border = "gray85", lwd = 5)
+            draw.circle(0,0,1, border = "gray35", lwd = 1)
           } else {
               raster::extent(stacks[[j]]) <- c(-1, 1, -1, 1)
               suppressWarnings(
