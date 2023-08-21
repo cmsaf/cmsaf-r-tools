@@ -52,6 +52,7 @@ quicklook <- function(config,
                       logo = TRUE,
                       copyright = TRUE,
                       bluemarble = FALSE,
+                      maxpixels = FALSE,
                       verbose = TRUE) {
   # Make sure that any user settings are reset when the function exits
   # This is a requirement by CRAN
@@ -619,8 +620,14 @@ quicklook <- function(config,
         stop("Bluemarble plotting is only available for CLAAS data on MSG grid.")
       }
       
-      # Get raster dimensions
+      # Get raster dimensions and set maxpixels
       figdim <- dim(stacks[[j]])
+      
+      if (maxpixels) {
+        maxp <- figdim[1] * figdim[2]
+      } else {
+        maxp <- 100000
+      }
       
       # Set color palette
       if (col_from_config[[1]] == "clouds") {
@@ -671,7 +678,7 @@ quicklook <- function(config,
             }
             rdata <- remap4quicklook(var = vars[j], infile = plotfile, auxfile = auxf)
             rdata$data <- rdata$data * scalef[j]
-            if (file_info$grid == "Satellite projection MSG/Seviri") {
+            if (file_info$grid == "Satellite projection MSG/Seviri" || file_info$grid == "Remapped") {
               file_info$grid <- "Remapped"
               
               rep.row <- function(x, n) {
@@ -685,6 +692,9 @@ quicklook <- function(config,
               
               datav <- as.vector(rdata$data)
               
+              # set data limits to plot_lim
+              datav[datav < plot_lim[j,1]] <- plot_lim[j,1] 
+              datav[datav > plot_lim[j,2]] <- plot_lim[j,2]
               
               a <- mapproj::mapproject(
                   x = lon_l2,
@@ -748,7 +758,7 @@ quicklook <- function(config,
       }
 
       # Polar Projection Plot
-      if (area == "NP" | area == "SP") {
+      if (area == "NP" || area == "SP") {
        
         rotate_cc <- function(x) {apply(t(x), 2, rev)}
         
