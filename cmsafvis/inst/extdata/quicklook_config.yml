@@ -681,7 +681,6 @@
         colorscale: Blue-Red 3
         logo: black
         bluemarble: FALSE
-        remap: TRUE
         aux_file: "/cmsaf/cmsaf-ops3/stkothe/QuicklookData/claas2_level2_aux_data.nc"
     CMAin003SVMSGE1MD:
       Dataset: CLAAS-2
@@ -693,7 +692,6 @@
         colorscale: Blue-Red 3
         logo: black
         bluemarble: FALSE
-        remap: TRUE
         aux_file: "/cmsaf/cmsaf-ops3/stkothe/QuicklookData/claas2_level2_aux_data.nc"
     CMAin004SVMSG01MD:
       Dataset: CLAAS-3
@@ -998,16 +996,16 @@
         colorscale: Plasma
         logo: black
         invert_col: TRUE
-        log_scale: TRUE
+        log_scale: FALSE
       COT:
         limits:
-          min: 0.001
-          max: 150
+          min: 0
+          max: 100
         legend: TRUE
         colorscale: Plasma
         logo: black
         invert_col: TRUE
-        log_scale: TRUE
+        log_scale: FALSE
         unit: ""
       CRE:
         limits:
@@ -1044,13 +1042,13 @@
         log_scale: TRUE
       COT:
         limits:
-          min: 0.001
-          max: 150
+          min: 0
+          max: 100
         legend: TRUE
         colorscale: Plasma
         logo: black
         invert_col: TRUE
-        log_scale: TRUE
+        log_scale: FALSE
         unit: ""
       REFF:
         limits:
