@@ -1,9 +1,9 @@
 
 remap4quicklook <- function(var, infile, auxfile, dxy = 0.05, method = "nearest", verbose = FALSE) {
 
-  cmsafops::check_variable(var)
-  cmsafops::check_infile(infile)
-  cmsafops::check_infile(auxfile)
+  cmsafops:::check_variable(var)
+  cmsafops:::check_infile(infile)
+  cmsafops:::check_infile(auxfile)
   stopifnot(method %in% c("bilinear", "conservative", "nearest"))
   
   # define constants and names

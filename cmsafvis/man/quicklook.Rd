@@ -41,6 +41,8 @@ quicklook(
 Due to data size this option is not available for the cmsafvis package on CRAN. Please have a look at
 our website https://www.cmsaf.eu/R_toolbox}
 
+\item{maxpixels}{logical; use actual number of pixels or default (100000)}
+
 \item{verbose}{logical; if TRUE, progress messages are shown}
 }
 \value{
