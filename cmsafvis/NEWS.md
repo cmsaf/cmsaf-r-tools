@@ -1,5 +1,9 @@
 # Changelog for cmsafvis package
 
+## 1.1.18
+
+- Several fixes in `quicklook` to match 1.1.15 plots
+
 ## 1.1.17
 
 - New quicklook parameter: `remap` to remap data using lon / lat from aux_file esp. for plotting CLAAS level-2 data

@@ -624,10 +624,12 @@ quicklook <- function(config,
       # Get raster dimensions and set maxpixels
       figdim <- dim(stacks[[j]])
       
+      maxp <- 100000
+      
       if (maxpixels) {
         maxp <- figdim[1] * figdim[2]
       } else {
-        maxp <- 100000
+        maxp <- 500000
       }
       
       # Set color palette
@@ -658,7 +660,7 @@ quicklook <- function(config,
               col = getColors(col_from_config[[j]], palettes, length(tick_lab[[j]]), FALSE)
             } else {
                 col <- getColors(col_from_config[[j]], palettes, 32, FALSE)
-                if (col_from_config[[j]] == "terrain.colors") {
+                if (col_from_config[[j]] == "terrain.colors" && remap_q) {
                   col <- col[1:30]
                 }
             }
@@ -922,7 +924,7 @@ quicklook <- function(config,
             add = TRUE,
             interior = FALSE,
             col = outcol,
-            lwd = 0.75,
+            lwd = 0.5,
             resolution = 0
           )
         )
@@ -970,7 +972,7 @@ quicklook <- function(config,
           xlab = "",
           ylab = "",
           col = col,
-          maxpixels = (figdim[1] * figdim[2]),
+          maxpixels = maxp,
           add = TRUE)
          } else {
            stop("Bluemarble plotting is not available. See https://www.cmsaf.eu/R_toolbox")
@@ -1117,44 +1119,76 @@ quicklook <- function(config,
                         col = col,
                         colNA = "gray85",
                         asp = 1,
-                        maxpixels = if(file_info$grid == "Satellite projection MSG/Seviri") (figdim[1] * figdim[2]) else 100000,
+                        maxpixels = maxp,
                         add = TRUE
           )
         } else {
             if (logsc[j] && !remap_q) {
-              raster::values(stacks[[j]])[raster::values(stacks[[j]]) == 0] <- plot_lim[j,1]
+              # raster::values(stacks[[j]])[raster::values(stacks[[j]]) <= 0] <- plot_lim[j,1]
+              # 
+              # if (slot_i == 1) {
+              #   raster::image(raster::calc(stacks[[j]], fun=log) * scalef[j],
+              #                 main = "",
+              #                 xlim = c(lon_min, lon_max),
+              #                 ylim = c(lat_min, lat_max),
+              #                 axes = FALSE,
+              #                 xlab = "",
+              #                 ylab = "",
+              #                 #zlim = log(plot_lim[j,]),
+              #                 col = col,
+              #                 colNA = "gray85",
+              #                 asp = 1,
+              #                 maxpixels = maxp,
+              #                 add = TRUE
+              #   )  
+              # } else {
+              #   raster::image(raster::calc(stacks[[j]], fun=log) * scalef[j], y = slot_i,
+              #                 main = "",
+              #                 xlim = c(lon_min, lon_max),
+              #                 ylim = c(lat_min, lat_max),
+              #                 axes = FALSE,
+              #                 xlab = "",
+              #                 ylab = "",
+              #                 #zlim = log(plot_lim[j,]),
+              #                 col = col,
+              #                 colNA = "gray85",
+              #                 asp = 1,
+              #                 maxpixels = maxp,
+              #                 add = TRUE
+              #   )
+              # }
               
-              if (slot_i == 1) {
-                raster::image(raster::calc(stacks[[j]], fun=log) * scalef[j],
+              nc    <- ncdf4::nc_open(ref_file)
+                lond <- ncdf4::ncvar_get(nc, lonvar)
+                latd <- ncdf4::ncvar_get(nc, latvar)
+              ncdf4::nc_close(nc)
+              
+              lonv  <- as.vector(lond)
+              latv  <- as.vector(latd)
+              lonv  <- seq(min(lonv), max(lonv), length.out = length(lonv))
+              latv  <- seq(min(latv), max(latv), length.out = length(latv))
+              rotate <- function(x) t(apply(x, 2, rev))
+              
+              datav <- raster::as.matrix(stacks[[j]][[slot_i]])
+              
+              # For log-scale values below or equal 0 are not allowed 
+              datav[datav <= 0] <- plot_lim[j,1]
+              
+              graphics::image(lonv, latv, log(rotate(datav)), 
+                              axis.args=list( at=log(ticks), labels=ticks), 
                               main = "",
                               xlim = c(lon_min, lon_max),
                               ylim = c(lat_min, lat_max),
                               axes = FALSE,
                               xlab = "",
                               ylab = "",
-                              zlim = log(plot_lim[j,]),
                               col = col,
                               colNA = "gray85",
                               asp = 1,
-                              maxpixels = if(file_info$grid == "Satellite projection MSG/Seviri") (figdim[1] * figdim[2]) else 100000,
+                              useRaster = TRUE,
                               add = TRUE
-                )  
-              } else {
-                raster::image(raster::calc(stacks[[j]], fun=log) * scalef[j], y = slot_i,
-                              main = "",
-                              xlim = c(lon_min, lon_max),
-                              ylim = c(lat_min, lat_max),
-                              axes = FALSE,
-                              xlab = "",
-                              ylab = "",
-                              zlim = log(plot_lim[j,]),
-                              col = col,
-                              colNA = "gray85",
-                              asp = 1,
-                              maxpixels = if(file_info$grid == "Satellite projection MSG/Seviri") (figdim[1] * figdim[2]) else 100000,
-                              add = TRUE
-                )
-              }
+              )
+              
             } else {
                 if (!is.na(smoothf[j])) {
                   smp <- raster::disaggregate(stacks[[j]], fact = smoothf[j], method='bilinear')
@@ -1256,7 +1290,7 @@ quicklook <- function(config,
                                     col = col,
                                     colNA = "gray85",
                                     asp = 1,
-                                    maxpixels = if(file_info$grid == "Satellite projection MSG/Seviri") (figdim[1] * figdim[2]) else 100000,
+                                    maxpixels = maxp,
                                     add = TRUE
                       )
                     }
@@ -1284,24 +1318,24 @@ quicklook <- function(config,
               raster::extent(stacks[[j]]) <- c(-1, 1, -1, 1)
               suppressWarnings(
               maps::map("world", projection = "orthographic", interior = FALSE, 
-                        col = "gray10", orientation = c(0,0,0), lwd = 1.5, add = TRUE)
+                        col = "gray20", orientation = c(0,0,0), add = TRUE)
               )
           }
         } else if (area == "GL") {
             if (lon_max >= 359) {
               maps::map("world2", interior = FALSE, xlim = c(lon_min, lon_max), 
-                        col = "gray10", ylim = c(lat_min, lat_max), lwd = 1.5, wrap = c(-180, 180), add = TRUE)
+                        col = "gray20", ylim = c(lat_min, lat_max), wrap = c(-180, 180), add = TRUE)
             } else {
                 maps::map("world", interior = FALSE, xlim = c(lon_min, lon_max), 
-                          col = "gray10", ylim = c(lat_min, lat_max), lwd = 1.5, wrap = c(-180, 180), add = TRUE)
+                          col = "gray20", ylim = c(lat_min, lat_max), wrap = c(-180, 180), add = TRUE)
             }
         } else {
             if (lon_max >= 359) {
               maps::map("world2", interior = FALSE, xlim = c(lon_min, lon_max), 
-                        col = "gray10", ylim = c(lat_min, lat_max), lwd = 1.5, add = TRUE)
+                        col = "gray20", ylim = c(lat_min, lat_max), add = TRUE)
             } else {
                 maps::map("world", interior = FALSE, xlim = c(lon_min, lon_max), 
-                          col = "gray10", ylim = c(lat_min, lat_max), lwd = 1.5, add = TRUE)
+                          col = "gray20", ylim = c(lat_min, lat_max), add = TRUE)
             }
         }
        }
@@ -1374,48 +1408,68 @@ quicklook <- function(config,
 
       if (legends[j]) {
         if (logsc[j]) {
-          if (slot_i == 1) {
-            raster::plot(raster::calc(stacks[[j]], fun=log) * scalef[j],
-                         main = "",
-                         axes = FALSE,
-                         xlab = "",
-                         ylab = "",
-                         zlim = log(plot_lim[j,]),
-                         legend.only = TRUE,
-                         legend.shrink = 0.9,
-                         legend.width = 1.5,
-                         legend.mar = 5.1,
-                         legend.args=list(text = units[j], 
-                                          side = 2, 
-                                          font = 2, 
-                                          line = 0.2, 
-                                          cex = 1.25*fsf),
-                         axis.args=list(cex.axis = 1*fsf,
-                                        at=log(ticks), labels=ticks),
-                         col = col,
-                         add = TRUE)  
+          if (remap_q) {
+            if (slot_i == 1) {
+              raster::plot(raster::calc(stacks[[j]], fun=log) * scalef[j],
+                           main = "",
+                           axes = FALSE,
+                           xlab = "",
+                           ylab = "",
+                           zlim = log(plot_lim[j,]),
+                           legend.only = TRUE,
+                           legend.shrink = 0.9,
+                           legend.width = 1.5,
+                           legend.mar = 5.1,
+                           legend.args=list(text = units[j],
+                                            side = 2,
+                                            font = 2,
+                                            line = 0.2,
+                                            cex = 1.25*fsf),
+                           axis.args=list(cex.axis = 1*fsf,
+                                          at=log(ticks), labels=ticks),
+                           col = col,
+                           add = TRUE)
+            } else {
+              raster::plot(raster::calc(stacks[[j]], fun=log) * scalef[j], y = slot_i,
+                           main = "",
+                           axes = FALSE,
+                           xlab = "",
+                           ylab = "",
+                           zlim = log(plot_lim[j,]),
+                           legend.only = TRUE,
+                           legend.shrink = 0.9,
+                           legend.width = 1.5,
+                           legend.mar = 5.1,
+                           legend.args=list(text = units[j],
+                                            side = 2,
+                                            font = 2,
+                                            line = 0.2,
+                                            cex = 1.25*fsf),
+                           axis.args=list(cex.axis = 1*fsf,
+                                          at=log(ticks), labels=ticks),
+                           col = col,
+                           add = TRUE)
+            }
           } else {
-            raster::plot(raster::calc(stacks[[j]], fun=log) * scalef[j], y = slot_i,
-                         main = "",
-                         axes = FALSE,
-                         xlab = "",
-                         ylab = "",
-                         zlim = log(plot_lim[j,]),
-                         legend.only = TRUE,
-                         legend.shrink = 0.9,
-                         legend.width = 1.5,
-                         legend.mar = 5.1,
-                         legend.args=list(text = units[j], 
-                                          side = 2, 
-                                          font = 2, 
-                                          line = 0.2, 
-                                          cex = 1.25*fsf),
-                         axis.args=list(cex.axis = 1*fsf,
-                                        at=log(ticks), labels=ticks),
-                         col = col,
-                         add = TRUE) 
+              fields::image.plot(lonv, latv, log(rotate(datav)), 
+                               main = "",
+                               axes = FALSE,
+                               xlab = "",
+                               ylab = "",
+                               legend.only = TRUE,
+                               legend.shrink = 0.9,
+                               legend.width = 1.5,
+                               legend.mar = 5.1,
+                               legend.args=list(text = units[j], 
+                                                side = 2, 
+                                                font = 2, 
+                                                line = 0.2, 
+                                                cex = 1.25*fsf),
+                               axis.args=list(cex.axis = 1*fsf,
+                                              at=log(ticks), labels=ticks),
+                               col = col,
+                               add = TRUE)
           }
-          
         } else {
            if (!is.na(tick_lab[[j]][1])) {
             breaks <- seq(plot_lim[j,1], plot_lim[j,2], length.out=(length(col) + 1))
