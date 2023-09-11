@@ -1,5 +1,5 @@
 Package: cmsaf
-Version: 3.4.4
+Version: 3.5.0
 Title: A Toolbox for CM SAF NetCDF Data
 Authors@R: 
     c(person(given = "Steffen",
@@ -47,7 +47,6 @@ Imports:
     shinyjs (>= 1.1),
     shinythemes (>= 1.1),
     shinyWidgets (>= 0.6),
-    sp (>= 1.4),
     tcltk (>= 3.5),
     data.table,
     SearchTrees,
@@ -55,8 +54,8 @@ Imports:
 NeedsCompilation: no
 Repository: CRAN
 Suggests: spelling (>= 2.1), testthat (>= 2.3)
-RoxygenNote: 7.2.1
+RoxygenNote: 7.2.3
 Encoding: UTF-8
 Language: en-US
-Packaged: 2022-08-15 12:34:00 UTC; SK
+Packaged: 2023-09-06 12:34:00 UTC; SK
 Maintainer: Steffen Kothe <Steffen.Kothe@dwd.de>

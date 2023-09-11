@@ -1,5 +1,10 @@
 # Changelog for cmsafvis package
 
+## 1.2.0
+
+- Update to remove retired packages `rgdal`, `maptool`, `sp`
+
+
 ## 1.1.18
 
 - Several fixes in `quicklook` to match 1.1.15 plots

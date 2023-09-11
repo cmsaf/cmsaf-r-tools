@@ -1,5 +1,8 @@
 # Release notes for cmsaf
 
+## 3.5.0
+- Remove `sp` package dependencies
+
 ## 3.4.4
 - Bug fix: error for t_unit = "hours" and time_bounds > 1
 

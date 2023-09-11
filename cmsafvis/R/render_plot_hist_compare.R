@@ -138,13 +138,12 @@ render_plot_hist_compare <- function(outfile = NULL,
           result_y <- append(result_y, rep(lat[j], length(lon)))
         }
         
-        coor_sat <- cbind(x=result_x, y=result_y)
-        A <- sp::SpatialPoints(coor_sat)
+        A <- cbind(x=result_x, y=result_y)
         
         for (istation in seq_along(data_station)) {
-          B <- sp::SpatialPoints(cbind(x=c(lon_station[istation]), y=c(lat_station[istation])))
-          tree <- SearchTrees::createTree(sp::coordinates(A))
-          inds <- SearchTrees::knnLookup(tree, newdat=sp::coordinates(B), k=1)
+          B <- cbind(x=c(lon_station[istation]), y=c(lat_station[istation]))
+          tree <- SearchTrees::createTree(A)
+          inds <- SearchTrees::knnLookup(tree, newdat=B, k=1)
           
           lon_coor <- coor_sat[inds,1]
           lat_coor <- coor_sat[inds,2]
