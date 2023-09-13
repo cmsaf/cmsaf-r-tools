@@ -8,9 +8,9 @@ getColors <- function(PAL,
   if (PAL == "tim.colors") {
     name <- "fields::tim.colors"
   }
-  if (PAL == "bpy") {
-    name <- "sp::bpy.colors"
-  }
+  # if (PAL == "bpy") {
+  #   name <- "sp::bpy.colors"
+  # }
   curPAL <- as.list(palettes[idx, ])
   if (length(idx) == 0) {
     idx <- which(rownames(palettes) == "larry")

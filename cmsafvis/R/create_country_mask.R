@@ -77,12 +77,18 @@ create_country_mask <- function(infile,
   nlat <- ny
 
   # Set the grid
-  gt <- sp::GridTopology(c(lonmin, latmin), c(dlon, dlat), c(nlon, nlat))
-  check_package_dependency("rgdal", "creating a mask file")
-  grd <- sp::SpatialGrid(gt, proj4string = sp::proj4string(poly))
+  grd <- terra::rast(xmin = lonmin, xmax = (lonmin + (dlon*nlon)), 
+                     ymin = latmin, ymax = (latmin + (dlat*nlat)), 
+                     nrow = nlon, ncol = nlat)
+  terra::crs(grd) <- "epsg:4326"
+  grd <- terra::init(grd, 1)
+  poly <- terra::vect(poly)
 
   # Determine the pixels inside the Polygon
-  idx <- sp::over(grd, poly) - 1
+  dummy <- terra::extract(grd, poly, cells=TRUE)
+  
+  idx <- rep(NA, nlon * nlat)
+  idx[dummy$cell] <- 1
 
   #Define the mask and invert the latitudes
   Poly.grid <- matrix(idx, nrow = nlon, ncol = nlat)

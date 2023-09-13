@@ -192,7 +192,7 @@ render_plot_side_by_side <- function(plot_rinstat,
             )
           ras_col <- raster::RGB(ras, col = col)
           
-          check_package_dependency("rgdal", "exporting GeoTIFF files")
+          # check_package_dependency("rgdal", "exporting GeoTIFF files")
           raster::writeRaster(ras_col, filename = outfile, format = "GTiff")  # Requires package rgdal
         } else if (fileExtension == ".jpg") {
           grDevices::jpeg(outfile, width = iwidth, height = iheight)
@@ -784,7 +784,7 @@ render_plot_side_by_side <- function(plot_rinstat,
           
           kml_toolbox <- raster::rasterToPolygons(ras)
           
-          check_package_dependency("plotKML", reason = "exporting KML files")
+          # check_package_dependency("plotKML", reason = "exporting KML files")
 
           # plotKML::plotKML(
           #   kml_toolbox,
@@ -813,7 +813,7 @@ render_plot_side_by_side <- function(plot_rinstat,
             )
           ras_col <- raster::RGB(ras, col = col)
           
-          check_package_dependency("rgdal", "exporting GeoTIFF files")
+          # check_package_dependency("rgdal", "exporting GeoTIFF files")
           raster::writeRaster(ras, filename = outfile, format = "GTiff")
           # raster::writeRaster(ras_col, filename = outfile, format = "GTiff")  # Requires package rgdal
         } else if (fileExtension == ".jpg") {

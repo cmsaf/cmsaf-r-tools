@@ -262,8 +262,8 @@ base.pals[["terrain.colors"]] <-
   c(NA, NA, NA, NA, NA, NA, NA, NA,  NA, 1)    # Default terrain colors
 base.pals[["cm.colors"]]      <-
   c(NA, NA, NA, NA, NA, NA, NA, NA,  NA, 1)    # Default cyan magenta colors
-base.pals[["bpy"]]            <-
-  c(NA, NA, NA, NA, NA, NA, NA, NA,  NA, 1)    # Analogous to sp::bpy.colors
+# base.pals[["bpy"]]            <-
+#   c(NA, NA, NA, NA, NA, NA, NA, NA,  NA, 1)    # Analogous to sp::bpy.colors
 
 ## collect all hcl palettes
 make_hcl_pals <- function() {
