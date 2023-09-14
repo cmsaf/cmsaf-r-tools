@@ -25,18 +25,18 @@ Description: The Satellite Application Facility on Climate Monitoring (CM SAF)
 License: GPL (>= 3)
 BugReports: https://github.com/cmsaf/cmsaf-r-tools/issues
 Depends: R (>= 3.6)
-Imports: animation (>= 2.6), assertthat (>= 0.2.1), cmsafops (>=
-        1.2.1), colorspace (>= 1.4), countrycode (>= 1.1), fields (>=
-        10.3), FNN (>= 1.1), mapproj (>= 1.2.7), maps (>= 3.3.0), methods (>= 3.6), 
-        ncdf4 (>= 1.17), png (>= 0.1), progress (>= 1.2.2), rainfarmr (>= 0.1),
-        raster (>= 3.0), sf (>= 1.0), terra (>= 1.7), yaml (>= 2.2), RColorBrewer, 
-        rasterVis, gridExtra, SearchTrees, utils
+Imports: assertthat (>= 0.2.1), cmsafops (>= 1.2.1), colorspace (>= 1.4), 
+        countrycode (>= 1.1), fields (>= 10.3), mapproj (>= 1.2.7), 
+        maps (>= 3.3.0), methods (>= 3.6), ncdf4 (>= 1.17), png (>= 0.1), 
+        progress (>= 1.2.2), raster (>= 3.0), sf (>= 1.0), terra (>= 1.7), 
+        RColorBrewer, rasterVis, gridExtra, utils
 NeedsCompilation: no
 Repository: CRAN
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
 Encoding: UTF-8
 Language: en-US
-Suggests: testthat (>= 2.3), spelling
+Suggests: animation (>= 2.6), FNN (>= 1.1), rainfarmr (>= 0.1), rnaturalearth, 
+        SearchTrees, spelling (>= 2.2), testthat (>= 2.3), yaml (>= 2.2)
 Packaged: 2023-09-11 12:30:00 UTC
 Maintainer: Steffen Kothe <Steffen.Kothe@dwd.de>

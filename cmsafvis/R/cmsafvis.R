@@ -6,6 +6,7 @@
 #'Warming Stripes Plot, Time Series Plot, Trend Plot) were designed
 #'and tested for daily or monthly valued CM SAF NetCDF data. As interface to NetCDF 
 #'data the \link[ncdf4:ncdf4-package]{ncdf4 package} is used.
+"_PACKAGE"
 #'
 #'@section Absolute:
 #'  \code{\link{absolute_map}}
@@ -31,8 +32,6 @@
 #'@section Trend Plot:
 #'  \code{\link{trend_plot}}
 #'
-#'@docType package
-#'@name cmsafvis
 #'
 #'@author Maintainer: Steffen Kothe \email{Steffen.Kothe@dwd.de}
 #'

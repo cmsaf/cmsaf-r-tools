@@ -150,11 +150,11 @@ selpoint.multi <- function(var, infile, path, pattern, outpath, lon1, lat1,
       lon2 <- file_data$dimension_data$x[lon_limit]
       lat2 <- file_data$dimension_data$y[lat_limit]
 
-      pos <- sp::SpatialPoints(cbind(lon1[n], lat1[n]), proj4string = sp::CRS("+proj=longlat +datum=WGS84"))
       dum_dist <- 1000
       for (i in seq_along(lon2)) {
         for (j in seq_along(lat2)) {
-          dist <- sp::spDistsN1(pos, c(lon2[i], lat2[j]), longlat = FALSE)
+          dist <- fields::rdist.earth(x1 = cbind(lon1, lat1), x2 = cbind(lon2[i], lat2[j]),
+                                      miles = FALSE)
           if (dist <= dum_dist) {
             dum_dist <- dist
             dumi <- i
@@ -203,7 +203,9 @@ selpoint.multi <- function(var, infile, path, pattern, outpath, lon1, lat1,
 
       lonlat_merge <- data.matrix(merge(lon_limit, lat_limit, by.x = c("row", "col"), by.y =  c("row", "col"), out.class = matrix))
 
-      dist <- sp::spDistsN1(cbind(file_data$grid$vars_data[[LON_NAMES$DEFAULT]][lonlat_merge], file_data$grid$vars_data[[LAT_NAMES$DEFAULT]][lonlat_merge]), c(lon1[n], lat1[n]), longlat = FALSE)
+      dist <- fields::rdist.eart(cbind(file_data$grid$vars_data[[LON_NAMES$DEFAULT]][lonlat_merge],
+                                       file_data$grid$vars_data[[LAT_NAMES$DEFAULT]][lonlat_merge]),
+                                 cbind(lon1, lat1), miles = FALSE)
       mini <- which.min(dist)
       nearest <- lonlat_merge[mini, ]
 

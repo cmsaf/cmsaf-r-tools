@@ -143,8 +143,8 @@ render_plot_scatter <- function(outfile = NULL,
           tree <- SearchTrees::createTree(A)
           inds <- SearchTrees::knnLookup(tree, newdat=B, k=1)
           
-          lon_coor <- coor_sat[inds,1]
-          lat_coor <- coor_sat[inds,2]
+          lon_coor <- A[inds,1]
+          lat_coor <- A[inds,2]
           
           data_sat[istation] <- data_nc[which(lon == lon_coor),which(lat == lat_coor), which(date.time == timestep_1d_visualize)]
         }

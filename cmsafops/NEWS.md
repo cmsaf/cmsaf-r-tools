@@ -1,5 +1,8 @@
 # Changelog for cmsafops package
 
+## 1.3.0
+- Updates due to retiring packages
+
 ## 1.2.7
 - Bug fix: trend calculation for option = 2 had an issue
 

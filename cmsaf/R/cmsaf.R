@@ -8,11 +8,10 @@
 #to NetCDF data the '\link[ncdf4:ncdf4-package]{ncdf4 package} is used.
 #'This package uses functionalities of the \link[cmsafops:cmsafops]{cmsafops} and
 #'\link[cmsafvis:cmsafvis]{cmsafvis} packages.
+"_PACKAGE"
 #'
 #'@section Get started: Run \code{run_toolbox()} to open the interactive toolbox.
 #'
-#'@docType package
-#'@name cmsaf
 #'
 #'@author Maintainer: Steffen Kothe \email{Steffen.Kothe@dwd.de}
 #'

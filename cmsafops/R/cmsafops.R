@@ -6,6 +6,7 @@
 #'CM SAF NetCDF data, but most of the functions can be applied to other NetCDF
 #'data, which use the CF convention and time, latitude, longitude dimensions. 
 #'As interface to NetCDF data the \link[ncdf4:ncdf4-package]{ncdf4 package} is used.
+"_PACKAGE"
 #'
 #'@section Toolbox: The CM SAF R Toolbox is a user-friendly \link[cmsaf:run_toolbox]{shiny app}
 #'in the \link[cmsaf:cmsaf]{cmsaf package}, which helps to apply 'cmsafops' operators.
@@ -78,8 +79,6 @@
 #'@section Other functions: \code{\link{cmsaf.cat}}, \code{\link{get_time}},
 #'  \code{\link{ncinfo}}, \code{\link{read_ncvar}}
 #'
-#'@docType package
-#'@name cmsafops
 #'
 #'@importFrom ncdf4 nc_open nc_close nc_create ncdim_def ncvar_def ncvar_get
 #'  ncvar_put ncvar_add ncvar_rename ncvar_change_missval ncatt_get ncatt_put

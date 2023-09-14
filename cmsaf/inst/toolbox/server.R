@@ -6194,7 +6194,7 @@ function(input, output, session) {
     req(file.exists(shapeFile_path()))
 
     # data of all regions
-    region_data(suppressWarnings(maptools::readShapePoly(shapeFile_path())))
+    region_data(suppressWarnings(raster::shapefile(shapeFile_path())))
   })
 
   # Set divisions
@@ -7433,13 +7433,13 @@ function(input, output, session) {
     cat("The CMSAF Visualizer is part of the CM SAF R Toolbox.", "\n")
     cat("This tool helps you to visualize 1D-timeseries and 2D-maps.", "\n")
     cat("\n")
-    cat("This version ('Just Read The Instructions') was tested with the cmsaf", "\n")
-    cat("R-package in version 3.4.4.", "\n")
+    cat("This version ('Of Course I Still Love You') was tested with the cmsaf", "\n")
+    cat("R-package in version 3.5.0.", "\n")
     cat("\n")
     cat("Suggestions for improvements and praise for the developers", "\n")
     cat("can be send to contact.cmsaf@dwd.de.", "\n")
     cat("\n")
-    cat("                              - Steffen Kothe - 2022-08-15 -", "\n")
+    cat("                              - Steffen Kothe - 2023-09-14 -", "\n")
     cat("\n")
     cat("\n")
   })
