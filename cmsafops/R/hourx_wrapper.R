@@ -20,8 +20,8 @@ hourx_wrapper <- function(op, var, infile, outfile, nc34, overwrite, verbose, nc
   date_time <- get_date_time(file_data$dimension_data$t, file_data$time_info$units)
   times_all <- date_time$times
   
-  error_msg <- "The time steps must be available at least every hour. Please try daysum for diurnal aggregation. "
-  if(!("" %in% times_all)) {
+  # error_msg <- "The time steps must be available at least every hour. Please try daysum for diurnal aggregation. "
+  # if(!("" %in% times_all)) {
     
     # Use placeholder for result so that it can be calculated later without the
     # need to have all input data in memory concurrently.
@@ -111,10 +111,9 @@ hourx_wrapper <- function(op, var, infile, outfile, nc34, overwrite, verbose, nc
   
     if (is.null(nc)) nc_close(nc_in)
     nc_close(nc_out)
-  }
-  else{
-    stop(error_msg)
-  }
+  # } else {
+    # stop(error_msg)
+  # }
   calc_time_end <- Sys.time()
   if (verbose) message(get_processing_time_string(calc_time_start, calc_time_end))
 }

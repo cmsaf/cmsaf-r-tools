@@ -38,7 +38,6 @@ Imports:
     ncdf4 (>= 1.17),
     R.utils (>= 2.9),
     raster (>= 3.0),
-    rworldxtra (>= 1.01),
     shiny (>= 1.4),
     shinyFiles (>= 0.8.0),
     shinyjs (>= 1.1),
@@ -50,7 +49,7 @@ Imports:
     xml2
 NeedsCompilation: no
 Repository: CRAN
-Suggests: spelling (>= 2.1), testthat (>= 2.3)
+Suggests: rworldxtra (>= 1.01), spelling (>= 2.1), testthat (>= 2.3)
 RoxygenNote: 7.2.3
 Encoding: UTF-8
 Language: en-US

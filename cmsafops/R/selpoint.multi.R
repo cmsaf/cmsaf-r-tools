@@ -128,7 +128,7 @@ selpoint.multi <- function(var, infile, path, pattern, outpath, lon1, lat1,
     stop("No lon/lat information found in file, please add by applying add_grid_info")
   }
 
-  # find closest point to target coordinates using sp package
+  # find closest point to target coordinates using fields package
   target_lon  <- NULL
   target_lat  <- NULL
   target_x <- NULL
@@ -149,11 +149,12 @@ selpoint.multi <- function(var, infile, path, pattern, outpath, lon1, lat1,
 
       lon2 <- file_data$dimension_data$x[lon_limit]
       lat2 <- file_data$dimension_data$y[lat_limit]
-
+      
+      pos <- cbind(lon1[n], lat1[n])
       dum_dist <- 1000
       for (i in seq_along(lon2)) {
         for (j in seq_along(lat2)) {
-          dist <- fields::rdist.earth(x1 = cbind(lon1, lat1), x2 = cbind(lon2[i], lat2[j]),
+          dist <- fields::rdist.earth(x1 = pos, x2 = cbind(lon2[i], lat2[j]),
                                       miles = FALSE)
           if (dist <= dum_dist) {
             dum_dist <- dist
@@ -203,7 +204,7 @@ selpoint.multi <- function(var, infile, path, pattern, outpath, lon1, lat1,
 
       lonlat_merge <- data.matrix(merge(lon_limit, lat_limit, by.x = c("row", "col"), by.y =  c("row", "col"), out.class = matrix))
 
-      dist <- fields::rdist.eart(cbind(file_data$grid$vars_data[[LON_NAMES$DEFAULT]][lonlat_merge],
+      dist <- fields::rdist.earth(cbind(file_data$grid$vars_data[[LON_NAMES$DEFAULT]][lonlat_merge],
                                        file_data$grid$vars_data[[LAT_NAMES$DEFAULT]][lonlat_merge]),
                                  cbind(lon1, lat1), miles = FALSE)
       mini <- which.min(dist)

@@ -79,7 +79,7 @@ mondaymean <- function(var, infile, outfile, nc34 = 4, overwrite = FALSE, verbos
   dateID <- paste(years_all, months_all, time_steps)
   
   warning_msg <- "The time steps must be available every 15min (at least 12 days per month), 30min (at least 6 days per month) or 1h (at least 3 days per month). One or more time steps do not meet the requirements. The result of these time steps is NA. "
-  if(!("" %in% time_steps)) {
+  # if(!("" %in% time_steps)) {
     hours_all_string <- substr(time_steps, 1, 2)
     hours_all_int <- strtoi(hours_all_string, base=10L)
     time_steps_hour <- hours_all_int[2] - ((hours_all_int[1] + 1)%%24)   # hourly time steps (time_steps_hour = 0)
@@ -191,10 +191,10 @@ mondaymean <- function(var, infile, outfile, nc34 = 4, overwrite = FALSE, verbos
       ncvar_put(nc_out, vars[[1]], mean_data, start = c(1, 1, j), count = c(-1, -1, 1))
     }
     nc_close(nc_out)
-  } 
-  else {
-    stop(warning_msg)
-  }
+  # } 
+  # else {
+  #   stop(warning_msg)
+  # }
   calc_time_end <- Sys.time()
   if (verbose) message(get_processing_time_string(calc_time_start, calc_time_end))
 }

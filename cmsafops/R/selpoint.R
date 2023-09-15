@@ -89,7 +89,7 @@ selpoint <- function(var, infile, outfile, lon1 = 0, lat1 = 0, format = "nc",
     stop("No lon/lat information found in file, please add by applying add_grid_info")
   }
 
-  # find closest point to target coordinates using sp package
+  # find closest point to target coordinates using fields package
   if (file_data$grid$is_regular) {
     dlon <- abs(file_data$dimension_data$x[1] - file_data$dimension_data$x[2])
     dlat <- abs(file_data$dimension_data$y[1] - file_data$dimension_data$y[2])
@@ -158,7 +158,7 @@ selpoint <- function(var, infile, outfile, lon1 = 0, lat1 = 0, format = "nc",
                                       by.y = c("row", "col"),
                                       out.class = matrix))
 
-    dist <- fields::rdist.eart(cbind(file_data$grid$vars_data[[LON_NAMES$DEFAULT]][lonlat_merge],
+    dist <- fields::rdist.earth(cbind(file_data$grid$vars_data[[LON_NAMES$DEFAULT]][lonlat_merge],
                                      file_data$grid$vars_data[[LAT_NAMES$DEFAULT]][lonlat_merge]),
                                cbind(lon1, lat1), miles = FALSE)
     mini <- which.min(dist)
