@@ -1,5 +1,9 @@
 # Changelog for cmsafvis package
 
+## 1.2.1
+
+- Bug fixes in `quicklook` for level-2 log-scales
+
 ## 1.2.0
 
 - Update to remove retired packages `rgdal`, `maptool`, `sp`

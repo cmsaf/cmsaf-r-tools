@@ -649,9 +649,9 @@ quicklook <- function(config,
             as.vector(10 ^ (lo:hi) %o% 1:9)
           }
           
-          if (plot_lim[j,1] == 0) {
-            plot_lim[j,1] <- 0.001
-          }
+          # if (plot_lim[j,1] == 0) {
+          #   plot_lim[j,1] <- 0.001
+          # }
           
           ticks <- get_breaks(plot_lim[j,])
           col = getColors(col_from_config[[j]], palettes, length(ticks) - 1L, FALSE)
@@ -699,8 +699,8 @@ quicklook <- function(config,
               datav <- as.vector(rdata$data)
               
               # set data limits to plot_lim
-              datav[datav < plot_lim[j,1]] <- plot_lim[j,1] 
-              datav[datav > plot_lim[j,2]] <- plot_lim[j,2]
+              # datav[datav < plot_lim[j,1]] <- plot_lim[j,1] 
+              # datav[datav > plot_lim[j,2]] <- plot_lim[j,2]
               
               a <- mapproj::mapproject(
                   x = lon_l2,
@@ -1124,7 +1124,7 @@ quicklook <- function(config,
           )
         } else {
             if (logsc[j] && !remap_q) {
-              # raster::values(stacks[[j]])[raster::values(stacks[[j]]) <= 0] <- plot_lim[j,1]
+              # raster::values(stacks[[j]])[raster::values(stacks[[j]]) <= 0] <- .Machine$double.xmin
               # 
               # if (slot_i == 1) {
               #   raster::image(raster::calc(stacks[[j]], fun=log) * scalef[j],
@@ -1172,7 +1172,7 @@ quicklook <- function(config,
               datav <- raster::as.matrix(stacks[[j]][[slot_i]])
               
               # For log-scale values below or equal 0 are not allowed 
-              datav[datav <= 0] <- plot_lim[j,1]
+              datav[datav <= 0] <- .Machine$double.xmin
               
               graphics::image(lonv, latv, log(rotate(datav)), 
                               axis.args=list( at=log(ticks), labels=ticks), 
@@ -1224,6 +1224,29 @@ quicklook <- function(config,
                         #                 useRaster = TRUE,
                         #                 add = TRUE
                         # )
+                        
+                        # For log-scale values below or equal 0 are not allowed 
+                        datav[datav <= 0] <- .Machine$double.xmin
+                        
+                        fields::quilt.plot(
+                          a$x,
+                          a$y,
+                          log(datav),
+                          xlim = c(-1, 1),
+                          ylim = c(-1, 1),
+                          zlim = log(c(min(datav, na.rm=T), plot_lim[j,2])),
+                          nx = nx / xf,
+                          ny = ny / yf,
+                          xlab = " ",
+                          ylab = " ",
+                          main = "text1",
+                          col = col[1],
+                          add.legend = FALSE,
+                          axes = FALSE,
+                          add = TRUE,
+                          useRaster = TRUE,
+                          asp = 1
+                        )
                         
                         fields::quilt.plot(
                           a$x,
@@ -1409,69 +1432,21 @@ quicklook <- function(config,
 
       if (legends[j]) {
         if (logsc[j]) {
-          if (remap_q) {
-            if (slot_i == 1) {
-              raster::plot(raster::calc(stacks[[j]], fun=log) * scalef[j],
-                           main = "",
-                           axes = FALSE,
-                           xlab = "",
-                           ylab = "",
-                           zlim = log(plot_lim[j,]),
-                           legend.only = TRUE,
-                           legend.shrink = 0.9,
-                           legend.width = 1.5,
-                           legend.mar = 5.1,
-                           legend.args=list(text = units[j],
-                                            side = 2,
-                                            font = 2,
-                                            line = 0.2,
-                                            cex = 1.25*fsf),
-                           axis.args=list(cex.axis = 1*fsf,
-                                          at=log(ticks), labels=ticks),
-                           col = col,
-                           add = TRUE)
-            } else {
-              raster::plot(raster::calc(stacks[[j]], fun=log) * scalef[j], y = slot_i,
-                           main = "",
-                           axes = FALSE,
-                           xlab = "",
-                           ylab = "",
-                           zlim = log(plot_lim[j,]),
-                           legend.only = TRUE,
-                           legend.shrink = 0.9,
-                           legend.width = 1.5,
-                           legend.mar = 5.1,
-                           legend.args=list(text = units[j],
-                                            side = 2,
-                                            font = 2,
-                                            line = 0.2,
-                                            cex = 1.25*fsf),
-                           axis.args=list(cex.axis = 1*fsf,
-                                          at=log(ticks), labels=ticks),
-                           col = col,
-                           add = TRUE)
-            }
-          } else {
-              fields::image.plot(lonv, latv, log(rotate(datav)), 
-                               zlim = log(plot_lim[j,]),   
-                               main = "",
-                               axes = FALSE,
-                               xlab = "",
-                               ylab = "",
-                               legend.only = TRUE,
-                               legend.shrink = 0.9,
-                               legend.width = 1.5,
-                               legend.mar = 5.1,
-                               legend.args=list(text = units[j], 
-                                                side = 2, 
-                                                font = 2, 
-                                                line = 0.2, 
-                                                cex = 1.25*fsf),
-                               axis.args=list(cex.axis = 1*fsf,
-                                              at=log(ticks), labels=ticks),
-                               col = col,
-                               add = TRUE)
-          }
+          fields::image.plot(log(datav), 
+                             zlim = log(plot_lim[j,]),   
+                             legend.only = TRUE,
+                             legend.shrink = 0.9,
+                             legend.width = 1.5,
+                             legend.mar = 5.1,
+                             legend.args=list(text = units[j], 
+                                              side = 2, 
+                                              font = 2, 
+                                              line = 0.2, 
+                                              cex = 1.25*fsf),
+                             axis.args=list(cex.axis = 1*fsf,
+                                            at=log(ticks), labels=ticks),
+                             col = col,
+                             add = TRUE)
         } else {
            if (!is.na(tick_lab[[j]][1])) {
             breaks <- seq(plot_lim[j,1], plot_lim[j,2], length.out=(length(col) + 1))
