@@ -14,7 +14,7 @@ quicklook(
   logo = TRUE,
   copyright = TRUE,
   bluemarble = FALSE,
-  maxpixels = FALSE,
+  maxpixels = TRUE,
   verbose = TRUE
 )
 }
