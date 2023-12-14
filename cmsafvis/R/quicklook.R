@@ -279,7 +279,9 @@ quicklook <- function(config,
   if (grepl("South", file_info$area)) area <- "SP"
   if (grepl("Global", file_info$area)) area <- "GL"
   
-  vars <- names(configParams[[file_info$product_type]][[file_info$id]])[names(configParams[[file_info$product_type]][[file_info$id]]) != "Dataset"]
+  # vars <- names(configParams[[file_info$product_type]][[file_info$id]])[names(configParams[[file_info$product_type]][[file_info$id]]) != "Dataset"]
+  vars <- names(configParams[[file_info$product_type]][[file_info$id]])
+  vars <- vars[!(vars %in% c("remap", "aux_file", "Dataset"))]
   nvars <- length(vars)
   
   # no plot variables found
@@ -299,10 +301,10 @@ quicklook <- function(config,
     isysd <- configParams[[file_info$product_type]][[file_info$id]][[vars[i]]]$sysdata
     if (!is.null(isysd)) sysd <- isysd
     
-    imap <- configParams[[file_info$product_type]][[file_info$id]][[vars[i]]]$remap
+    imap <- configParams[[file_info$product_type]][[file_info$id]]$remap
     if (!is.null(imap)) remap_q <- imap
     
-    iauxf <- configParams[[file_info$product_type]][[file_info$id]][[vars[i]]]$aux_file
+    iauxf <- configParams[[file_info$product_type]][[file_info$id]]$aux_file
     if (!is.null(iauxf)) auxf <- iauxf
     
     iinvert <- configParams[[file_info$product_type]][[file_info$id]][[vars[i]]]$invert_col
@@ -796,10 +798,10 @@ quicklook <- function(config,
             if (mirror[j] == "NP" | mirror[j] == "TRUE") {
               datav <- datav[,dim(datav)[2]:1]
             } else {
-              datav <- datav[dim(datav)[1]:1,dim(datav)[2]:1]
+              datav <- datav[dim(datav)[1]:1,]
             }
           } else {
-            datav <- datav[dim(datav)[1]:1,dim(datav)[2]:1]
+            datav <- datav[dim(datav)[1]:1,]
           }
         }
         

@@ -1,5 +1,9 @@
 # Changelog for cmsafvis package
 
+## 1.2.2
+
+- Update of `quicklook` due to changes of `remap` and `aux_files` position in config file
+
 ## 1.2.1
 
 - Bug fixes in `quicklook` for level-2 log-scales

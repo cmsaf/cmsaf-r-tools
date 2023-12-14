@@ -671,7 +671,7 @@
   CFL:
   CFS:
   CMA:
-    CMAin003SVMSG01MA:
+    CMAin003SVMSG01MD:
       Dataset: CLAAS-2
       CMA:
         limits:
@@ -694,6 +694,8 @@
         bluemarble: FALSE
         aux_file: "/cmsaf/cmsaf-ops3/stkothe/QuicklookData/claas2_level2_aux_data.nc"
     CMAin004SVMSG01MD:
+      remap: TRUE
+      aux_file: "/cmsaf/cmsaf-ops3/stkothe/QuicklookData/claas3_level2_aux_data.nc"
       Dataset: CLAAS-3
       CMA:
         limits:
@@ -703,8 +705,18 @@
         colorscale: Blue-Red 3
         logo: black
         bluemarble: FALSE
-        remap: TRUE
-        aux_file: "/cmsaf/cmsaf-ops3/stkothe/QuicklookData/claas3_level2_aux_data.nc"
+    CMAin004SVMSGI1MD:
+      remap: TRUE
+      aux_file: "/cmsaf/cmsaf-ops3/stkothe/QuicklookData/claas3_level2_aux_data.nc"
+      Dataset: CLAAS-3 ICDR
+      CMA:
+        limits:
+          min: 0
+          max: 2
+        legend: FALSE
+        colorscale: Blue-Red 3
+        logo: black
+        bluemarble: FALSE
   COT:
   CPH:
     CPHmm400AVPOS01GL:
@@ -975,6 +987,8 @@
         var_name: frac. of liquid water clouds monthly mean diurnal cycle
   CPP:
     CPPin004SVMSG01MD:
+      remap: TRUE
+      aux_file: "/cmsaf/cmsaf-ops3/stkothe/QuicklookData/claas3_level2_aux_data.nc"
       Dataset: CLAAS-3
       CPH:
         limits:
@@ -986,26 +1000,67 @@
         logo: black
         tick_lab: ['Cloud free', 'Liquid', 'Ice']
         unit: ""
-        remap: TRUE
-        aux_file: "/cmsaf/cmsaf-ops3/stkothe/QuicklookData/claas3_level2_aux_data.nc"
       CWP:
         limits:
-          min: 0.001
+          min: 0
           max: 3.5
         legend: TRUE
         colorscale: Plasma
         logo: black
         invert_col: TRUE
-        log_scale: FALSE
+        log_scale: TRUE
       COT:
         limits:
           min: 0
-          max: 100
+          max: 150
         legend: TRUE
         colorscale: Plasma
         logo: black
         invert_col: TRUE
-        log_scale: FALSE
+        log_scale: TRUE
+        unit: ""
+      CRE:
+        limits:
+          min: 0
+          max: 35
+        legend: TRUE
+        colorscale: Plasma
+        logo: black
+        scale_factor: 1000000
+        unit: "µm"
+        invert_col: TRUE
+    CPPin004SVMSGI1MD:
+      remap: TRUE
+      aux_file: "/cmsaf/cmsaf-ops3/stkothe/QuicklookData/claas3_level2_aux_data.nc"
+      Dataset: CLAAS-3 ICDR
+      CPH:
+        limits:
+          min: 0
+          max: 2
+        legend: TRUE
+        colorscale: BuPu
+        invert_col: TRUE
+        logo: black
+        tick_lab: ['Cloud free', 'Liquid', 'Ice']
+        unit: ""
+      CWP:
+        limits:
+          min: 0
+          max: 3.5
+        legend: TRUE
+        colorscale: Plasma
+        logo: black
+        invert_col: TRUE
+        log_scale: TRUE
+      COT:
+        limits:
+          min: 0
+          max: 150
+        legend: TRUE
+        colorscale: Plasma
+        logo: black
+        invert_col: TRUE
+        log_scale: TRUE
         unit: ""
       CRE:
         limits:
@@ -1018,6 +1073,8 @@
         unit: "µm"
         invert_col: TRUE
     CPPin003SVMSGE1MD:
+      remap: TRUE
+      aux_file: "/cmsaf/cmsaf-ops3/stkothe/QuicklookData/claas3_level2_aux_data.nc"
       Dataset: CLAAS-2
       CPH:
         limits:
@@ -1029,11 +1086,9 @@
         logo: black
         tick_lab: ['Cloud free', 'Liquid', 'Ice']
         unit: ""
-        remap: TRUE
-        aux_file: "/cmsaf/cmsaf-ops3/stkothe/QuicklookData/claas2_level2_aux_data.nc"
       CWP:
         limits:
-          min: 0.001
+          min: 0
           max: 3.5
         legend: TRUE
         colorscale: Plasma
@@ -1043,12 +1098,12 @@
       COT:
         limits:
           min: 0
-          max: 100
+          max: 150
         legend: TRUE
         colorscale: Plasma
         logo: black
         invert_col: TRUE
-        log_scale: FALSE
+        log_scale: TRUE
         unit: ""
       REFF:
         limits:
@@ -1735,6 +1790,8 @@
 # CTT:
   CTX:
     CTXin003SVMSGE1MD:
+      remap: TRUE
+      aux_file: "/cmsaf/cmsaf-ops3/stkothe/QuicklookData/claas2_level2_aux_data.nc"
       Dataset: CLAAS-2
       CTP:
         limits:
@@ -1743,8 +1800,6 @@
         legend: TRUE
         colorscale: terrain.colors
         logo: black
-        remap: TRUE
-        aux_file: "/cmsaf/cmsaf-ops3/stkothe/QuicklookData/claas2_level2_aux_data.nc"
       CTT:
         limits:
           min: 190
@@ -1760,6 +1815,8 @@
         colorscale: terrain.colors
         logo: black
     CTXin004SVMSG01MD:
+      remap: TRUE
+      aux_file: "/cmsaf/cmsaf-ops3/stkothe/QuicklookData/claas3_level2_aux_data.nc"
       Dataset: CLAAS-3
       CTP:
         limits:
@@ -1768,8 +1825,6 @@
         legend: TRUE
         colorscale: terrain.colors
         logo: black
-        remap: TRUE
-        aux_file: "/cmsaf/cmsaf-ops3/stkothe/QuicklookData/claas3_level2_aux_data.nc"
       CTT:
         limits:
           min: 190
@@ -1785,6 +1840,8 @@
         colorscale: terrain.colors
         logo: black
     CTXin004SVMSGI1MD:
+      remap: TRUE
+      aux_file: "/cmsaf/cmsaf-ops3/stkothe/QuicklookData/claas3_level2_aux_data.nc"
       Dataset: CLAAS-3 ICDR
       CTP:
         limits:
@@ -1793,8 +1850,6 @@
         legend: TRUE
         colorscale: terrain.colors
         logo: black
-        remap: TRUE
-        aux_file: "/cmsaf/cmsaf-ops3/stkothe/QuicklookData/claas3_level2_aux_data.nc"
       CTT:
         limits:
           min: 190
@@ -2892,6 +2947,7 @@
         colorscale: albedo
         logo: black
         unit: "%"
+        mirror_data: TRUE
     SALmm400AVPOS01SP:
       Dataset: ICDR AVHRR
       SAL:
@@ -3406,3 +3462,24 @@
         colorscale: Blues
         invert_col: TRUE
         logo: black
+    UTHdm002MSPOS01GL:
+      Dataset: CM SAF UTH CDR
+      MEAN_UTH:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: Blues
+        invert_col: TRUE
+        logo: black
+    UTHin002MSPOS01GL:
+      Dataset: CM SAF UTH CDR
+      MEAN_UTH:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: Blues
+        invert_col: TRUE
+        logo: black
+        slot: 13
