@@ -24,7 +24,7 @@ Description: The Satellite Application Facility on Climate Monitoring (CM SAF)
     (<http://www.cmsaf.eu/R_toolbox>).
 License: GPL (>= 3)
 BugReports: https://github.com/cmsaf/cmsaf-r-tools/issues
-Depends: R (>= 3.6)
+Depends: R (>= 4.0)
 Imports: assertthat (>= 0.2.1), cmsafops (>= 1.2.1), colorspace (>= 1.4), 
         countrycode (>= 1.1), fields (>= 10.3), mapproj (>= 1.2.7), 
         maps (>= 3.3.0), methods (>= 3.6), ncdf4 (>= 1.17), png (>= 0.1), 

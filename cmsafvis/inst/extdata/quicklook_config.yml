@@ -206,6 +206,27 @@
         legend: TRUE
         colorscale: Blues
         logo: black
+    CFCmm002AVPOSE1NP:
+      Dataset: CLARA-A2.1
+      CFC:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: Blues
+        logo: black
+        unit: "%"
+    CFCmm002AVPOSE1SP:
+      Dataset: CLARA-A2.1
+      CFC:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: Blues
+        logo: black
+        unit: "%"
+        mirror_data: TRUE
     CFCmm002AVN0701GL:
       Dataset: CLARA-A2, AVHRR on NOAA-07
       CFC:
@@ -475,6 +496,15 @@
         logo: black
     CFCdm003SVMSG01MA:
       Dataset: CLAAS-2
+      CFC:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: Blues
+        logo: black
+    CFCdm0021000101MA:
+      Dataset: Landflux
       CFC:
         limits:
           min: 0

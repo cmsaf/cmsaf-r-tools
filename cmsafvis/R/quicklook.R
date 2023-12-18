@@ -785,37 +785,19 @@ quicklook <- function(config,
 
       # Polar Projection Plot
       if (area == "NP" || area == "SP") {
-       
-        rotate_cc <- function(x) {apply(t(x), 2, rev)}
-        
-        datav <- raster::as.matrix(stacks[[j]][[slot_i]])
+
+        nc <- ncdf4::nc_open(plotfile)
+          datav <- ncdf4::ncvar_get(nc, vars[j])
+        ncdf4::nc_close(nc)
         # Apply scale factor
         datav <- datav * scalef[j]
-        # for some reason the data are mirrored; this has to be corrected
-        datav <- rotate_cc(datav)
-        if (area == "NP") {
-          if (!is.null(mirror)) {
-            if (mirror[j] == "NP" | mirror[j] == "TRUE") {
-              datav <- datav[,dim(datav)[2]:1]
-            } else {
-              datav <- datav[dim(datav)[1]:1,]
-            }
-          } else {
+
+        if (!is.null(mirror)) {
+          if (mirror[j] == "NP" | mirror[j] == "SP" | mirror[j] == "TRUE") {
             datav <- datav[dim(datav)[1]:1,]
-          }
-        }
+          } 
+        } 
         
-        if (area == "SP") {
-          if (!is.null(mirror)) {
-            if (mirror[j] == "SP" | mirror[j] == "TRUE") {
-              datav <- datav[,dim(datav)[2]:1]
-            } else {
-              datav <- datav[dim(datav)[1]:1,dim(datav)[2]:1]
-            }
-          } else {
-            datav <- datav[dim(datav)[1]:1,dim(datav)[2]:1]
-          }
-        }
         datav <- as.vector(datav)
         
         lonv  <- as.vector(lond)

@@ -3,6 +3,7 @@
 ## 1.2.2
 
 - Update of `quicklook` due to changes of `remap` and `aux_files` position in config file
+- Bug fix for polar quicklooks
 
 ## 1.2.1
 
