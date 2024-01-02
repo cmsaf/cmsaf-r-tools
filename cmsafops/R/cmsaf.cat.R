@@ -86,7 +86,24 @@ cmsaf.cat <- function(var, infiles, outfile, nc34 = 4, overwrite = FALSE, verbos
     stop("No files found that match the pattern")
   }
 
-  filelist <- sort(filelist)
+  # Function to sort NetCDF files by time
+  sort_nc_files_by_time <- function(nc_files) {
+    # Extract time values for each file
+    time_values <- sapply(nc_files, function(file) {
+      nc <- ncdf4::nc_open(file)
+      time_values <- ncvar_get(nc, "time")
+      time_unit <- ncatt_get(nc, "time", "units")$value
+      time_val <- cmsafops::get_time(time_unit, time_values)
+      ncdf4::nc_close(nc)
+      return(time_val)
+    })
+    # Sort files based on time values
+    sorted_indices <- order(unlist(time_values))
+    sorted_nc_files <- nc_files[sorted_indices]
+    return(sorted_nc_files)
+  }
+  
+  filelist <- sort_nc_files_by_time(filelist)
   fdim <- length(filelist)
 
   file <- filelist[1]

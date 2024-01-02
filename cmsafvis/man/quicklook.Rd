@@ -57,21 +57,21 @@ This operator can be applied using a configuration file (quicklook_config.yml).
 An example config file can be found in the extdata folder of this package. The following
 parameters can be defined:
 \itemize{
-\item{logo: }{color / black}
-\item{slot: }{numeric (e.g., 13)}
-\item{invert_col: }{TRUE / FALSE}
-\item{Dataset: }{character (e.g., ICDR Seviri Radiation)}
-\item{limits: }{min: numeric; max: numeric}
-\item{legend: }{TRUE / FALSE}
-\item{colorscale: }{character (e.g., Viridis)}
-\item{unit: }{character (e.g., Percent / '\%')}
-\item{var_name: }{character (e.g., Percent / '\%')}
-\item{bluemarble: }{TRUE / FALSE}
-\item{mirror_data: }{TRUE / FALSE / NP / SP}
-\item{scale_factor: }{numeric (e.g., 1)}
-\item{smooth_factor: }{numeric (e.g., 1)}
-\item{aux_file: } {path to optional aux-file, including CLAAS level 2 lon/ lat data}
-\item{sysd: } {path to optional sysdata.rda file, which includes bluemarble data}
-\item{remap: } {remap data to regular grid. TRUE / FALSE}
+\item logo: color / black
+\item slot: numeric (e.g., 13)
+\item invert_col: TRUE / FALSE
+\item Dataset: character (e.g., ICDR Seviri Radiation)
+\item limits: min: numeric; max: numeric
+\item legend: TRUE / FALSE
+\item colorscale: character (e.g., Viridis)
+\item unit: character (e.g., Percent / '\%')
+\item var_name: character (e.g., Percent / '\%')
+\item bluemarble: TRUE / FALSE
+\item mirror_data: TRUE / FALSE / NP / SP
+\item scale_factor: numeric (e.g., 1)
+\item smooth_factor: numeric (e.g., 1)
+\item aux_file: path to optional aux-file, including CLAAS level 2 lon/ lat data
+\item sysd: path to optional sysdata.rda file, which includes bluemarble data
+\item remap: remap data to regular grid. TRUE / FALSE
 }
 }

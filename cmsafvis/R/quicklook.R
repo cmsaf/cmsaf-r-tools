@@ -24,22 +24,22 @@
 #'An example config file can be found in the extdata folder of this package. The following
 #'parameters can be defined: 
 #'\itemize{
-#'  \item{logo: }{color / black}
-#'  \item{slot: }{numeric (e.g., 13)}
-#'  \item{invert_col: }{TRUE / FALSE}
-#'  \item{Dataset: }{character (e.g., ICDR Seviri Radiation)}
-#'  \item{limits: }{min: numeric; max: numeric}
-#'  \item{legend: }{TRUE / FALSE}
-#'  \item{colorscale: }{character (e.g., Viridis)}
-#'  \item{unit: }{character (e.g., Percent / '%')}
-#'  \item{var_name: }{character (e.g., Percent / '%')}
-#'  \item{bluemarble: }{TRUE / FALSE}
-#'  \item{mirror_data: }{TRUE / FALSE / NP / SP}
-#'  \item{scale_factor: }{numeric (e.g., 1)}
-#'  \item{smooth_factor: }{numeric (e.g., 1)}
-#'  \item{aux_file: } {path to optional aux-file, including CLAAS level 2 lon/ lat data}
-#'  \item{sysd: } {path to optional sysdata.rda file, which includes bluemarble data}  
-#'  \item{remap: } {remap data to regular grid. TRUE / FALSE} 
+#' \item logo: color / black
+#' \item slot: numeric (e.g., 13)
+#' \item invert_col: TRUE / FALSE
+#' \item Dataset: character (e.g., ICDR Seviri Radiation)
+#' \item limits: min: numeric; max: numeric
+#' \item legend: TRUE / FALSE
+#' \item colorscale: character (e.g., Viridis)
+#' \item unit: character (e.g., Percent / '%')
+#' \item var_name: character (e.g., Percent / '%')
+#' \item bluemarble: TRUE / FALSE
+#' \item mirror_data: TRUE / FALSE / NP / SP
+#' \item scale_factor: numeric (e.g., 1)
+#' \item smooth_factor: numeric (e.g., 1)
+#' \item aux_file: path to optional aux-file, including CLAAS level 2 lon/ lat data
+#' \item sysd: path to optional sysdata.rda file, which includes bluemarble data
+#' \item remap: remap data to regular grid. TRUE / FALSE
 #' }
 #'@export
 #'@importFrom assertthat assert_that is.count is.flag is.readable is.writeable
@@ -655,7 +655,11 @@ quicklook <- function(config,
           
           if (plot_lim[j,1] == 0) {
             datav <- raster::as.matrix(stacks[[j]][[slot_i]])
-            minval <- min(datav[datav > 0], na.rm = TRUE)
+            if (all(is.na(datav))) {
+              minval <- 0.001
+            } else {
+                minval <- min(datav[datav > 0], na.rm = TRUE)
+            }
             tick_lim[1] <- minval
             logzero <- TRUE
             ticks <- get_breaks(tick_lim)
