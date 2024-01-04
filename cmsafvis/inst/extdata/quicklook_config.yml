@@ -1039,6 +1039,7 @@
         logo: black
         invert_col: TRUE
         log_scale: TRUE
+        namin: 2e-04
       COT:
         limits:
           min: 0
@@ -1082,6 +1083,7 @@
         logo: black
         invert_col: TRUE
         log_scale: TRUE
+        namin: 2e-04
       COT:
         limits:
           min: 0

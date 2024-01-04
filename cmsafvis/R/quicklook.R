@@ -267,6 +267,7 @@ quicklook <- function(config,
   sysd <- c()
   auxf <- c()
   mirror <- c()
+  namin <- c()
   logsc <- c()
   scalef <- c()
   smoothf <- c()
@@ -324,6 +325,12 @@ quicklook <- function(config,
       scfa <- 1.0
     }
     scalef <- append(scalef, scfa)
+    
+    inamin <- configParams[[file_info$product_type]][[file_info$id]][[vars[i]]]$namin
+    if (is.null(inamin)) {
+      inamin <- NA
+    }
+    namin <- append(namin, inamin)
     
     tl <- configParams[[file_info$product_type]][[file_info$id]][[vars[i]]]$tick_lab
     if (is.null(tl)) {
@@ -656,7 +663,11 @@ quicklook <- function(config,
           if (plot_lim[j,1] == 0) {
             datav <- raster::as.matrix(stacks[[j]][[slot_i]])
             if (all(is.na(datav))) {
-              minval <- 0.001
+              if (!is.na(namin[j])){
+                minval <- as.numeric(namin[j])
+              } else {
+                  minval <- 0.001
+              }
             } else {
                 minval <- min(datav[datav > 0], na.rm = TRUE)
             }
