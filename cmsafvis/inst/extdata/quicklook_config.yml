@@ -530,6 +530,15 @@
         legend: TRUE
         colorscale: Blues
         logo: black
+    CFChm0021000101MA:
+      Dataset: Landflux
+      CFC:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: Blues
+        logo: black
     CFCdd004SVMSG01MA:
       Dataset: CLAAS-3
       CFC_DMDC:
@@ -561,6 +570,15 @@
         logo: black
     CFCmm004SVMSGI1MA:
       Dataset: CLAAS-3 ICDR
+      CFC:
+        limits:
+          min: 0
+          max: 100
+        legend: TRUE
+        colorscale: Blues
+        logo: black
+    CFCmm0021000101MA:
+      Dataset: Landflux
       CFC:
         limits:
           min: 0
@@ -2407,6 +2425,109 @@
         legend: TRUE
         colorscale: Blues
         logo: black
+  LEH:
+    LEHdm0011000101MA:
+      Dataset: Landflux
+      ET:
+        limits:
+          min: 0
+          max: 15
+        legend: TRUE
+        colorscale: Reds
+        invert_col: TRUE
+        logo: black
+      LE:
+        limits:
+          min: 0
+          max: 400
+        legend: TRUE
+        colorscale: Reds
+        invert_col: TRUE
+        logo: black
+      G:
+        limits:
+          min: -80
+          max: 80
+        legend: TRUE
+        colorscale: Blue-Red 3
+        invert_col: TRUE
+        logo: black
+      H:
+        limits:
+          min: -280
+          max: 280
+        legend: TRUE
+        colorscale: Blue-Red 3
+        invert_col: TRUE
+        logo: black
+    LEHhm0011000101MA:
+      Dataset: Landflux
+      ET:
+        limits:
+          min: 0
+          max: 0.5
+        legend: TRUE
+        colorscale: larry
+        invert_col: TRUE
+        logo: black
+      LE:
+        limits:
+          min: 0
+          max: 350
+        legend: TRUE
+        colorscale: larry
+        invert_col: TRUE
+        logo: black
+      G:
+        limits:
+          min: -60
+          max: 60
+        legend: TRUE
+        colorscale: larry
+        invert_col: TRUE
+        logo: black
+      H:
+        limits:
+          min: -350
+          max: 350
+        legend: TRUE
+        colorscale: Blue-Red 3
+        invert_col: TRUE
+        logo: black
+    LEHmm0011000101MA:
+      Dataset: Landflux
+      ET:
+        limits:
+          min: 0
+          max: 500
+        legend: TRUE
+        colorscale: larry
+        invert_col: TRUE
+        logo: black
+      LE:
+        limits:
+          min: 0
+          max: 450
+        legend: TRUE
+        colorscale: larry
+        invert_col: TRUE
+        logo: black
+      G:
+        limits:
+          min: -75
+          max: 75
+        legend: TRUE
+        colorscale: larry
+        invert_col: TRUE
+        logo: black
+      H:
+        limits:
+          min: -200
+          max: 200
+        legend: TRUE
+        colorscale: Blue-Red 3
+        invert_col: TRUE
+        logo: black
   LHF:
     LHFmm002SCPOS01GL:
       Dataset: HOAPS, version 4.0
@@ -2419,6 +2540,25 @@
         invert_col: TRUE
         logo: black
   LTP:
+    LTPin0021000101MA:
+      Dataset: Landflux
+      LST_PMW:
+        limits:
+          min: 220
+          max: 360
+        legend: TRUE
+        colorscale: heat 
+        logo: black
+    LTPmd0021000101MA:
+      Dataset: Landflux
+      LST_PMW:
+        limits:
+          min: 220
+          max: 360
+        legend: TRUE
+        colorscale: heat 
+        logo: black
+        slot: 13
   LTS:
   LWP:
     LWPmm003AVPOSI1GL:
@@ -3433,6 +3573,99 @@
         legend: TRUE
         colorscale: Blue-Red
         logo: black
+    SRBdm0011000101MA:
+      Dataset: Landflux
+      SDL:
+        limits:
+          min: 150
+          max: 500
+        legend: TRUE
+        colorscale: YlOrRd
+        invert_col: TRUE
+        logo: black
+      SIS:
+        limits:
+          min: 0
+          max: 450
+        legend: TRUE
+        colorscale: Viridis
+        logo: black
+      SOL:
+        limits:
+          min: 250
+          max: 650
+        legend: TRUE
+        colorscale: Viridis
+        logo: black
+      SRB:
+        limits:
+          min: -360
+          max: 360
+        legend: TRUE
+        colorscale: Blue-Red
+        logo: black
+    SRBhm0011000101MA:
+      Dataset: Landflux
+      SDL:
+        limits:
+          min: 150
+          max: 550
+        legend: TRUE
+        colorscale: YlOrRd
+        invert_col: TRUE
+        logo: black
+      SIS:
+        limits:
+          min: 0
+          max: 1150
+        legend: TRUE
+        colorscale: Viridis
+        logo: black
+      SOL:
+        limits:
+          min: 250
+          max: 850
+        legend: TRUE
+        colorscale: Viridis
+        logo: black
+      SRB:
+        limits:
+          min: -860
+          max: 860
+        legend: TRUE
+        colorscale: Blue-Red
+        logo: black
+    SRBmm0011000101MA:
+      Dataset: Landflux
+      SDL:
+        limits:
+          min: 150
+          max: 500
+        legend: TRUE
+        colorscale: YlOrRd
+        invert_col: TRUE
+        logo: black
+      SIS:
+        limits:
+          min: 0
+          max: 400
+        legend: TRUE
+        colorscale: Viridis
+        logo: black
+      SOL:
+        limits:
+          min: 250
+          max: 620
+        legend: TRUE
+        colorscale: Viridis
+        logo: black
+      SRB:
+        limits:
+          min: -300
+          max: 300
+        legend: TRUE
+        colorscale: Blue-Red
+        logo: black
   SRS:
     SRSmm003AVPOS01GL:
       Dataset: CLARA-A3
@@ -3475,7 +3708,7 @@
           min: 0
           max: 100
         legend: TRUE
-        colorscale: Blues
+        colorscale: Viridis
         invert_col: TRUE
         logo: black
       UTH_MEAN_ASCEND_DESCEND:
@@ -3483,7 +3716,7 @@
           min: 0
           max: 100
         legend: TRUE
-        colorscale: Blues
+        colorscale: Viridis
         invert_col: TRUE
         logo: black
       UTH_MEAN_DESCEND:
@@ -3491,7 +3724,7 @@
           min: 0
           max: 100
         legend: TRUE
-        colorscale: Blues
+        colorscale: Viridis
         invert_col: TRUE
         logo: black
     UTHdm002MSPOS01GL:
@@ -3501,7 +3734,7 @@
           min: 0
           max: 100
         legend: TRUE
-        colorscale: Blues
+        colorscale: Viridis
         invert_col: TRUE
         logo: black
     UTHin002MSPOS01GL:
@@ -3511,7 +3744,7 @@
           min: 0
           max: 100
         legend: TRUE
-        colorscale: Blues
+        colorscale: Viridis
         invert_col: TRUE
         logo: black
         slot: 13
