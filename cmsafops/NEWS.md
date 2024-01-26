@@ -1,5 +1,9 @@
 # Changelog for cmsafops package
 
+## 1.4.0
+- New operator: ymonmedian
+- Improve time sorting in cmsaf.cat
+
 ## 1.3.0
 - Updates due to retiring packages
 

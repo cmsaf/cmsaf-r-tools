@@ -1,5 +1,12 @@
 # Changelog for cmsafvis package
 
+## 1.2.3
+
+- Bug fix for `quicklook` in case of empty products plus log-scale and min=0
+- New attribute for quicklook config file: `namin`
+- Set font family 'Liberation Sans' in `quicklook` to avoid changes on different systems
+- Add config parameters `triup` and `tridown` in quicklook config
+
 ## 1.2.2
 
 - Update of `quicklook` due to changes of `remap` and `aux_files` position in config file

@@ -38,7 +38,8 @@ ymonx_wrapper <- function(op, var, infile, outfile, nc34, overwrite, verbose,
     paste0("cmsafops::ymonmin for variable ", file_data$variable$name),
     paste0("cmsafops::ymonmean for variable ", file_data$variable$name),
     paste0("cmsafops::ymonsum for variable ", file_data$variable$name),
-    paste0("cmsafops::ymonsd for variable ", file_data$variable$name)
+    paste0("cmsafops::ymonsd for variable ", file_data$variable$name),
+    paste0("cmsafops::ymonmedian for variable ", file_data$variable$name)
   )
 
   time_data <- time_bnds[1, ]
@@ -116,6 +117,10 @@ ymonx_wrapper <- function(op, var, infile, outfile, nc34, overwrite, verbose,
            {
              if (verbose) message(paste0("apply multi-year monthly standard deviation ", j))
              data <- apply(dum_dat, c(1, 2), stats::sd, na.rm = TRUE)
+           },
+           {
+             if (verbose) message(paste0("apply multi-year monthly median ", j))
+             data <- apply(dum_dat, c(1, 2), stats::median, na.rm = TRUE)
            }
     )
 
