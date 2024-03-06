@@ -65,12 +65,15 @@ hovmoller
 infile
 instat
 kml
+Liberation 
+Sans
 loc
 lon
 maptools
 maximium 
 maptools
 mtext
+namin
 ortho
 outfile
 quicklook
@@ -82,6 +85,9 @@ temporaly
 tif
 timeseries 
 timestemp
+tri
+tridown
+triup
 Viridis
 vec 
 vis
