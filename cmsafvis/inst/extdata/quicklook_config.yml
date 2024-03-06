@@ -581,8 +581,8 @@
       Dataset: Landflux
       CFC:
         limits:
-          min: 0
-          max: 100
+          min: 20
+          max: 80
         legend: TRUE
         colorscale: Blues
         logo: black
@@ -2437,31 +2437,23 @@
       ET:
         limits:
           min: 0
-          max: 15
+          max: 8
         legend: TRUE
-        colorscale: Reds
+        colorscale: larry
         invert_col: TRUE
         logo: black
       LE:
         limits:
           min: 0
-          max: 400
+          max: 200
         legend: TRUE
-        colorscale: Reds
-        invert_col: TRUE
-        logo: black
-      G:
-        limits:
-          min: -80
-          max: 80
-        legend: TRUE
-        colorscale: Blue-Red 3
+        colorscale: larry
         invert_col: TRUE
         logo: black
       H:
         limits:
-          min: -280
-          max: 280
+          min: -200
+          max: 200
         legend: TRUE
         colorscale: Blue-Red 3
         invert_col: TRUE
@@ -2471,7 +2463,7 @@
       ET:
         limits:
           min: 0
-          max: 0.5
+          max: 0.3
         legend: TRUE
         colorscale: larry
         invert_col: TRUE
@@ -2479,23 +2471,15 @@
       LE:
         limits:
           min: 0
-          max: 350
-        legend: TRUE
-        colorscale: larry
-        invert_col: TRUE
-        logo: black
-      G:
-        limits:
-          min: -60
-          max: 60
+          max: 200
         legend: TRUE
         colorscale: larry
         invert_col: TRUE
         logo: black
       H:
         limits:
-          min: -350
-          max: 350
+          min: -200
+          max: 200
         legend: TRUE
         colorscale: Blue-Red 3
         invert_col: TRUE
@@ -2505,7 +2489,7 @@
       ET:
         limits:
           min: 0
-          max: 500
+          max: 300
         legend: TRUE
         colorscale: larry
         invert_col: TRUE
@@ -2513,15 +2497,7 @@
       LE:
         limits:
           min: 0
-          max: 450
-        legend: TRUE
-        colorscale: larry
-        invert_col: TRUE
-        logo: black
-      G:
-        limits:
-          min: -75
-          max: 75
+          max: 200
         legend: TRUE
         colorscale: larry
         invert_col: TRUE
@@ -2925,6 +2901,44 @@
         legend: TRUE
         colorscale: Oslo
         logo: black
+    PREdm001IMPGS01GL:
+      Dataset: GIRAFE v1
+      PRECIPITATION:
+        limits:
+          min: 0.1
+          max: 100
+        legend: TRUE
+        colorscale: YlGnBu
+        logo: black
+        invert_col: TRUE
+        tri_up: TRUE
+        tri_down: TRUE
+        log_scale: TRUE
+      SAMPLING_ERROR:
+        limits:
+          min: 0.1
+          max: 10
+        legend: TRUE
+        colorscale: Oslo
+        logo: black
+        invert_col: FALSE
+        tri_up: TRUE
+        tri_down: TRUE
+        log_scale: TRUE
+        var_name: Sampling Uncertainty of Daily Accumulated Precipitation
+    PREmm001IMPGS01GL:
+      Dataset: GIRAFE
+      PRECIPITATION:
+        limits:
+          min: 0.1
+          max: 30
+        legend: TRUE
+        colorscale: YlGnBu
+        logo: black
+        invert_col: TRUE
+        tri_up: TRUE
+        tri_down: TRUE
+        log_scale: TRUE
   RSF:
     RSFmm003AVPOS01GL:
       Dataset: CLARA-A3
@@ -3581,93 +3595,27 @@
         logo: black
     SRBdm0011000101MA:
       Dataset: Landflux
-      SDL:
-        limits:
-          min: 150
-          max: 500
-        legend: TRUE
-        colorscale: YlOrRd
-        invert_col: TRUE
-        logo: black
-      SIS:
-        limits:
-          min: 0
-          max: 450
-        legend: TRUE
-        colorscale: Viridis
-        logo: black
-      SOL:
-        limits:
-          min: 250
-          max: 650
-        legend: TRUE
-        colorscale: Viridis
-        logo: black
       SRB:
         limits:
-          min: -360
-          max: 360
+          min: 0
+          max: 400
         legend: TRUE
         colorscale: Blue-Red
         logo: black
     SRBhm0011000101MA:
       Dataset: Landflux
-      SDL:
-        limits:
-          min: 150
-          max: 550
-        legend: TRUE
-        colorscale: YlOrRd
-        invert_col: TRUE
-        logo: black
-      SIS:
-        limits:
-          min: 0
-          max: 1150
-        legend: TRUE
-        colorscale: Viridis
-        logo: black
-      SOL:
-        limits:
-          min: 250
-          max: 850
-        legend: TRUE
-        colorscale: Viridis
-        logo: black
       SRB:
         limits:
-          min: -860
-          max: 860
+          min: 0
+          max: 1000
         legend: TRUE
         colorscale: Blue-Red
         logo: black
     SRBmm0011000101MA:
       Dataset: Landflux
-      SDL:
-        limits:
-          min: 150
-          max: 500
-        legend: TRUE
-        colorscale: YlOrRd
-        invert_col: TRUE
-        logo: black
-      SIS:
-        limits:
-          min: 0
-          max: 400
-        legend: TRUE
-        colorscale: Viridis
-        logo: black
-      SOL:
-        limits:
-          min: 250
-          max: 620
-        legend: TRUE
-        colorscale: Viridis
-        logo: black
       SRB:
         limits:
-          min: -300
+          min: 0
           max: 300
         legend: TRUE
         colorscale: Blue-Red
@@ -3743,7 +3691,7 @@
         colorscale: Viridis
         invert_col: TRUE
         logo: black
-        tri_up: FALSE
+        tri_up: TRUE
     UTHin002MSPOS01GL:
       Dataset: CM SAF UTH CDR
       MEAN_UTH:
@@ -3755,4 +3703,4 @@
         invert_col: TRUE
         logo: black
         slot: 13
-        tri_up: FALSE
+        tri_up: TRUE

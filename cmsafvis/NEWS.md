@@ -1,5 +1,9 @@
 # Changelog for cmsafvis package
 
+## 1.2.4
+
+- Minor update of `quicklook` for colour scale with triangle
+
 ## 1.2.3
 
 - Bug fix for `quicklook` in case of empty products plus log-scale and min=0
