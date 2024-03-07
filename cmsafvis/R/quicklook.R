@@ -1290,7 +1290,8 @@ quicklook <- function(config,
                         col = "gray20", ylim = c(lat_min, lat_max), wrap = c(-180, 180), add = TRUE)
             } else {
                 maps::map("world", interior = FALSE, xlim = c(lon_min, lon_max), 
-                          col = "gray20", ylim = c(lat_min, lat_max), wrap = c(-180, 180), add = TRUE)
+                          col = "gray20", ylim = c(lat_min, lat_max), wrap = c(-180, 180), 
+                          lforce = "e", add = TRUE)
             }
         } else {
             if (lon_max >= 359) {
