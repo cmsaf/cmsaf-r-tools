@@ -100,6 +100,7 @@ Other monthly statistics:
 \code{\link{multimonsum}()},
 \code{\link{ymonmax}()},
 \code{\link{ymonmean}()},
+\code{\link{ymonmedian}()},
 \code{\link{ymonmin}()},
 \code{\link{ymonsd}()},
 \code{\link{ymonsum}()}

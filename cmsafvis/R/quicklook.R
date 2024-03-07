@@ -35,11 +35,14 @@
 #' \item var_name: character (e.g., Percent / '%')
 #' \item bluemarble: TRUE / FALSE
 #' \item mirror_data: TRUE / FALSE / NP / SP
+#' \item namin: numeric (e.g., 2e-04), minimum in case of no data
 #' \item scale_factor: numeric (e.g., 1)
 #' \item smooth_factor: numeric (e.g., 1)
 #' \item aux_file: path to optional aux-file, including CLAAS level 2 lon/ lat data
 #' \item sysd: path to optional sysdata.rda file, which includes bluemarble data
 #' \item remap: remap data to regular grid. TRUE / FALSE
+#' \item tri_up: plot upper triangle on colorscale. TRUE / FALSE
+#' \item tri_down: plot lower triangle on colorscale. TRUE / FALSE
 #' }
 #'@export
 #'@importFrom assertthat assert_that is.count is.flag is.readable is.writeable
@@ -273,6 +276,8 @@ quicklook <- function(config,
   smoothf <- c()
   tick_lab <- vector(mode = "list", length = 1)
   remap_q <- FALSE
+  triup <- c()
+  tridown <- c()
   
   # define plotting area in case of polar projection
   area <- ""
@@ -280,7 +285,6 @@ quicklook <- function(config,
   if (grepl("South", file_info$area)) area <- "SP"
   if (grepl("Global", file_info$area)) area <- "GL"
   
-  # vars <- names(configParams[[file_info$product_type]][[file_info$id]])[names(configParams[[file_info$product_type]][[file_info$id]]) != "Dataset"]
   vars <- names(configParams[[file_info$product_type]][[file_info$id]])
   vars <- vars[!(vars %in% c("remap", "aux_file", "Dataset"))]
   nvars <- length(vars)
@@ -296,7 +300,6 @@ quicklook <- function(config,
     plot_lim <- rbind(plot_lim, c(limits$min, limits$max))
     legends <- c(legends, configParams[[file_info$product_type]][[file_info$id]][[vars[i]]]$legend)
     slots <- c(slots, configParams[[file_info$product_type]][[file_info$id]][[vars[i]]]$slot)
-    set_vname <- c(set_vname, configParams[[file_info$product_type]][[file_info$id]][[vars[i]]]$var_name)
     marble <- c(marble, configParams[[file_info$product_type]][[file_info$id]][[vars[i]]]$bluemarble)
     
     isysd <- configParams[[file_info$product_type]][[file_info$id]][[vars[i]]]$sysdata
@@ -349,12 +352,30 @@ quicklook <- function(config,
       iunit <- NA
     }
     set_unit <- append(set_unit, iunit)
+    
+    ivname <- configParams[[file_info$product_type]][[file_info$id]][[vars[i]]]$var_name
+    if (is.null(ivname)) {
+      ivname <- NA
+    }
+    set_vname <- append(set_vname, ivname)
 
     ilogsc <- configParams[[file_info$product_type]][[file_info$id]][[vars[i]]]$log_scale
     if (is.null(ilogsc)) {
       ilogsc <- FALSE
     }
     logsc <- append(logsc, ilogsc)
+    
+    itriup <- configParams[[file_info$product_type]][[file_info$id]][[vars[i]]]$tri_up
+    if (is.null(itriup)) {
+      itriup <- FALSE
+    }
+    triup <- append(triup, itriup)
+    
+    itridown <- configParams[[file_info$product_type]][[file_info$id]][[vars[i]]]$tri_down
+    if (is.null(itridown)) {
+      itridown <- FALSE
+    }
+    tridown <- append(tridown, itridown)
     
     col_from_config <- c(col_from_config, configParams[[file_info$product_type]][[file_info$id]][[vars[i]]]$colorscale)
     if (logo) logos <- c(logos, configParams[[file_info$product_type]][[file_info$id]][[vars[i]]]$logo)
@@ -383,10 +404,8 @@ quicklook <- function(config,
       }
     }
     
-    if (!is.null(set_vname)){
-      if (!is.na(set_vname[k])){
-        varnames[k] <- set_vname[k]
-      }
+    if (!is.na(set_vname[k])){
+      varnames[k] <- set_vname[k]
     }
     
     if (!is.null(marble)){
@@ -428,6 +447,13 @@ quicklook <- function(config,
     lat_max <- ncdf4::ncatt_get(nc, 0, "geospatial_lat_max")$value
   } else {
     stop("unable to get a lon / lat reference")
+  }
+  
+  if (ncdf4::ncatt_get(nc, 0, "geospatial_lon_max")$hasatt) {
+    lon_min <- ncdf4::ncatt_get(nc, 0, "geospatial_lon_min")$value
+    lon_max <- ncdf4::ncatt_get(nc, 0, "geospatial_lon_max")$value
+    lat_min <- ncdf4::ncatt_get(nc, 0, "geospatial_lat_min")$value
+    lat_max <- ncdf4::ncatt_get(nc, 0, "geospatial_lat_max")$value
   }
   
   if (lon_max > 350) {
@@ -598,28 +624,47 @@ quicklook <- function(config,
         file_time <- format(file_time, "%Y-%m")
     }
     
-    grDevices::jpeg(outfile,
+    if (is_multiplot && (ceiling(nvars/ceiling(sqrt(nvars))) == 1)) {
+      grDevices::jpeg(outfile,
                     quality = jpeg_quality,
                     width = iwidth,
-                    height = iheight,
+                    height = 2 * iheight,
                     res = dpi,
                     pointsize = round(12 * (1/(dpi/72)))
-    )
+      )
+    } else {
+        grDevices::jpeg(outfile,
+                      quality = jpeg_quality,
+                      width = iwidth,
+                      height = iheight,
+                      res = dpi,
+                      pointsize = round(12 * (1/(dpi/72)))
+        )
+    }
     
     # Parameters for multiple plots
     
     if (is_multiplot) {
       ncols <- ceiling(sqrt(nvars))
       nrows <- ceiling(nvars/ncols)
-      graphics::par(mfrow = c(nrows, ncols))
-      graphics::par(mar = c(2, 4, 4, 6) + 0.1)
-      graphics::par(oma = c(0, 0, 2, 5))
+      if (nrows == 1) {
+        graphics::par(mfrow = c(ncols, nrows))
+        graphics::par(mar = c(2, 0, 4, 5) + 0.1)
+        graphics::par(oma = c(0, 0, 1, 1))
+      } else {
+        graphics::par(mfrow = c(nrows, ncols))
+        graphics::par(mar = c(2, 4, 4, 6) + 0.1)
+        graphics::par(oma = c(0, 0, 2, 5))
+      }
+      graphics::par(family = "Liberation Sans")
     }  else if (area == "GL") {
         graphics::par(mar = c(2, 0, 4, 5) + 0.1)
         graphics::par(oma = c(0, 0, 1, 1))
+        graphics::par(family = "Liberation Sans")
     } else {
         graphics::par(mar = c(2, 4, 4, 7) + 0.1)
         graphics::par(oma = c(0, 0, 1, 2))
+        graphics::par(family = "Liberation Sans")
     }
 
     for (j in seq_along(vars)) {
@@ -1066,9 +1111,9 @@ quicklook <- function(config,
               lwd = 1
             )
           } else {
-              graphics::image((lon_min*0.998):(lon_max*1.002),
+              graphics::image((lon_min):(lon_max),
                             lat_min:lat_max,
-                            outer((lon_min*0.998):(lon_max*1.002),lat_min:lat_max,"+"),
+                            outer((lon_min):(lon_max),lat_min:lat_max,"+"),
                             main = "",
                             xlim = c(lon_min, lon_max),
                             ylim = c(lat_min, lat_max),
@@ -1078,7 +1123,7 @@ quicklook <- function(config,
                             axes = FALSE,
                             useRaster = TRUE,
                             asp = 1
-            ) 
+            )
           }
         }
          
@@ -1114,12 +1159,29 @@ quicklook <- function(config,
              maps::map("world2", fill = TRUE, border = NA, xlim = c(lon_min, lon_max), 
                        col = "gray75", ylim = c(lat_min, lat_max), add = TRUE)
            } else {
-             maps::map("world", fill = TRUE, border = NA, xlim = c(lon_min, lon_max), 
+             maps::map("world", fill = TRUE, border = NA, xlim = c(lon_min, lon_max),
                        col = "gray75", ylim = c(lat_min, lat_max), add = TRUE)
            }
          }
         
         # plot image
+        # In case of values outside plot_lim, marked by a triangle, set min and max
+        if (triup[j]){
+          raster::values(stacks[[j]])[raster::values(stacks[[j]]) > plot_lim[j,2]] <- plot_lim[j,2]
+          
+          if (!exists("datav")){
+            datav <- raster::as.matrix(stacks[[j]][[slot_i]])
+          }
+          datav[datav > plot_lim[j,2]] <- plot_lim[j,2]
+        }
+        if (tridown[j]){
+          raster::values(stacks[[j]])[raster::values(stacks[[j]]) < plot_lim[j,1]] <- plot_lim[j,1]
+         
+          if (!exists("datav")){
+            datav <- raster::as.matrix(stacks[[j]][[slot_i]])
+          }
+          datav[datav < plot_lim[j,1]] <- plot_lim[j,1]
+        }
         # UTH data with 0 to 360 grid were plotted wrong,
         # but the solution on Windows did not work on Linux
         if (ind360) {
@@ -1393,6 +1455,21 @@ quicklook <- function(config,
                          col = col,
                          add = TRUE)  
           } else {
+              if (triup[j] || tridown[j]) {
+                fields::imagePlot(datav, 
+                                zlim = plot_lim[j,],   
+                                legend.only = TRUE,
+                                legend.shrink = 0.9,
+                                legend.width = 1.5,
+                                legend.mar = 5.1,
+                                axis.args=list(labels = FALSE,
+                                               tick = FALSE),
+                                col = col,
+                                upperTriangle = triup[j],
+                                lowerTriangle = tridown[j],
+                                add = TRUE)
+              }
+            
               fields::image.plot(log(datav), 
                                zlim = log(plot_lim[j,]),   
                                legend.only = TRUE,
@@ -1438,24 +1515,59 @@ quicklook <- function(config,
                        col = col,
                        add = TRUE)
            } else {
-             raster::plot(stacks[[j]] * scalef[j], y = slot_i,
-                          main = "",
-                          axes = FALSE,
-                          xlab = "",
-                          ylab = "",
-                          zlim = plot_lim[j,],
-                          legend.only = TRUE,
-                          legend.shrink = 0.9,
-                          legend.width = 1.5,
-                          legend.mar = 5.1,
-                          legend.args=list(text = units[j], 
-                                           side = 2, 
-                                           font = 2, 
-                                           line = 0.2, 
-                                           cex = 1.25*fsf),
-                       axis.args=list(cex.axis = 1*fsf),
-                       col = col,
-                       add = TRUE)
+             if (triup[j] || tridown[j]) {
+               fields::imagePlot(datav, 
+                                 zlim = plot_lim[j,],   
+                                 legend.only = TRUE,
+                                 legend.shrink = 0.899,
+                                 legend.width = 1.5,
+                                 legend.mar = 5.1,
+                                 axis.args=list(labels = FALSE,
+                                                tick = FALSE),
+                                 col = col,
+                                 upperTriangle = triup[j],
+                                 lowerTriangle = tridown[j],
+                                 add = TRUE)
+               
+               raster::plot(stacks[[j]] * scalef[j], y = slot_i,
+                            main = "",
+                            axes = FALSE,
+                            xlab = "",
+                            ylab = "",
+                            zlim = plot_lim[j,],
+                            legend.only = TRUE,
+                            legend.shrink = 0.9,
+                            legend.width = 1.5,
+                            legend.mar = 5.1,
+                            legend.args=list(text = units[j], 
+                                             side = 2, 
+                                             font = 2, 
+                                             line = 0.2, 
+                                             cex = 1.25*fsf),
+                            axis.args=list(cex.axis = 1*fsf),
+                            col = col,
+                            add = TRUE)
+             } else {
+                 raster::plot(stacks[[j]] * scalef[j], y = slot_i,
+                            main = "",
+                            axes = FALSE,
+                            xlab = "",
+                            ylab = "",
+                            zlim = plot_lim[j,],
+                            legend.only = TRUE,
+                            legend.shrink = 0.9,
+                            legend.width = 1.5,
+                            legend.mar = 5.1,
+                            legend.args=list(text = units[j], 
+                                             side = 2, 
+                                             font = 2, 
+                                             line = 0.2, 
+                                             cex = 1.25*fsf),
+                            axis.args=list(cex.axis = 1*fsf),
+                            col = col,
+                            add = TRUE)
+             }
+             
            }
         }
       }

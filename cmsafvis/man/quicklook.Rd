@@ -68,10 +68,13 @@ parameters can be defined:
 \item var_name: character (e.g., Percent / '\%')
 \item bluemarble: TRUE / FALSE
 \item mirror_data: TRUE / FALSE / NP / SP
+\item namin: numeric (e.g., 2e-04), minimum in case of no data
 \item scale_factor: numeric (e.g., 1)
 \item smooth_factor: numeric (e.g., 1)
 \item aux_file: path to optional aux-file, including CLAAS level 2 lon/ lat data
 \item sysd: path to optional sysdata.rda file, which includes bluemarble data
 \item remap: remap data to regular grid. TRUE / FALSE
+\item tri_up: plot upper triangle on colorscale. TRUE / FALSE
+\item tri_down: plot lower triangle on colorscale. TRUE / FALSE
 }
 }
