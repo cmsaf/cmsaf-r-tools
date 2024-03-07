@@ -440,11 +440,9 @@ quicklook <- function(config,
     lon_max <- max(ncdf4::ncvar_get(nc, lonvar), na.rm = TRUE)
     lat_min <- min(ncdf4::ncvar_get(nc, latvar), na.rm = TRUE)
     lat_max <- max(ncdf4::ncvar_get(nc, latvar), na.rm = TRUE)
-  } else if (ncdf4::ncatt_get(nc, 0, "geospatial_lon_max")$hasatt) {
-    lon_min <- ncdf4::ncatt_get(nc, 0, "geospatial_lon_min")$value
-    lon_max <- ncdf4::ncatt_get(nc, 0, "geospatial_lon_max")$value
-    lat_min <- ncdf4::ncatt_get(nc, 0, "geospatial_lat_min")$value
-    lat_max <- ncdf4::ncatt_get(nc, 0, "geospatial_lat_max")$value
+    
+    dlon <- ncdf4::ncvar_get(nc, lonvar)[2] - ncdf4::ncvar_get(nc, lonvar)[1]
+    dlat <- ncdf4::ncvar_get(nc, latvar)[2] - ncdf4::ncvar_get(nc, latvar)[1]
   } else {
     stop("unable to get a lon / lat reference")
   }
@@ -1111,9 +1109,10 @@ quicklook <- function(config,
               lwd = 1
             )
           } else {
-              graphics::image((lon_min):(lon_max),
-                            lat_min:lat_max,
-                            outer((lon_min):(lon_max),lat_min:lat_max,"+"),
+              graphics::image((lon_min + (dlon / 2)):(lon_max - (dlon / 2)),
+                            (lat_min + (dlat / 2)) :(lat_max - (dlat / 2)),
+                            outer((lon_min + (dlon / 2)):(lon_max - (dlon / 2)),
+                                  (lat_min + (dlat / 2)):(lat_max - (dlat / 2)),"+"),
                             main = "",
                             xlim = c(lon_min, lon_max),
                             ylim = c(lat_min, lat_max),
