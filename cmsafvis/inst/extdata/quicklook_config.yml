@@ -586,6 +586,8 @@
         legend: TRUE
         colorscale: Blues
         logo: black
+        tri_up: TRUE
+        tri_down: TRUE
     CFCmd004SVMSG01MA:
       Dataset: CLAAS-3
       CFC_MMDC:
@@ -2442,6 +2444,7 @@
         colorscale: larry
         invert_col: TRUE
         logo: black
+        tri_up: TRUE
       LE:
         limits:
           min: 0
@@ -2450,14 +2453,15 @@
         colorscale: larry
         invert_col: TRUE
         logo: black
+        tri_up: TRUE
       H:
         limits:
           min: -200
           max: 200
         legend: TRUE
         colorscale: Blue-Red 3
-        invert_col: TRUE
         logo: black
+        tri_down: TRUE
     LEHhm0011000101MA:
       Dataset: Landflux
       ET:
@@ -2468,6 +2472,8 @@
         colorscale: larry
         invert_col: TRUE
         logo: black
+        tri_up: TRUE
+        tri_down: TRUE
       LE:
         limits:
           min: 0
@@ -2476,14 +2482,16 @@
         colorscale: larry
         invert_col: TRUE
         logo: black
+        tri_up: TRUE
+        tri_down: TRUE
       H:
         limits:
           min: -200
           max: 200
         legend: TRUE
         colorscale: Blue-Red 3
-        invert_col: TRUE
         logo: black
+        tri_down: TRUE
     LEHmm0011000101MA:
       Dataset: Landflux
       ET:
@@ -2494,6 +2502,7 @@
         colorscale: larry
         invert_col: TRUE
         logo: black
+        tri_up: TRUE
       LE:
         limits:
           min: 0
@@ -2502,14 +2511,15 @@
         colorscale: larry
         invert_col: TRUE
         logo: black
+        tri_up: TRUE
       H:
         limits:
           min: -200
           max: 200
         legend: TRUE
         colorscale: Blue-Red 3
-        invert_col: TRUE
         logo: black
+        tri_down: TRUE
   LHF:
     LHFmm002SCPOS01GL:
       Dataset: HOAPS, version 4.0
@@ -2905,39 +2915,39 @@
       Dataset: GIRAFE v1
       PRECIPITATION:
         limits:
-          min: 0.1
+          min: 0
           max: 100
         legend: TRUE
         colorscale: YlGnBu
         logo: black
         invert_col: TRUE
         tri_up: TRUE
-        tri_down: TRUE
+        logmin: 0.1
         log_scale: TRUE
       SAMPLING_ERROR:
         limits:
-          min: 0.1
+          min: 0
           max: 10
         legend: TRUE
         colorscale: Oslo
         logo: black
         invert_col: FALSE
         tri_up: TRUE
-        tri_down: TRUE
+        logmin: 0.1
         log_scale: TRUE
         var_name: Sampling Uncertainty of Daily Accumulated Precipitation
     PREmm001IMPGS01GL:
       Dataset: GIRAFE
       PRECIPITATION:
         limits:
-          min: 0.1
+          min: 0
           max: 30
         legend: TRUE
         colorscale: YlGnBu
         logo: black
         invert_col: TRUE
         tri_up: TRUE
-        tri_down: TRUE
+        logmin: 0.1
         log_scale: TRUE
   RSF:
     RSFmm003AVPOS01GL:
@@ -3602,6 +3612,7 @@
         legend: TRUE
         colorscale: Blue-Red
         logo: black
+        tri_down: TRUE
     SRBhm0011000101MA:
       Dataset: Landflux
       SRB:
@@ -3611,6 +3622,7 @@
         legend: TRUE
         colorscale: Blue-Red
         logo: black
+        tri_down: TRUE
     SRBmm0011000101MA:
       Dataset: Landflux
       SRB:
@@ -3620,6 +3632,7 @@
         legend: TRUE
         colorscale: Blue-Red
         logo: black
+        tri_down: TRUE
   SRS:
     SRSmm003AVPOS01GL:
       Dataset: CLARA-A3

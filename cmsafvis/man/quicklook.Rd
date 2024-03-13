@@ -69,6 +69,7 @@ parameters can be defined:
 \item bluemarble: TRUE / FALSE
 \item mirror_data: TRUE / FALSE / NP / SP
 \item namin: numeric (e.g., 2e-04), minimum in case of no data
+\item logmin: numeric (e.g., 0.2), minimum in case of log-scale
 \item scale_factor: numeric (e.g., 1)
 \item smooth_factor: numeric (e.g., 1)
 \item aux_file: path to optional aux-file, including CLAAS level 2 lon/ lat data

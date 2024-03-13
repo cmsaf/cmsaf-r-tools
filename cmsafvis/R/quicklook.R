@@ -36,6 +36,7 @@
 #' \item bluemarble: TRUE / FALSE
 #' \item mirror_data: TRUE / FALSE / NP / SP
 #' \item namin: numeric (e.g., 2e-04), minimum in case of no data
+#' \item logmin: numeric (e.g., 0.2), minimum in case of log-scale
 #' \item scale_factor: numeric (e.g., 1)
 #' \item smooth_factor: numeric (e.g., 1)
 #' \item aux_file: path to optional aux-file, including CLAAS level 2 lon/ lat data
@@ -271,6 +272,7 @@ quicklook <- function(config,
   auxf <- c()
   mirror <- c()
   namin <- c()
+  logmin <- c()
   logsc <- c()
   scalef <- c()
   smoothf <- c()
@@ -334,6 +336,12 @@ quicklook <- function(config,
       inamin <- NA
     }
     namin <- append(namin, inamin)
+    
+    ilogmin <- configParams[[file_info$product_type]][[file_info$id]][[vars[i]]]$logmin
+    if (is.null(ilogmin)) {
+      ilogmin <- NA
+    }
+    logmin <- append(logmin, ilogmin)
     
     tl <- configParams[[file_info$product_type]][[file_info$id]][[vars[i]]]$tick_lab
     if (is.null(tl)) {
@@ -712,14 +720,18 @@ quicklook <- function(config,
                   minval <- 0.001
               }
             } else {
-                minval <- min(datav[datav > 0], na.rm = TRUE)
+                if (!is.na(logmin[j])){
+                  minval <- logmin[j]
+                } else {
+                    minval <- min(datav[datav > 0], na.rm = TRUE)
+                }
             }
             tick_lim[1] <- minval
             logzero <- TRUE
             ticks <- get_breaks(tick_lim)
             ticks_labs <- ticks 
             zeroval <- 0.5 * minval
-            if (ticks[1] < minval) {
+            if (ticks[1] < minval || !is.na(logmin[j])) {
               zeroval <- ticks[1]
               ticks_labs[1] <- "0"
             } else {
@@ -729,7 +741,11 @@ quicklook <- function(config,
             }
             
             # adjust plot_lim
-            plot_lim[j,1] <- zeroval
+            if (!is.na(logmin[j])){
+              plot_lim[j,1] <- logmin[j]
+            } else {
+              plot_lim[j,1] <- zeroval
+            }
             
           } else {
               ticks <- get_breaks(plot_lim[j,])
@@ -1173,6 +1189,7 @@ quicklook <- function(config,
           }
           datav[datav > plot_lim[j,2]] <- plot_lim[j,2]
         }
+         
         if (tridown[j]){
           raster::values(stacks[[j]])[raster::values(stacks[[j]]) < plot_lim[j,1]] <- plot_lim[j,1]
          
@@ -1213,11 +1230,17 @@ quicklook <- function(config,
               latv  <- seq(min(latv), max(latv), length.out = length(latv))
               rotate <- function(x) t(apply(x, 2, rev))
               
-              datav <- raster::as.matrix(stacks[[j]][[slot_i]])
+              if (!exists("datav")){
+                datav <- raster::as.matrix(stacks[[j]][[slot_i]])
+              }
               
               # For log-scale values below or equal 0 are not allowed 
               if (logzero) {
-                datav[datav <= 0] <- zeroval
+                if (!is.na(logmin[j])) {
+                  datav[datav <= logmin[j]] <- logmin[j]
+                } else {
+                    datav[datav <= 0] <- zeroval
+                }
               }
               
               graphics::image(lonv, latv, log(rotate(datav)), 
@@ -1453,6 +1476,22 @@ quicklook <- function(config,
                                         at=log(ticks), labels=ticks_labs),
                          col = col,
                          add = TRUE)  
+            
+            if (triup[j] || tridown[j]) {
+              fields::imagePlot(datav, 
+                                zlim = plot_lim[j,],   
+                                legend.only = TRUE,
+                                legend.shrink = 0.9,
+                                legend.width = 1.5,
+                                legend.mar = 5.1,
+                                axis.args=list(labels = FALSE,
+                                               tick = FALSE),
+                                col = col,
+                                upperTriangle = triup[j],
+                                lowerTriangle = tridown[j],
+                                add = TRUE)
+            }
+            
           } else {
               if (triup[j] || tridown[j]) {
                 fields::imagePlot(datav, 
