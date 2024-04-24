@@ -3,7 +3,7 @@
 # You should not use this R-script on its own!
 #
 # Have fun with the CM SAF R TOOLBOX!
-#                                              (Steffen Kothe / CM SAF 2022-06-28)
+#                                              (Steffen Kothe / CM SAF 2024-04-03)
 #__________________________________________________________________________________
 
 # Function to compute first of month
@@ -39,7 +39,7 @@ getTarList <- function(path_to_tar, tar_flag = 1, includeClaasAux = FALSE) {
   }
   # Exlude claas aux file if not wanted.
   if (!includeClaasAux) {
-    tarlist <- tarlist[tarlist != "CM_SAF_CLAAS2_L2_AUX.nc"]
+    tarlist <- tarlist[tarlist != "CM_SAF_CLAAS3_L2_AUX.nc"]
   }
 
   tarlist <- sort(tarlist)
@@ -49,7 +49,7 @@ getTarList <- function(path_to_tar, tar_flag = 1, includeClaasAux = FALSE) {
 
 # Get CLAAS AUX FLAG
 getClaasAuxFlag <- function(tarlist) {
-  return("CM_SAF_CLAAS2_L2_AUX.nc" %in% tarlist)
+  return("CM_SAF_CLAAS3_L2_AUX.nc" %in% tarlist)
 }
 
 # A function to extract ALL dates from a tar file.
@@ -1719,8 +1719,8 @@ function(input, output, session) {
 
   # Observing
   observeEvent(input$aux_download, {
-    auxfile <- file.path(userDir, "claas2_level2_aux_data.nc")
-    res <- tryCatch(utils::download.file("https://public.cmsaf.dwd.de/data/perm/auxilliary_data/claas2_level2_aux_data.nc", auxfile, "auto", mode = "wb"))
+    auxfile <- file.path(userDir, "claas3_level2_aux_data.nc")
+    res <- tryCatch(utils::download.file("https://public.cmsaf.dwd.de/data/perm/auxilliary_data/claas3_level2_aux_data.nc", auxfile, "auto", mode = "wb"))
 
     # Download file returns 0 on success.
     if (class(res) != "try-error" && res == 0) {
@@ -1915,7 +1915,7 @@ function(input, output, session) {
     # Get claas_flag and strop from tarlist if needed.
     claas_flag <- getClaasAuxFlag(tarlist_all)
     if (claas_flag) {
-      tarlist_all <- tarlist_all[tarlist_all != "CM_SAF_CLAAS2_L2_AUX.nc"]
+      tarlist_all <- tarlist_all[tarlist_all != "CM_SAF_CLAAS3_L2_AUX.nc"]
     }
 
     if (tar_flag == 0) {
@@ -1940,8 +1940,8 @@ function(input, output, session) {
         tarlist <- utils::untar(file, list = TRUE)
       }
       
-      if ("CM_SAF_CLAAS2_L2_AUX.nc" %in% tarlist) {
-        tarlist <- subset(tarlist, !(tarlist %in% c("CM_SAF_CLAAS2_L2_AUX.nc")))
+      if ("CM_SAF_CLAAS3_L2_AUX.nc" %in% tarlist) {
+        tarlist <- subset(tarlist, !(tarlist %in% c("CM_SAF_CLAAS3_L2_AUX.nc")))
         claas_flag <- 1
       }
       tarlist <- sort(tarlist)
@@ -2049,13 +2049,13 @@ function(input, output, session) {
       if (tar_flag == 1) {
         utils::untar(
           path_to_tar,
-          files = "CM_SAF_CLAAS2_L2_AUX.nc",
+          files = "CM_SAF_CLAAS3_L2_AUX.nc",
           exdir = ordpath,
           tar = "internal"
         )
       } else {
         utils::untar(path_to_tar,
-                     files = "CM_SAF_CLAAS2_L2_AUX.nc",
+                     files = "CM_SAF_CLAAS3_L2_AUX.nc",
                      exdir = ordpath)
       }
     }
@@ -2300,10 +2300,10 @@ function(input, output, session) {
 
     if (!file_info$has_lon_lat) {
       if (claas_flag) {
-        auxFilePath(file.path(ordPath, "CM_SAF_CLAAS2_L2_AUX.nc"))
+        auxFilePath(file.path(ordPath, "CM_SAF_CLAAS3_L2_AUX.nc"))
         cmsafops::add_grid_info(infile, auxFilePath(), outfile = NULL, overwrite = TRUE)
       } else {
-        grid_info <- get_grid(infile)
+        grid_info <- cmsaf:::get_grid(infile)
         if (grid_info == 5 && (is.null(globalAuxFilePath()) || !file.exists(globalAuxFilePath()))) {
           showModal(modalDialog(
             h4("Your data seems to require an auxiliar file. You can either upload a local auxiliar file or download it from the public CM SAF website."),
@@ -2320,7 +2320,7 @@ function(input, output, session) {
             size = "l"
           ))
 
-          # Leave silently and come back when auxFilePath is updated.
+          # Leave silently and come back when globalAuxFilePath is updated.
           req(FALSE)
           cmsafops::add_grid_info(infile, globalAuxFilePath(), outfile = NULL, overwrite = TRUE)
         } else if (grid_info == 2 || grid_info == 7) {
@@ -2466,16 +2466,28 @@ function(input, output, session) {
       # Regrid first file
       infile  <- filelist[1]
       infile  <- file.path(ordDir, infile)
-      auxfile <- file.path(ordDir, "CM_SAF_CLAAS2_L2_AUX.nc")
+      auxfile <- file.path(ordDir, "CM_SAF_CLAAS3_L2_AUX.nc")
       dxy <- 0.05     # Target grid resolution
+      goc <- NULL
 
       id <- ncdf4::nc_open(infile)
-      rdata <- ncdf4::ncvar_get(id, var)
+        rdata <- ncdf4::ncvar_get(id, var)
+        if ("georef_offset_corrected" %in% names(id$var)) {
+          goc <- ncdf4::ncvar_get(id, "georef_offset_corrected")
+          goc <- goc + 1
+        }
       ncdf4::nc_close(id)
 
       id <- ncdf4::nc_open(auxfile)
-      lon_reg <- ncdf4::ncvar_get(id, lon_var)
-      lat_reg <- ncdf4::ncvar_get(id, lat_var)
+        lon_reg <- ncdf4::ncvar_get(id, lon_var)
+        if (!is.null(goc) && !is.na(dim(lon_reg)[3])) {
+          if (dim(lon_reg)[3] > 1) lon_reg <- lon_reg[,,goc]
+        }
+        
+        lat_reg <- ncdf4::ncvar_get(id, lat_var)
+        if (!is.null(goc) && !is.na(dim(lat_reg)[3])) {
+          if (dim(lat_reg)[3] > 1) lat_reg <- lat_reg[,,goc]
+        }
       ncdf4::nc_close(id)
 
       lon_org <- seq(-90.0, 90.0, dxy)

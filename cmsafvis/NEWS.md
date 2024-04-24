@@ -1,5 +1,9 @@
 # Changelog for cmsafvis package
 
+## 1.2.6
+
+- Bug fix for `quicklooks` due to incorrect background plotting
+
 ## 1.2.5
 
 - New attribute for quicklook config file: `logmin`

@@ -35,8 +35,8 @@ NeedsCompilation: no
 Repository: CRAN
 Suggests: cmsaf, cmsafvis, spelling (>= 2.1), testthat (>= 2.3)
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.1
 Encoding: UTF-8
 Language: en-US
-Packaged: 2024-01-05 12:30:00 UTC; SK
+Packaged: 2024-04-22 12:30:00 UTC; SK
 Maintainer: Steffen Kothe <Steffen.Kothe@dwd.de>

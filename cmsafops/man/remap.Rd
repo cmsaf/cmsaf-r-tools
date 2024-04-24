@@ -49,6 +49,9 @@ object of class \code{ncdf4} (as returned from \code{ncdf4::nc_open}).}
 
 \item{nc2}{Alternatively to \code{infile2} you can specify the input as an
 object of class \code{ncdf4} (as returned from \code{ncdf4::nc_open}).}
+
+\item{dxy_factor}{In case of nearest neighbor all grid points with distance > (dxy * dxy_factor)
+are set to NA (numeric). Default is 1.}
 }
 \value{
 A NetCDF file including the interpolated data of infile1 on the grid of
@@ -122,6 +125,7 @@ Other data manipulation functions:
 \code{\link{add_grid_info}()},
 \code{\link{box_mergetime}()},
 \code{\link{cmsaf.transform.coordinate.system}()},
-\code{\link{levbox_mergetime}()}
+\code{\link{levbox_mergetime}()},
+\code{\link{map_regular}()}
 }
 \concept{data manipulation functions}

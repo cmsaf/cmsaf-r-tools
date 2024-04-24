@@ -95,7 +95,7 @@ cmsaf.cat <- function(var, infiles, outfile, nc34 = 4, overwrite = FALSE, verbos
       time_unit <- ncatt_get(nc, "time", "units")$value
       time_val <- cmsafops::get_time(time_unit, time_values)
       ncdf4::nc_close(nc)
-      return(time_val)
+      return(time_val[1])
     })
     # Sort files based on time values
     sorted_indices <- order(unlist(time_values))

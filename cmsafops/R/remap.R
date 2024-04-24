@@ -22,13 +22,15 @@
 #'  "conservative" for conservative remapping (only for regular grids, respectively)
 #'  and "nearest" for nearest-neighbor interpolation.
 #'  Default is "nearest".
-#'@param nc34 NetCDF version of output file. If \code{nc34 = 3} the output file will be
+#' @param dxy_factor In case of nearest neighbor all grid points with distance > (dxy * dxy_factor) 
+#'  are set to NA (numeric). Default is 1.
+#' @param nc34 NetCDF version of output file. If \code{nc34 = 3} the output file will be
 #'  in NetCDFv3 format (numeric). Default output is NetCDFv4.
 #' @param overwrite logical; should existing output file be overwritten?
 #' @param verbose logical; if TRUE, progress messages are shown
-#'@param nc1 Alternatively to \code{infile1} you can specify the input as an
+#' @param nc1 Alternatively to \code{infile1} you can specify the input as an
 #'  object of class `ncdf4` (as returned from \code{ncdf4::nc_open}).
-#'@param nc2 Alternatively to \code{infile2} you can specify the input as an
+#' @param nc2 Alternatively to \code{infile2} you can specify the input as an
 #'  object of class `ncdf4` (as returned from \code{ncdf4::nc_open}).
 #'
 #' @return A NetCDF file including the interpolated data of infile1 on the grid of
@@ -285,10 +287,12 @@ remap <- function(var, infile1, infile2, outfile, method = "nearest", nc34 = 4,
                rdata <- as.vector(rdata)
                rdata <- rdata[!is.na(ref_vec1)]
                result <- array(rdata[fnn$nn.index], dim = dim(result))
+               result[fnn$nn.dist > dxy * abs(dxy_factor)] <- NA
              }else{
                rdata <- as.vector(rdata)
                rdata <- rdata[!is.na(ref_vec1)]
                result <- array(rdata[fnn_target], dim = dim(result))
+               result[fnn$nn.dist > dxy * abs(dxy_factor)] <- NA
              }
            },
            conservative =

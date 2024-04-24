@@ -2,7 +2,6 @@
 % Please edit documentation in R/cmsafvis-package.R, R/cmsafvis.R
 \docType{package}
 \name{cmsafvis-package}
-\alias{cmsafvis}
 \alias{cmsafvis-package}
 \title{cmsafvis: Tools to Visualize CM SAF NetCDF Data}
 \description{

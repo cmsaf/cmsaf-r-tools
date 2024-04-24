@@ -88,8 +88,8 @@ Other selection and removal functions:
 \code{\link{extract.period}()},
 \code{\link{sellonlatbox}()},
 \code{\link{selperiod}()},
-\code{\link{selpoint.multi}()},
 \code{\link{selpoint}()},
+\code{\link{selpoint.multi}()},
 \code{\link{seltime}()},
 \code{\link{selyear}()}
 }

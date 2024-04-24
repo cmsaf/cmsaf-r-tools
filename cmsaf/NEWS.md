@@ -1,5 +1,8 @@
 # Release notes for cmsaf
 
+## 3.5.1
+- Bug fix for CLAAS-3 files; for CLAAS-2 use `cmsafops::map_regular`
+
 ## 3.5.0
 - Remove `sp` package dependencies
 

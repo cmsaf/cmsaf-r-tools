@@ -92,8 +92,8 @@ Other selection and removal functions:
 \code{\link{sellonlatbox}()},
 \code{\link{selmon}()},
 \code{\link{selperiod}()},
-\code{\link{selpoint.multi}()},
 \code{\link{selpoint}()},
+\code{\link{selpoint.multi}()},
 \code{\link{seltime}()},
 \code{\link{selyear}()}
 }

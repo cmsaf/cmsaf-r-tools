@@ -36,16 +36,29 @@ add_grid_info <- function(infile, auxfile, outfile, overwrite = FALSE, verbose =
     stopifnot(file.copy(infile, outfile, overwrite = overwrite))
     file_to_change <- outfile
   }
+  
+  ### check if georef variable is available
+  goc <- NULL
+  nc_1 <- ncdf4::nc_open(infile)
+    if ("georef_offset_corrected" %in% names(nc_1$var)) {
+      goc <- ncdf4::ncvar_get(nc_1, "georef_offset_corrected")
+      goc <- goc + 1
+    }
+  ncdf4::nc_close(nc_1)
 
   # Get data from aux file.
   nc_aux <- nc_open(auxfile)
+    lon <- ncvar_get(nc_aux, "lon")  #TODO be more resistant to different spellings
+    if (!is.null(goc) && !is.na(dim(lon)[3])) {
+      if (dim(lon)[3] > 1) lon <- lon[,,goc]
+    }
+    lon_list <- nc_aux$var[["lon"]]
 
-
-  lon <- ncvar_get(nc_aux, "lon")  #TODO be more resistant to different spellings
-  lon_list <- nc_aux$var[["lon"]]
-
-  lat <- ncvar_get(nc_aux, "lat")
-  lat_list <- nc_aux$var[["lat"]]
+    lat <- ncvar_get(nc_aux, "lat")
+    if (!is.null(goc) && !is.na(dim(lat)[3])) {
+      if (dim(lat)[3] > 1) lat <- lat[,,goc]
+    }
+    lat_list <- nc_aux$var[["lat"]]
   nc_close(nc_aux)
 
   # Add variables to existing file.
@@ -69,7 +82,7 @@ add_grid_info <- function(infile, auxfile, outfile, overwrite = FALSE, verbose =
                        longname = lon_list$longname,
                        prec = lon_list$prec,
                        compression = lon_list$compression,
-                       chunksizes = lon_list$chunksizes
+                       chunksizes = lon_list$chunksizes[1:2]
   )
   lat_new <- ncvar_def(name = lat_list$name,
                        units = lat_list$units,
@@ -78,7 +91,7 @@ add_grid_info <- function(infile, auxfile, outfile, overwrite = FALSE, verbose =
                        longname = lat_list$longname,
                        prec = lat_list$prec,
                        compression = lat_list$compression,
-                       chunksizes = lat_list$chunksizes
+                       chunksizes = lat_list$chunksizes[1:2]
   )
   nc <- ncvar_add(nc, lon_new)
   ncvar_put(nc, lon_list$name, lon)

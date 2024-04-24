@@ -1,5 +1,5 @@
 Package: cmsaf
-Version: 3.5.0
+Version: 3.5.1
 Title: A Toolbox for CM SAF NetCDF Data
 Authors@R: 
     c(person(given = "Steffen",
@@ -53,5 +53,5 @@ Suggests: rworldxtra (>= 1.01), spelling (>= 2.1), testthat (>= 2.3)
 RoxygenNote: 7.2.3
 Encoding: UTF-8
 Language: en-US
-Packaged: 2023-09-06 12:34:00 UTC; SK
+Packaged: 2024-04-03 12:34:00 UTC; SK
 Maintainer: Steffen Kothe <Steffen.Kothe@dwd.de>

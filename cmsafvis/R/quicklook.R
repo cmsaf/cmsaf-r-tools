@@ -449,10 +449,20 @@ quicklook <- function(config,
     lat_min <- min(ncdf4::ncvar_get(nc, latvar), na.rm = TRUE)
     lat_max <- max(ncdf4::ncvar_get(nc, latvar), na.rm = TRUE)
     
-    dlon <- ncdf4::ncvar_get(nc, lonvar)[2] - ncdf4::ncvar_get(nc, lonvar)[1]
-    dlat <- ncdf4::ncvar_get(nc, latvar)[2] - ncdf4::ncvar_get(nc, latvar)[1]
+    dlon <- round(ncdf4::ncvar_get(nc, lonvar)[2] - ncdf4::ncvar_get(nc, lonvar)[1], digits = 2)
+    dlat <- round(ncdf4::ncvar_get(nc, latvar)[2] - ncdf4::ncvar_get(nc, latvar)[1], digits = 2)
+    
+    lond <- ncdf4::ncvar_get(nc, lonvar)
+    latd <- ncdf4::ncvar_get(nc, latvar)
+
+    lonv  <- as.vector(lond)
+    latv  <- as.vector(latd)
+    lonv  <- seq(min(lonv), max(lonv), length.out = length(lonv))
+    latv  <- seq(min(latv), max(latv), length.out = length(latv))
   } else {
-    stop("unable to get a lon / lat reference")
+      if (is.null(auxf) & area != "NP" & area != "SP") {
+        stop("unable to get a lon / lat reference")
+      }
   }
   
   if (ncdf4::ncatt_get(nc, 0, "geospatial_lon_max")$hasatt) {
@@ -474,7 +484,7 @@ quicklook <- function(config,
     lond <- ncdf4::ncvar_get(nc, lonvar)
     latd <- ncdf4::ncvar_get(nc, latvar)
   }
-  
+
   # get time info for all slots
   date.time   <- ncdf4::ncvar_get(nc,"time") 
   t_unit      <- ncdf4::ncatt_get(nc,"time","units")$value
@@ -730,10 +740,13 @@ quicklook <- function(config,
             logzero <- TRUE
             ticks <- get_breaks(tick_lim)
             ticks_labs <- ticks 
-            zeroval <- 0.5 * minval
-            if (ticks[1] < minval || !is.na(logmin[j])) {
+            zeroval <- (0 + minval) / 2
+            if (ticks[1] < minval) {
               zeroval <- ticks[1]
               ticks_labs[1] <- "0"
+            } else if (!is.na(logmin[j])) {
+                ticks <- append(zeroval, ticks)
+                ticks_labs <- append("0", ticks_labs)
             } else {
                 zeroval <- ticks[1] - (0.9 * ticks[1])
                 ticks <- append(zeroval, ticks)
@@ -741,11 +754,7 @@ quicklook <- function(config,
             }
             
             # adjust plot_lim
-            if (!is.na(logmin[j])){
-              plot_lim[j,1] <- logmin[j]
-            } else {
-              plot_lim[j,1] <- zeroval
-            }
+            plot_lim[j,1] <- zeroval
             
           } else {
               ticks <- get_breaks(plot_lim[j,])
@@ -856,7 +865,7 @@ quicklook <- function(config,
           }
         }
       }
-
+      
       # Polar Projection Plot
       if (area == "NP" || area == "SP") {
 
@@ -1125,10 +1134,8 @@ quicklook <- function(config,
               lwd = 1
             )
           } else {
-              graphics::image((lon_min + (dlon / 2)):(lon_max - (dlon / 2)),
-                            (lat_min + (dlat / 2)) :(lat_max - (dlat / 2)),
-                            outer((lon_min + (dlon / 2)):(lon_max - (dlon / 2)),
-                                  (lat_min + (dlat / 2)):(lat_max - (dlat / 2)),"+"),
+            graphics::image(lonv, latv,
+                            outer(lonv, latv, "+"),
                             main = "",
                             xlim = c(lon_min, lon_max),
                             ylim = c(lat_min, lat_max),
@@ -1172,10 +1179,10 @@ quicklook <- function(config,
          } else {
            if (lon_max >= 359) {
              maps::map("world2", fill = TRUE, border = NA, xlim = c(lon_min, lon_max), 
-                       col = "gray75", ylim = c(lat_min, lat_max), add = TRUE)
+                       col = "gray75", ylim = c(lat_min, lat_max), lforce = "e", add = TRUE)
            } else {
              maps::map("world", fill = TRUE, border = NA, xlim = c(lon_min, lon_max),
-                       col = "gray75", ylim = c(lat_min, lat_max), add = TRUE)
+                       col = "gray75", ylim = c(lat_min, lat_max), lforce = "e", add = TRUE)
            }
          }
         
@@ -1198,11 +1205,15 @@ quicklook <- function(config,
           }
           datav[datav < plot_lim[j,1]] <- plot_lim[j,1]
         }
-        # UTH data with 0 to 360 grid were plotted wrong,
+         
+        # Get subset of raster stack, which contains data to plot
+         plotdata <- raster::subset(stacks[[j]], slot_i)
+        
+         # UTH data with 0 to 360 grid were plotted wrong,
         # but the solution on Windows did not work on Linux
         if (ind360) {
         #  raster::image(raster::rotate(stacks[[j]]),
-            raster::image(stacks[[j]] * scalef[j], y = slot_i,
+            raster::image(plotdata * scalef[j],
                         main = "",
                         xlim = c(lon_min, lon_max),
                         ylim = c(lat_min, lat_max),
@@ -1218,16 +1229,7 @@ quicklook <- function(config,
           )
         } else {
             if (logsc[j] && !remap_q) {
-              
-              nc    <- ncdf4::nc_open(ref_file)
-                lond <- ncdf4::ncvar_get(nc, lonvar)
-                latd <- ncdf4::ncvar_get(nc, latvar)
-              ncdf4::nc_close(nc)
-              
-              lonv  <- as.vector(lond)
-              latv  <- as.vector(latd)
-              lonv  <- seq(min(lonv), max(lonv), length.out = length(lonv))
-              latv  <- seq(min(latv), max(latv), length.out = length(latv))
+
               rotate <- function(x) t(apply(x, 2, rev))
               
               if (!exists("datav")){
@@ -1237,7 +1239,7 @@ quicklook <- function(config,
               # For log-scale values below or equal 0 are not allowed 
               if (logzero) {
                 if (!is.na(logmin[j])) {
-                  datav[datav <= logmin[j]] <- logmin[j]
+                  datav[datav >= 0 & datav < logmin[j]] <- zeroval
                 } else {
                     datav[datav <= 0] <- zeroval
                 }
@@ -1326,7 +1328,7 @@ quicklook <- function(config,
                           )
                       }
                     } else {
-                        raster::image(stacks[[j]] * scalef[j], y = slot_i,
+                        raster::image(plotdata * scalef[j],
                                     main = "",
                                     xlim = c(lon_min, lon_max),
                                     ylim = c(lat_min, lat_max),
@@ -1380,10 +1382,10 @@ quicklook <- function(config,
         } else {
             if (lon_max >= 359) {
               maps::map("world2", interior = FALSE, xlim = c(lon_min, lon_max), 
-                        col = "gray20", ylim = c(lat_min, lat_max), add = TRUE)
+                        col = "gray20", ylim = c(lat_min, lat_max), lforce = "e", add = TRUE)
             } else {
                 maps::map("world", interior = FALSE, xlim = c(lon_min, lon_max), 
-                          col = "gray20", ylim = c(lat_min, lat_max), add = TRUE)
+                          col = "gray20", ylim = c(lat_min, lat_max), lforce = "e", add = TRUE)
             }
         }
        }
@@ -1453,11 +1455,16 @@ quicklook <- function(config,
       }
       
       # plot legend
+      
+      # Get subset of raster stack, which contains data to plot
+      if (area == "NP" | area == "SP") {
+        plotdata <- raster::subset(stacks[[j]], slot_i)
+      }
 
       if (legends[j]) {
         if (logsc[j]) {
           if (logzero) {
-            raster::plot(raster::calc(stacks[[j]], fun=log) * scalef[j], y = slot_i,
+            raster::plot(raster::calc(plotdata, fun=log) * scalef[j],
                          main = "",
                          axes = FALSE,
                          xlab = "",
@@ -1530,7 +1537,7 @@ quicklook <- function(config,
             labstep <- (breaks[2] - breaks[1]) / 2
             labat <- seq(breaks[1]+labstep, breaks[length(breaks)]-labstep, length.out = length(tick_lab[[j]]))
             graphics::par(cex=1.0)
-            raster::plot(stacks[[j]] * scalef[j], y = slot_i,
+            raster::plot(plotdata * scalef[j],
                        main = "",
                        axes = FALSE,
                        xlab = "",
@@ -1567,7 +1574,7 @@ quicklook <- function(config,
                                  lowerTriangle = tridown[j],
                                  add = TRUE)
                
-               raster::plot(stacks[[j]] * scalef[j], y = slot_i,
+               raster::plot(plotdata * scalef[j],
                             main = "",
                             axes = FALSE,
                             xlab = "",
@@ -1586,7 +1593,7 @@ quicklook <- function(config,
                             col = col,
                             add = TRUE)
              } else {
-                 raster::plot(stacks[[j]] * scalef[j], y = slot_i,
+                 raster::plot(plotdata * scalef[j],
                             main = "",
                             axes = FALSE,
                             xlab = "",
@@ -1639,6 +1646,10 @@ quicklook <- function(config,
       )
     }
     grDevices::dev.off()
+    if (exists("stacks")) rm(stacks)
+    if (exists("plotfile")) rm(plotfile)
+    if (exists("datav")) rm(datav)
+    gc()
   }
   # Clean up 
   if (file.exists("Rplots.pdf")) {

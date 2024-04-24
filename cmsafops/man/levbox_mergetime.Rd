@@ -122,6 +122,7 @@ Other data manipulation functions:
 \code{\link{add_grid_info}()},
 \code{\link{box_mergetime}()},
 \code{\link{cmsaf.transform.coordinate.system}()},
+\code{\link{map_regular}()},
 \code{\link{remap}()}
 }
 \concept{data manipulation functions}

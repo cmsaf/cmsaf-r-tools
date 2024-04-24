@@ -53,6 +53,7 @@ Other data manipulation functions:
 \code{\link{box_mergetime}()},
 \code{\link{cmsaf.transform.coordinate.system}()},
 \code{\link{levbox_mergetime}()},
+\code{\link{map_regular}()},
 \code{\link{remap}()}
 }
 \concept{data manipulation functions}

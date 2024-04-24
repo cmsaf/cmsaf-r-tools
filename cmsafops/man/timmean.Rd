@@ -93,7 +93,7 @@ Other temporal operators:
 \code{\link{timpctl}()},
 \code{\link{timsd}()},
 \code{\link{timsum}()},
-\code{\link{trend_advanced}()},
-\code{\link{trend}()}
+\code{\link{trend}()},
+\code{\link{trend_advanced}()}
 }
 \concept{temporal operators}

@@ -80,14 +80,14 @@ unlink(c(file.path(tempdir(),"CMSAF_example_file.nc"),
 }
 \seealso{
 Other mathematical operators: 
-\code{\link{cmsaf.addc}()},
 \code{\link{cmsaf.add}()},
-\code{\link{cmsaf.divc}()},
+\code{\link{cmsaf.addc}()},
 \code{\link{cmsaf.div}()},
-\code{\link{cmsaf.mulc}()},
+\code{\link{cmsaf.divc}()},
 \code{\link{cmsaf.mul}()},
-\code{\link{cmsaf.subc}()},
+\code{\link{cmsaf.mulc}()},
 \code{\link{cmsaf.sub}()},
+\code{\link{cmsaf.subc}()},
 \code{\link{divdpm}()},
 \code{\link{muldpm}()}
 }

@@ -1,8 +1,10 @@
 # Changelog for cmsafops package
 
 ## 1.4.0
-- New operator: ymonmedian
-- Improve time sorting in cmsaf.cat
+- New operator: `ymonmedian`
+- Improve time sorting in `cmsaf.cat`
+- New operator: `map_regular`
+- Add `dxy_factor` to `map_regular` and `remap`
 
 ## 1.3.0
 - Updates due to retiring packages
