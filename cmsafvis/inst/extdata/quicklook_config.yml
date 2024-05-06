@@ -504,7 +504,7 @@
         colorscale: Blues
         logo: black
     CFCdm0021000101MA:
-      Dataset: Landflux
+      Dataset: COMET-2
       CFC:
         limits:
           min: 0
@@ -512,6 +512,7 @@
         legend: TRUE
         colorscale: Blues
         logo: black
+        var_name: Cloud Fractional Cover
     CFCdm004SVMSG01MA:
       Dataset: CLAAS-3
       CFC:
@@ -531,7 +532,7 @@
         colorscale: Blues
         logo: black
     CFChm0021000101MA:
-      Dataset: Landflux
+      Dataset: COMET-2
       CFC:
         limits:
           min: 0
@@ -539,6 +540,7 @@
         legend: TRUE
         colorscale: Blues
         logo: black
+        var_name: Cloud Fractional Cover
     CFCdd004SVMSG01MA:
       Dataset: CLAAS-3
       CFC_DMDC:
@@ -578,7 +580,7 @@
         colorscale: Blues
         logo: black
     CFCmm0021000101MA:
-      Dataset: Landflux
+      Dataset: COMET-2
       CFC:
         limits:
           min: 20
@@ -588,6 +590,7 @@
         logo: black
         tri_up: TRUE
         tri_down: TRUE
+        var_name: Cloud Fractional Cover
     CFCmd004SVMSG01MA:
       Dataset: CLAAS-3
       CFC_MMDC:
@@ -2435,7 +2438,7 @@
         logo: black
   LEH:
     LEHdm0011000101MA:
-      Dataset: Landflux
+      Dataset: LANDFLUX
       ET:
         limits:
           min: 0
@@ -2463,7 +2466,7 @@
         logo: black
         tri_down: TRUE
     LEHhm0011000101MA:
-      Dataset: Landflux
+      Dataset: LANDFLUX
       ET:
         limits:
           min: 0
@@ -2493,7 +2496,7 @@
         logo: black
         tri_down: TRUE
     LEHmm0011000101MA:
-      Dataset: Landflux
+      Dataset: LANDFLUX
       ET:
         limits:
           min: 0
@@ -2533,7 +2536,7 @@
         logo: black
   LTP:
     LTPin0021000101MA:
-      Dataset: Landflux
+      Dataset: LANDFLUX
       LST_PMW:
         limits:
           min: 220
@@ -2542,7 +2545,7 @@
         colorscale: heat 
         logo: black
     LTPmd0021000101MA:
-      Dataset: Landflux
+      Dataset: LANDFLUX
       LST_PMW:
         limits:
           min: 220
@@ -3604,7 +3607,7 @@
         colorscale: Blue-Red
         logo: black
     SRBdm0011000101MA:
-      Dataset: Landflux
+      Dataset: LANDFLUX
       SRB:
         limits:
           min: 0
@@ -3614,7 +3617,7 @@
         logo: black
         tri_down: TRUE
     SRBhm0011000101MA:
-      Dataset: Landflux
+      Dataset: LANDFLUX
       SRB:
         limits:
           min: 0
@@ -3624,7 +3627,7 @@
         logo: black
         tri_down: TRUE
     SRBmm0011000101MA:
-      Dataset: Landflux
+      Dataset: LANDFLUX
       SRB:
         limits:
           min: 0

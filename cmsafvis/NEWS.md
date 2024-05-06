@@ -1,5 +1,9 @@
 # Changelog for cmsafvis package
 
+## 1.2.7
+
+- Correction in `quicklooks` for md and hm product dates
+
 ## 1.2.6
 
 - Bug fix for `quicklooks` due to incorrect background plotting

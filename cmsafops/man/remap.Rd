@@ -10,6 +10,7 @@ remap(
   infile2,
   outfile,
   method = "nearest",
+  dxy_factor = 1,
   nc34 = 4,
   overwrite = FALSE,
   verbose = FALSE,
@@ -37,6 +38,9 @@ Options are "bilinear" for bilinear interpolation,
 and "nearest" for nearest-neighbor interpolation.
 Default is "nearest".}
 
+\item{dxy_factor}{In case of nearest neighbor all grid points with distance > (dxy * dxy_factor)
+are set to NA (numeric). Default is 1.}
+
 \item{nc34}{NetCDF version of output file. If \code{nc34 = 3} the output file will be
 in NetCDFv3 format (numeric). Default output is NetCDFv4.}
 
@@ -49,9 +53,6 @@ object of class \code{ncdf4} (as returned from \code{ncdf4::nc_open}).}
 
 \item{nc2}{Alternatively to \code{infile2} you can specify the input as an
 object of class \code{ncdf4} (as returned from \code{ncdf4::nc_open}).}
-
-\item{dxy_factor}{In case of nearest neighbor all grid points with distance > (dxy * dxy_factor)
-are set to NA (numeric). Default is 1.}
 }
 \value{
 A NetCDF file including the interpolated data of infile1 on the grid of

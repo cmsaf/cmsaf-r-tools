@@ -81,8 +81,7 @@ add_grid_info <- function(infile, auxfile, outfile, overwrite = FALSE, verbose =
                        missval = lon_list$missval,
                        longname = lon_list$longname,
                        prec = lon_list$prec,
-                       compression = lon_list$compression,
-                       chunksizes = lon_list$chunksizes[1:2]
+                       compression = lon_list$compression
   )
   lat_new <- ncvar_def(name = lat_list$name,
                        units = lat_list$units,
@@ -90,8 +89,7 @@ add_grid_info <- function(infile, auxfile, outfile, overwrite = FALSE, verbose =
                        missval = lat_list$missval,
                        longname = lat_list$longname,
                        prec = lat_list$prec,
-                       compression = lat_list$compression,
-                       chunksizes = lat_list$chunksizes[1:2]
+                       compression = lat_list$compression
   )
   nc <- ncvar_add(nc, lon_new)
   ncvar_put(nc, lon_list$name, lon)

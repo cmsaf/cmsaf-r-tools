@@ -39,7 +39,11 @@ getTarList <- function(path_to_tar, tar_flag = 1, includeClaasAux = FALSE) {
   }
   # Exlude claas aux file if not wanted.
   if (!includeClaasAux) {
-    tarlist <- tarlist[tarlist != "CM_SAF_CLAAS3_L2_AUX.nc"]
+    claas_aux <- "CLAAS_AUX_FILE"
+    if ("CM_SAF_CLAAS2_L2_AUX.nc" %in% tarlist) (claas_aux <- "CM_SAF_CLAAS2_L2_AUX.nc")
+    if ("CM_SAF_CLAAS3_L2_AUX.nc" %in% tarlist) (claas_aux <- "CM_SAF_CLAAS3_L2_AUX.nc")
+    tarlist <- tarlist[tarlist != claas_aux
+                       & tarlist != claas_aux]
   }
 
   tarlist <- sort(tarlist)
@@ -49,7 +53,7 @@ getTarList <- function(path_to_tar, tar_flag = 1, includeClaasAux = FALSE) {
 
 # Get CLAAS AUX FLAG
 getClaasAuxFlag <- function(tarlist) {
-  return("CM_SAF_CLAAS3_L2_AUX.nc" %in% tarlist)
+  return(claas_aux %in% tarlist)
 }
 
 # A function to extract ALL dates from a tar file.
@@ -1915,7 +1919,7 @@ function(input, output, session) {
     # Get claas_flag and strop from tarlist if needed.
     claas_flag <- getClaasAuxFlag(tarlist_all)
     if (claas_flag) {
-      tarlist_all <- tarlist_all[tarlist_all != "CM_SAF_CLAAS3_L2_AUX.nc"]
+      tarlist_all <- tarlist_all[tarlist_all != claas_aux]
     }
 
     if (tar_flag == 0) {
@@ -1940,8 +1944,8 @@ function(input, output, session) {
         tarlist <- utils::untar(file, list = TRUE)
       }
       
-      if ("CM_SAF_CLAAS3_L2_AUX.nc" %in% tarlist) {
-        tarlist <- subset(tarlist, !(tarlist %in% c("CM_SAF_CLAAS3_L2_AUX.nc")))
+      if (claas_aux %in% tarlist) {
+        tarlist <- subset(tarlist, !(tarlist %in% c(claas_aux)))
         claas_flag <- 1
       }
       tarlist <- sort(tarlist)
@@ -2049,13 +2053,13 @@ function(input, output, session) {
       if (tar_flag == 1) {
         utils::untar(
           path_to_tar,
-          files = "CM_SAF_CLAAS3_L2_AUX.nc",
+          files = claas_aux,
           exdir = ordpath,
           tar = "internal"
         )
       } else {
         utils::untar(path_to_tar,
-                     files = "CM_SAF_CLAAS3_L2_AUX.nc",
+                     files = claas_aux,
                      exdir = ordpath)
       }
     }
@@ -2300,7 +2304,7 @@ function(input, output, session) {
 
     if (!file_info$has_lon_lat) {
       if (claas_flag) {
-        auxFilePath(file.path(ordPath, "CM_SAF_CLAAS3_L2_AUX.nc"))
+        auxFilePath(file.path(ordPath, claas_aux))
         cmsafops::add_grid_info(infile, auxFilePath(), outfile = NULL, overwrite = TRUE)
       } else {
         grid_info <- cmsaf:::get_grid(infile)
@@ -2337,7 +2341,13 @@ function(input, output, session) {
       }
 
     }
-
+    
+    if (!is.null(globalAuxFilePath())) {
+      if (file.exists(globalAuxFilePath())) {
+        cmsafops::add_grid_info(infile, globalAuxFilePath(), outfile = NULL, overwrite = TRUE)
+      }
+    }
+    
     userOptions <- getUserOptions(infile, claas_flag)
 
     # Set max_level
@@ -2466,7 +2476,7 @@ function(input, output, session) {
       # Regrid first file
       infile  <- filelist[1]
       infile  <- file.path(ordDir, infile)
-      auxfile <- file.path(ordDir, "CM_SAF_CLAAS3_L2_AUX.nc")
+      auxfile <- file.path(ordDir, claas_aux)
       dxy <- 0.05     # Target grid resolution
       goc <- NULL
 

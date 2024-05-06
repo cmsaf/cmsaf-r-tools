@@ -630,7 +630,7 @@ quicklook <- function(config,
       file_time <- format(file_time, "%Y-%m-%d %R")
     if (!is.null(file_info$statistics)){
       if (file_info$statistics == "mean diurnal cycle")
-        file_time <- format(file_time, "%Y-%m-%d %R")
+        file_time <- format(file_time, "%Y-%m %R")
     }
     if (!is.null(file_info$statistics)){
       if (file_info$time_interval == "monthly" & file_info$statistics != "mean diurnal cycle")

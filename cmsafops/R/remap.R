@@ -91,7 +91,7 @@
 #'unlink(c(file.path(tempdir(),"CMSAF_example_file_1.nc"), 
 #'  file.path(tempdir(),"CMSAF_example_file_2.nc"),
 #'  file.path(tempdir(),"CMSAF_example_file_remap.nc")))
-remap <- function(var, infile1, infile2, outfile, method = "nearest", nc34 = 4,
+remap <- function(var, infile1, infile2, outfile, method = "nearest", dxy_factor = 1, nc34 = 4,
                   overwrite = FALSE, verbose = FALSE, nc1 = NULL, nc2 = NULL) {
   calc_time_start <- Sys.time()
 
