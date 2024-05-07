@@ -3,7 +3,7 @@
 # You should not use this R-script on its own!
 #
 # Have fun with the CM SAF R TOOLBOX!
-#                                              (Steffen Kothe / CM SAF 2024-04-03)
+#                                              (Steffen Kothe / CM SAF 2024-05-07)
 #__________________________________________________________________________________
 
 # Function to compute first of month
@@ -11,6 +11,15 @@ firstOfMonth <- function(x) {
   x <- as.POSIXlt(x)
   x$mday <- 1
   as.Date(x)
+}
+
+getClaasAux <- function(tar_list){
+  # Get CLAAS auxfile name
+  claas_aux <<- "CLAAS_AUX_FILE"
+  if ("CM_SAF_CLAAS2_L2_AUX.nc" %in% tar_list) (claas_aux <<- "CM_SAF_CLAAS2_L2_AUX.nc")
+  if ("CM_SAF_CLAAS3_L2_AUX.nc" %in% tar_list) (claas_aux <<- "CM_SAF_CLAAS3_L2_AUX.nc")
+  
+  return(claas_aux)
 }
 
 # Get tarlist sorted by name.
@@ -37,11 +46,10 @@ getTarList <- function(path_to_tar, tar_flag = 1, includeClaasAux = FALSE) {
       tarlist <- append(tarlist, utils::untar(file, list = TRUE))
     }
   }
+ 
+  claas_aux <- getClaasAux(tarlist)
   # Exlude claas aux file if not wanted.
   if (!includeClaasAux) {
-    claas_aux <- "CLAAS_AUX_FILE"
-    if ("CM_SAF_CLAAS2_L2_AUX.nc" %in% tarlist) (claas_aux <- "CM_SAF_CLAAS2_L2_AUX.nc")
-    if ("CM_SAF_CLAAS3_L2_AUX.nc" %in% tarlist) (claas_aux <- "CM_SAF_CLAAS3_L2_AUX.nc")
     tarlist <- tarlist[tarlist != claas_aux
                        & tarlist != claas_aux]
   }
@@ -1915,7 +1923,7 @@ function(input, output, session) {
     # IN FACT: WE ARE OMITTING TIMESTEP VALUE CAUSE WE DON'T APPEAR TO NEED IT.
     dates <- extractAllDates(path_to_tar, tar_flag = tar_flag)
     dates <- dates$allDates
-
+    
     # Get claas_flag and strop from tarlist if needed.
     claas_flag <- getClaasAuxFlag(tarlist_all)
     if (claas_flag) {
@@ -7456,12 +7464,12 @@ function(input, output, session) {
     cat("This tool helps you to visualize 1D-timeseries and 2D-maps.", "\n")
     cat("\n")
     cat("This version ('Of Course I Still Love You') was tested with the cmsaf", "\n")
-    cat("R-package in version 3.5.0.", "\n")
+    cat("R-package in version 3.5.1.", "\n")
     cat("\n")
     cat("Suggestions for improvements and praise for the developers", "\n")
     cat("can be send to contact.cmsaf@dwd.de.", "\n")
     cat("\n")
-    cat("                              - Steffen Kothe - 2023-09-14 -", "\n")
+    cat("                              - Steffen Kothe - 2024-05-07 -", "\n")
     cat("\n")
     cat("\n")
   })
