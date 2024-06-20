@@ -13,6 +13,10 @@ plot_abs_map <- function(variable,
                          output_format,
                          min_value,
                          max_value,
+                         lon_min,
+                         lon_max,
+                         lat_min,
+                         lat_max,
 						             color_pal,
 						             relative,
                          nbreaks,
@@ -85,6 +89,13 @@ plot_abs_map <- function(variable,
   
   nx <- length(lon)
   ny <- length(lat)
+  
+  if (is.null(lon_min)) {
+    lon_min <- min(lon, na.rm =TRUE)
+    lat_min <- min(lat, na.rm =TRUE)
+    lon_max <- max(lon, na.rm =TRUE)
+    lat_max <- max(lat, na.rm =TRUE)
+  }
 
   if (is_leap_year(year) && finish_doy > 60 && start_doy < 60) {
     # We remove the leap year date in this case so we actually have one day less.
@@ -103,10 +114,6 @@ plot_abs_map <- function(variable,
     field_for_setup <- field_source[, , 1:duration]
     field_for_setup_last <- field_source[, , duration]
   }
-
-
-  nx <- length(lon)
-  ny <- length(lat)
 
   # define colors
   bwr_col <-
@@ -259,8 +266,12 @@ plot_abs_map <- function(variable,
   coldiff <- max_value - min_value
 
   # pic size
-  pic.width <-  710
   pic.height <- 830
+  pic.width <-  round(((nx / ny) * pic.height) / 0.9)
+  if (pic.width < 710) {
+    pic.width <- 710
+    pic.height <-  round((pic.width / (nx / ny)) * 0.9)
+  }
 
   if (country_code == "TOT") {
     pic.width <-  830
@@ -388,7 +399,10 @@ plot_abs_map <- function(variable,
       nlevel = ncol - 1,
       axis.args = list(at = at.ticks, labels = names.ticks),
       legend.mar = lg_mar,
-      cex.main = 1.1
+      cex.main = 1.1,
+      xlim = c(lon_min, lon_max),
+      ylim = c(lat_min, lat_max),
+      asp = 1
     )
 
     # State and/or country borders
@@ -537,7 +551,10 @@ plot_abs_map <- function(variable,
             nlevel = ncol - 1,
             legend.mar = lg_mar,
             axis.args = list(at = at.ticks, labels = names.ticks),
-            cex.main = 1.1
+            cex.main = 1.1,
+            xlim = c(lon_min, lon_max),
+            ylim = c(lat_min, lat_max),
+            asp = 1
           )
 
           # State and/or country borders
@@ -684,7 +701,10 @@ plot_abs_map <- function(variable,
               nlevel = ncol - 1,
               legend.mar = lg_mar,
               axis.args = list(at = at.ticks, labels = names.ticks),
-              cex.main = 1.1
+              cex.main = 1.1,
+              xlim = c(lon_min, lon_max),
+              ylim = c(lat_min, lat_max),
+              asp = 1
             )
 
             # State and/or country borders

@@ -1,5 +1,12 @@
 # Changelog for cmsafvis package
 
+## 1.2.8
+
+- Bug fix for `quicklooks` for time format of hourly data
+- Bug fix in `create_country_mask` to avoid issues with country maps in `monitor_climate` 
+- For anomaly plots lon/lat values outside the given limits are allowed now to
+  have better influence on the plotting region
+
 ## 1.2.7
 
 - Correction in `quicklooks` for md and hm product dates

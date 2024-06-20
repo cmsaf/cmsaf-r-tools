@@ -168,7 +168,7 @@ anomaly_map <- function(config = NULL,
     nc = nc
     )
   }
-  
+
 if (is_country(country_code)) {
     mask_file <- create_country_mask(
       infile = finalInfile,
@@ -238,6 +238,10 @@ if (is_country(country_code)) {
       output_format = output_format,
       min_value = min_value,
       max_value = max_value,
+      lon_min = lon_min,
+      lon_max = lon_max,
+      lat_min = lat_min,
+      lat_max = lat_max,
 	    color_pal = color_pal,
 	    relative = relative,
       nbreaks = nbreaks,
@@ -267,6 +271,10 @@ if (is_country(country_code)) {
       output_format = output_format,
       min_value = min_value,
       max_value = max_value,
+      lon_min = lon_min,
+      lon_max = lon_max,
+      lat_min = lat_min,
+      lat_max = lat_max,
 	    color_pal = color_pal,
       relative = relative,
       nbreaks = nbreaks,

@@ -626,7 +626,7 @@ quicklook <- function(config,
       slot_i <- slots[1]
     }
     
-    if (file_info$time_interval == "instantaneous")
+    if (file_info$time_interval == "instantaneous" | file_info$time_interval == "hourly")
       file_time <- format(file_time, "%Y-%m-%d %R")
     if (!is.null(file_info$statistics)){
       if (file_info$statistics == "mean diurnal cycle")

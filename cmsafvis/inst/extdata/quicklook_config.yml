@@ -591,6 +591,19 @@
         tri_up: TRUE
         tri_down: TRUE
         var_name: Cloud Fractional Cover
+    CFCmd0021000101MA:
+      Dataset: COMET-2
+      CFC:
+        limits:
+          min: 20
+          max: 80
+        legend: TRUE
+        colorscale: Blues
+        logo: black
+        tri_up: TRUE
+        tri_down: TRUE
+        var_name: Cloud Fractional Cover
+        slot: 13
     CFCmd004SVMSG01MA:
       Dataset: CLAAS-3
       CFC_MMDC:
@@ -2489,12 +2502,47 @@
         tri_down: TRUE
       H:
         limits:
+          min: -500
+          max: 500
+        legend: TRUE
+        colorscale: Blue-Red 3
+        logo: black
+        tri_up: TRUE
+        tri_down: TRUE
+    LEHmd0011000101MA:
+      Dataset: LANDFLUX
+      ET:
+        limits:
+          min: 0
+          max: 20
+        legend: TRUE
+        colorscale: larry
+        invert_col: TRUE
+        logo: black
+        tri_up: TRUE
+        tri_down: TRUE
+        slot: 13
+      LE:
+        limits:
+          min: 0
+          max: 200
+        legend: TRUE
+        colorscale: larry
+        invert_col: TRUE
+        logo: black
+        tri_up: TRUE
+        tri_down: TRUE
+        slot: 13
+      H:
+        limits:
           min: -200
           max: 200
         legend: TRUE
         colorscale: Blue-Red 3
         logo: black
+        tri_up: TRUE
         tri_down: TRUE
+        slot: 13
     LEHmm0011000101MA:
       Dataset: LANDFLUX
       ET:
@@ -3626,6 +3674,18 @@
         colorscale: Blue-Red
         logo: black
         tri_down: TRUE
+    SRBmd0011000101MA:
+      Dataset: LANDFLUX
+      SRB:
+        limits:
+          min: 0
+          max: 600
+        legend: TRUE
+        colorscale: Blue-Red
+        logo: black
+        tri_up: TRUE
+        tri_down: TRUE
+        slot: 13
     SRBmm0011000101MA:
       Dataset: LANDFLUX
       SRB:
