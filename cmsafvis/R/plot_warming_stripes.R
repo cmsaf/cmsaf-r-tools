@@ -48,10 +48,10 @@ plot_warming_stripes <- function(variable,
   
   nBins = 10
   
-  minT = min(dataT$dum_dat)
-  maxT = max(dataT$dum_dat)
-  minY = min(dataT$date_info)
-  maxY = max(dataT$date_info)
+  minT = min(dataT$dum_dat, na.rm = TRUE)
+  maxT = max(dataT$dum_dat, na.rm = TRUE)
+  minY = min(dataT$date_info, na.rm = TRUE)
+  maxY = max(dataT$date_info, na.rm = TRUE)
   
   xlabel <- rep(NA, length(date_info_1))
   n <- round(seq(1, length(xlabel), length.out = 4))
@@ -267,6 +267,7 @@ plot_warming_stripes <- function(variable,
       graphics::rect(y-(diff_time/2), minT, y+(diff_time/2), maxT, col=lineCol, border=NA, lwd=0)
     }
   
+    dataT$dum_dat[is.na(dataT$dum_dat)] <- 0
     apply(dataT, 1, rectPlot)
   
     title(title, col.main = "white", cex.main = 2.0, line = 0.2, 
