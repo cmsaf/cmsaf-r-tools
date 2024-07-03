@@ -28,7 +28,7 @@ Depends: R (>= 4.0)
 Imports: assertthat (>= 0.2.1), cmsafops (>= 1.2.1), colorspace (>= 1.4), 
         countrycode (>= 1.1), fields (>= 10.3), mapproj (>= 1.2.7), 
         maps (>= 3.3.0), methods (>= 3.6), ncdf4 (>= 1.17), png (>= 0.1), 
-        progress (>= 1.2.2), raster (>= 3.0), sf (>= 1.0), terra (>= 1.7), 
+        progress (>= 1.2.2), raster (>= 3.0), sf (>= 1.0), sp (>= 2.1), 
         RColorBrewer, rasterVis, gridExtra, utils
 NeedsCompilation: no
 Repository: CRAN
@@ -38,5 +38,5 @@ Encoding: UTF-8
 Language: en-US
 Suggests: animation (>= 2.6), FNN (>= 1.1), rainfarmr (>= 0.1), rnaturalearth, 
         SearchTrees, spelling (>= 2.2), testthat (>= 2.3), yaml (>= 2.2)
-Packaged: 2024-06-17 12:30:00 UTC
+Packaged: 2024-07-03 12:30:00 UTC
 Maintainer: Steffen Kothe <Steffen.Kothe@dwd.de>

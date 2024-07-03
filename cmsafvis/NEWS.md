@@ -6,6 +6,7 @@
 - Bug fix in `create_country_mask` to avoid issues with country maps in `monitor_climate` 
 - For anomaly plots lon/lat values outside the given limits are allowed now to
   have better influence on the plotting region
+- Improved aspect ration for anomaly plots
 
 ## 1.2.7
 
