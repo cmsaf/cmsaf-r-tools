@@ -100,13 +100,32 @@ plot_abs_map <- function(variable,
     ahav(sqrt(hav(diff(lat)) + cos(lat[-n]) * cos(lat[-1]) * hav(diff(lon))))
   }
 
+  var_unit <- "-"
+  
   # input
   if (!is.null(nc)) opennc <- nc
   else opennc <- ncdf4::nc_open(infile)
-  field_source <- ncdf4::ncvar_get(opennc, variable)
-  lon <- ncdf4::ncvar_get(opennc, "lon")
-  lat <- ncdf4::ncvar_get(opennc, "lat")
+    field_source <- ncdf4::ncvar_get(opennc, variable)
+    lon <- ncdf4::ncvar_get(opennc, "lon")
+    lat <- ncdf4::ncvar_get(opennc, "lat")
+    var_unit  <- ncdf4::ncatt_get(opennc, variable, "units")$value
   if (is.null(nc)) ncdf4::nc_close(opennc)
+    
+    # Check if the unit should be replaced
+    if (grepl("(neu)", var_unit) || grepl("(new)", var_unit)) {
+      remove_substrings <- c("\\(neu\\)", "\\(new\\)")
+      # Remove (neu) or (new)
+      for (substring in remove_substrings) {
+        var_unit <- gsub(substring, "", var_unit)
+      }
+      # Trim any extra whitespace that may be left
+      var_unit <- trimws(var_unit)
+      
+      # Replace the old substring with the new substring
+      pattern <- "\\[.*?\\]"
+      # Replace the content within square brackets with the new content
+      units_text <- gsub(pattern, paste0("[", var_unit, "]"), units_text)
+    } 
   
   nx <- length(lon)
   ny <- length(lat)

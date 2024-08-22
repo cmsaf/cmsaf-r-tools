@@ -2,7 +2,7 @@
 plot_fieldmean <- function(variable,
                            infile,
                            infile2,
-						   infile3,
+						               infile3,
                            country_code,
                            climate_year_start,
                            climate_year_end,
@@ -112,8 +112,25 @@ plot_fieldmean <- function(variable,
     date_time <- as.Date(cmsafops::get_time(ncdf4::ncatt_get(id, "time", "units")$value, ncdf4::ncvar_get(id, "time")))
     firstyear <- format(min(date_time), "%Y")
     lastyear  <- format(max(date_time), "%Y")
-	lastyear  <- as.character(as.numeric(lastyear) - 1)
+	  lastyear  <- as.character(as.numeric(lastyear) - 1)
+	  var_unit  <- ncdf4::ncatt_get(id, variable, "units")$value
   ncdf4::nc_close(id)
+  
+  # Check if the unit should be replaced
+  if (grepl("(neu)", var_unit) || grepl("(new)", var_unit)) {
+    remove_substrings <- c("\\(neu\\)", "\\(new\\)")
+    # Remove (neu) or (new)
+    for (substring in remove_substrings) {
+      var_unit <- gsub(substring, "", var_unit)
+    }
+    # Trim any extra whitespace that may be left
+    var_unit <- trimws(var_unit)
+    
+    # Replace the old substring with the new substring
+    pattern <- "\\[.*?\\]"
+    # Replace the content within square brackets with the new content
+    ylab_text <- gsub(pattern, paste0("[", var_unit, "]"), ylab_text)
+  } 
 
   # read in netcdf data
   # read in annual mean

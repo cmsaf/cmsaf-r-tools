@@ -99,9 +99,10 @@ plot_fieldmean_and_map <- function(variable,
 
   # read in netcdf data
   nc_map <- ncdf4::nc_open(infile_map)
-  field_source <- ncdf4::ncvar_get(nc_map, variable)
-  lon <- ncdf4::ncvar_get(nc_map, "lon")
-  lat <- ncdf4::ncvar_get(nc_map, "lat")
+    field_source <- ncdf4::ncvar_get(nc_map, variable)
+    lon <- ncdf4::ncvar_get(nc_map, "lon")
+    lat <- ncdf4::ncvar_get(nc_map, "lat")
+    var_unit  <- ncdf4::ncatt_get(id, variable, "units")$value
   ncdf4::nc_close(nc_map)
 
   duration <- length(field_source[1, 1, ])
@@ -125,6 +126,22 @@ plot_fieldmean_and_map <- function(variable,
     "]"
   )
   ylab_text <- get_axis_label(variable, language)
+  
+  # Check if the unit should be replaced
+  if (grepl("(neu)", var_unit) || grepl("(new)", var_unit)) {
+    remove_substrings <- c("\\(neu\\)", "\\(new\\)")
+    # Remove (neu) or (new)
+    for (substring in remove_substrings) {
+      var_unit <- gsub(substring, "", var_unit)
+    }
+    # Trim any extra whitespace that may be left
+    var_unit <- trimws(var_unit)
+    
+    # Replace the old substring with the new substring
+    pattern <- "\\[.*?\\]"
+    # Replace the content within square brackets with the new content
+    ylab_text <- gsub(pattern, paste0("[", var_unit, "]"), ylab_text)
+  } 
 
   date_format_string <- ifelse(language == "deu", "%d.%m.%Y", "%Y-%m-%d")
 

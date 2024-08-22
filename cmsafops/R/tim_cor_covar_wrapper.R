@@ -112,18 +112,22 @@ tim_cor_covar_wrapper <- local({
           }
         })
       })
-      result_array <- array(numeric(),c(length(dimension_data_1$x),length(dimension_data_1$y),1)) 
-      for(i in 1:length(result)){
-        result_array[i] <- result[i]
+      
+      result_final <- array(numeric(), c(length(dimension_data_1$x), length(dimension_data_1$y)))
+      
+      for (j in 1:length(dimension_data_1$x)) {
+        for (k in 1:length(dimension_data_1$y)) {
+          index <- (j - 1) * length(dimension_data_1$y) + k
+          result_final[j, k] <- result[index]
+        }
       }
-      result_final <- aperm(result_array)
     }
     else {
       stop("The datasets do not have the same dimension. Make sure that the dimensions match. Use cmsaf.adjust.two.files first. ")
     }
     
-    result_final[is.na(result_final)] <- file_data_one$variable$attributes$missing_value
     file_data_one$variable$attributes$missing_value <- -999   # change value for missing values to -999
+    result_final[is.na(result_final)] <- file_data_one$variable$attributes$missing_value
     
     vars_data <- list(result = result_final, time_bounds = time_bnds)
     
