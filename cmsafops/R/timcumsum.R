@@ -142,8 +142,14 @@ timcumsum <- function(var,
                 dum_na[, 2] %in% mean_na[, 2])
       if (length(na_ind) > 0)
         dum_na <- dum_na[-na_ind,]
-      dum_na_timestep <- unique(dum_na[, 3])
-      dum_na_times <- dum_times[dum_na_timestep, ]
+        if (length(dum_na) == 3){
+          dum_na2 <- array(NA, dim = c(1,3))
+          dum_na2[1,] <- dum_na
+          dum_na <- dum_na2
+          rm(dum_na2)
+        }
+        dum_na_timestep <- unique(dum_na[, 3])
+        dum_na_times <- dum_times[dum_na_timestep, ]
       for (k in seq_along(dum_na_timestep)) {
         mo <- which(meantimes$month == dum_na_times$month[k])
         yr <- which(meantimes$year == dum_na_times$year[k])
@@ -159,7 +165,13 @@ timcumsum <- function(var,
                   dum_na[, 2] %in% ref_na[, 2])
         if (length(na_ind) > 0)
           dum_na <- dum_na[-na_ind,]
-        dum_na_timestep <- unique(dum_na[, 3])
+          if (length(dum_na) == 3){
+            dum_na2 <- array(NA, dim = c(1,3))
+            dum_na2[1,] <- dum_na
+            dum_na <- dum_na2
+            rm(dum_na2)
+          }
+          dum_na_timestep <- unique(dum_na[, 3])
         for (k in seq_along(dum_na_timestep)) {
           dum_dat[, , dum_na_timestep[k]] <-
             dum_dat[, , dum_na_timestep[k] - 1]
@@ -226,8 +238,14 @@ timcumsum <- function(var,
                   dum_na[, 2] %in% mean_na[, 2])
         if (length(na_ind) > 0)
           dum_na <- dum_na[-na_ind,]
-        dum_na_timestep <- unique(dum_na[, 3])
-        dum_na_times <- dum_times[dum_na_timestep, ]
+          if (length(dum_na) == 3){
+            dum_na2 <- array(NA, dim = c(1,3))
+            dum_na2[1,] <- dum_na
+            dum_na <- dum_na2
+            rm(dum_na2)
+          }
+          dum_na_timestep <- unique(dum_na[, 3])
+          dum_na_times <- dum_times[dum_na_timestep, ]
         for (k in seq_along(dum_na_timestep)) {
           mo <- which(meantimes$month == dum_na_times$month[k])
           yr <- which(meantimes$year == dum_na_times$year[k])
@@ -243,7 +261,13 @@ timcumsum <- function(var,
                     dum_na[, 2] %in% ref_na[, 2])
           if (length(na_ind) > 0)
             dum_na <- dum_na[-na_ind,]
-          dum_na_timestep <- unique(dum_na[, 3])
+            if (length(dum_na) == 3){
+              dum_na2 <- array(NA, dim = c(1,3))
+              dum_na2[1,] <- dum_na
+              dum_na <- dum_na2
+              rm(dum_na2)
+            }
+            dum_na_timestep <- unique(dum_na[, 3])
           for (k in seq_along(dum_na_timestep)) {
             dum_dat[, , dum_na_timestep[k]] <-
               dum_dat[, , dum_na_timestep[k] - 1]

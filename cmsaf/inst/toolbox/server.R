@@ -762,7 +762,7 @@ function(input, output, session) {
   # Updating the path to the tar file. (local)
   observeEvent(input$tarFileLocal, {
     shinyjs::disable("tarFileLocal")
-    res <- try(tar_path(file.choose(new = TRUE)))
+    res <- try(tar_path(file.choose(new = FALSE)))
     if (class(res) != "try-error") {
       #for (path in tar_path()) {
       if (!endsWith(tar_path(), ".tar")) {
@@ -779,7 +779,7 @@ function(input, output, session) {
   # prepare choose .nc-files button
   observeEvent(input$ncFileLocal, {
     shinyjs::disable("ncFileLocal")
-    res <- try(nc_path(file.choose(new = TRUE)))
+    res <- try(nc_path(file.choose(new = FALSE)))
     if (class(res) != "try-error") {
       if (!endsWith(nc_path(), ".nc")) {
         isolate(nc_path(""))
@@ -1247,7 +1247,7 @@ function(input, output, session) {
   observeEvent(input$ncFileLocal_analyze, {
     shinyjs::disable("ncFileLocal_analyze")
     shinyjs::disable("useOutputFile_analyze")
-    res <- try(nc_path_analyze(file.choose(new = TRUE)))
+    res <- try(nc_path_analyze(file.choose(new = FALSE)))
     isolate(nc_object_analyze(NULL))
     if (class(res) != "try-error") {
       if (!endsWith(nc_path_analyze(), ".nc")) {
@@ -1296,7 +1296,7 @@ function(input, output, session) {
   observeEvent(input$ncFileLocal_visualize, {
     shinyjs::disable("ncFileLocal_visualize")
     shinyjs::disable("useOutputFile_visualize")
-    res <- try(nc_path_visualize(file.choose(new = TRUE)))
+    res <- try(nc_path_visualize(file.choose(new = FALSE)))
     isolate(nc_object_visualize(NULL))
     if (class(res) != "try-error") {
       if (!endsWith(nc_path_visualize(), ".nc")) {
@@ -1341,7 +1341,7 @@ function(input, output, session) {
   # Updating path to shape file. (local)
   observeEvent(input$shapefileLocal, {
     shinyjs::disable("shapefileLocal")
-    res <- try(shapeFile_path(file.choose(new = TRUE)))
+    res <- try(shapeFile_path(file.choose(new = FALSE)))
     if (class(res) != "try-error") {
       if (!endsWith(shapeFile_path(), ".shp")) {
         isolate(shapeFile_path(""))
@@ -1379,7 +1379,7 @@ function(input, output, session) {
   # Updating the path to the instat file. (local)
   observeEvent(input$instat_file_local, {
     shinyjs::disable("instat_file_local")
-    res <- try(instat_path(file.choose(new = TRUE)))
+    res <- try(instat_path(file.choose(new = FALSE)))
     if (class(res) != "try-error") {
       if (!endsWith(instat_path(), ".RData") && !endsWith(instat_path(), ".csv")) {
         isolate(instat_path(""))
@@ -1717,7 +1717,7 @@ function(input, output, session) {
 
   # Observing upload of aux file.
   observeEvent(input$aux_upload, {
-    res <- try(globalAuxFilePath(file.choose(new = TRUE)))
+    res <- try(globalAuxFilePath(file.choose(new = FALSE)))
     if (class(res) != "try-error") {
       shiny::removeModal()
     } else {
@@ -3845,7 +3845,7 @@ function(input, output, session) {
       if (!isRunningLocally) {
         infile2 <- second_infile()
       } else {
-        infile2 <- try( file.choose(new = TRUE) )
+        infile2 <- try( file.choose(new = FALSE) )
       }
 
       if (class(infile2) == "try-error") {
@@ -3900,7 +3900,7 @@ function(input, output, session) {
       if (!isRunningLocally) {
         infile2 <- second_infile()
       } else {
-        infile2 <- try( file.choose(new = TRUE) )
+        infile2 <- try( file.choose(new = FALSE) )
       }
 
       if (class(infile2) == "try-error") {
@@ -4354,7 +4354,7 @@ function(input, output, session) {
       if (!isRunningLocally) {
         infile_attach <- second_infile()
       } else {
-        infile_attach <- try( file.choose(new = TRUE) )
+        infile_attach <- try( file.choose(new = FALSE) )
       }
 
       if (class(infile_attach) == "try-error") {
@@ -4621,7 +4621,7 @@ function(input, output, session) {
     if (!isRunningLocally) {
       infile2 <- second_infile()
     } else {
-      infile2 <- try( file.choose(new = TRUE) )
+      infile2 <- try( file.choose(new = FALSE) )
     }
     
     if (class(infile2) != "try-error") {

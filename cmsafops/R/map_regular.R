@@ -31,7 +31,8 @@
 #'
 #' @family data manipulation functions
 #'
-map_regular <- function(var, infile, auxfile, outfile, dxy = 0.05, dxy_factor = 1, 
+map_regular <- function(var, infile, auxfile, outfile, dxy = 0.05, dxy_factor = 1,
+                        min_lon = -80, max_lon = 80, min_lat = -80, max_lat = 80,
                         method = "nearest", nc34 = 4, overwrite = FALSE, verbose = FALSE, 
                         nc = NULL) {
 
@@ -94,8 +95,10 @@ map_regular <- function(var, infile, auxfile, outfile, dxy = 0.05, dxy_factor = 
   
   file_data2 <- list()
   file_data2$grid <- list()
-  file_data2$dimension_data <- list(x = seq(min(lon,na.rm=T), max(lon, na.rm=T), dxy),
-                                    y = seq(min(lat,na.rm=T), max(lat, na.rm=T), dxy))
+  # file_data2$dimension_data <- list(x = seq(min(lon,na.rm=T), max(lon, na.rm=T), dxy),
+  #                                  y = seq(min(lat,na.rm=T), max(lat, na.rm=T), dxy))
+  file_data2$dimension_data <- list(x = seq(min_lon, max_lon, dxy),
+                                    y = seq(min_lat, max_lat, dxy))
   file_data2$grid$is_regular <- TRUE
 
   isReg1 <- file_data1$grid$is_regular
