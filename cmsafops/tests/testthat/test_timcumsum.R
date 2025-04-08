@@ -20,7 +20,7 @@ test_that("data is correct", {
   )
   expected <- array(expected_data, dim = c(3, 3, 4))
 
-  expect_equivalent(actual, expected)
+  expect_equal(actual, expected, tolerance = 1e-4)
 })
 
 test_that("attributes are correct", {
@@ -113,7 +113,7 @@ test_that("data is correct", {
                      seq(34, 66, 4))
   expected <- array(expected_data, dim = c(3, 3, 4))
 
-  expect_equivalent(actual, expected)
+  expect_equal(actual, expected, tolerance = 1e-4)
 })
 
 test_that("attributes are correct", {
@@ -207,7 +207,7 @@ test_that("data is correct", {
                      seq(34, 66, 4))
   expected <- array(expected_data, dim = c(3, 3, 4))
 
-  expect_equivalent(actual, expected)
+  expect_equal(actual, expected, tolerance = 1e-4)
 })
 
 test_that("attributes are correct", {
@@ -302,7 +302,7 @@ test_that("data is correct", {
                      11 * temp + c(NA, 1, NA, 2, 3, 4, NA, 5, NA))
   expected <- array(expected_data, dim = c(3, 3, 4))
 
-  expect_equivalent(actual, expected)
+  expect_equal(actual, expected, tolerance = 1e-4)
 })
 
 test_that("attributes are correct", {

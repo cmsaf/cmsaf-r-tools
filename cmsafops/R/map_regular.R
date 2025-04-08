@@ -16,6 +16,10 @@
 #' @param dxy Grid resolution of the regular output grid in degrees (numeric). Default is 0.05°.
 #' @param dxy_factor In case of nearest neighbor all grid points with distance > (dxy * dxy_factor) 
 #'  are set to NA (numeric). Default is 1.
+#' @param min_lon Minimum longitude
+#' @param max_lon Maximum longitude
+#' @param min_lat Minimum latitude
+#' @param max_lat Maximum latitude
 #' @param method Method used for remapping (character). Default and so far the only option
 #'  is "nearest" for nearest-neighbor interpolation.
 #' @param nc34 NetCDF version of output file. If \code{nc34 = 3} the output file will be
