@@ -214,14 +214,14 @@ render_plot <- function(plot_rinstat,
       zlim = c(num_rmin, num_rmax),
       col = col,
       axis.args = list(
-        cex.axis = 1,
+        cex.axis = textsize,
         at = as.numeric(tlab[tlab != ""]),
         labels = tlab[tlab != ""],
         mgp = c(1, 0.4, 0),
         tck = c(-0.3)
       ),
       legend.lab = text3,
-      legend.line = -2,
+      legend.line = -2 * (1 - 0.4 * ((textsize - 1.2) / 1.2)),
       axes = FALSE
     )
 
@@ -521,7 +521,7 @@ render_plot <- function(plot_rinstat,
       main = text1,
       col = pcol,
       axis.args = list(
-        cex.axis = 1,
+        cex.axis = textsize,
         at = as.numeric(tlab[tlab != ""]),
         labels = tlab[tlab != ""],
         mgp = c(1, 0.4, 0),
@@ -568,7 +568,7 @@ render_plot <- function(plot_rinstat,
       main = text1,
       col = pcol,
       axis.args = list(
-        cex.axis = 1,
+        cex.axis = textsize,
         at = as.numeric(tlab[tlab != ""]),
         labels = tlab[tlab != ""],
         mgp = c(1, 0.4, 0),

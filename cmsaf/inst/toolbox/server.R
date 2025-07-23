@@ -3,7 +3,7 @@
 # You should not use this R-script on its own!
 #
 # Have fun with the CM SAF R TOOLBOX!
-#                                              (Steffen Kothe / CM SAF 2024-05-07)
+#                                              (Steffen Kothe / CM SAF 2025-07-23)
 #__________________________________________________________________________________
 
 # Function to compute first of month
@@ -259,7 +259,30 @@ function(input, output, session) {
   # TODO: Setting the maximum request size. WARNING: NOT SURE WHAT'S A GOOD VALUE FOR THIS
   # FOR NOW SETTING TO 2.5 GB, as this exceeds the largest test data.
   options(shiny.maxRequestSize = 2500 * 1024^2)
-
+  
+  # Helper: show info when file dialog opens
+  showFileDialogHint <- function(inputId) {
+    observeEvent(input[[inputId]], {
+      showModal(modalDialog(
+        title = "File Selection",
+        "A file selection window has opened. If you don't see it, check behind the Toolbox window.",
+        easyClose = TRUE,
+        footer = modalButton("OK")
+      ))
+    })
+  }
+  
+  # Add observers for all file chooser buttons here:
+  lapply(c(
+    "tarFileLocal", "tarFileRemote",
+    "ncFileLocal", "ncFileRemote",
+    "ncFileLocal_analyze", "ncFileRemote_analyze",
+    "ncFileLocal_visualize", "ncFileRemote_visualize",
+    "shapefileLocal", "shapefileRemote",
+    "instat_file_local", "instat_file_remote",
+    "ncSecondFileRemote"
+  ), function(id) showFileDialogHint(id))
+  
   # Check if is running locally or on remote server
   # Variable can be found in global.R
   if (isRunningLocally) {
@@ -6777,6 +6800,9 @@ function(input, output, session) {
 
   getPlot_1d <- reactive({
     req(readyToPlot())
+    
+    input$font_size_1d
+    
     if(nc_path_visualize_2() != ""){
       c(db_text1_1d())
       c(db_text2_1d())
@@ -6820,7 +6846,7 @@ function(input, output, session) {
                                                         imageheight = imageheight(),
                                                         text1_1d = input$text1_1d,   # title
                                                         text2_1d = input$text2_1d,   # subtitle
-                                                        textsize = textsize,
+                                                        textsize = input$font_size_1d / 10,
                                                         linesize = linesize,
                                                         x_axis_label_1d = input$x_axis_label_1d,
                                                         y_axis_label_1d = input$y_axis_label_1d,
@@ -6838,7 +6864,7 @@ function(input, output, session) {
                                                         imageheight = imageheight(),
                                                         text1_1d = input$text1_1d,   # title
                                                         text2_1d = input$text2_1d,   # subtitle
-                                                        textsize = textsize,
+                                                        textsize = input$font_size_1d / 10,
                                                         legend_label1 = input$x_axis_label_1d,
                                                         legend_label2 = input$y_axis_label_1d,
                                                         timestep_1d_visualize = input$timestep_1d_visualize
@@ -6862,7 +6888,7 @@ function(input, output, session) {
                                                              imageheight = imageheight(),
                                                              text1_1d = input$text1_1d,   # title
                                                              text2_1d = input$text2_1d,   # subtitle
-                                                             textsize = textsize,
+                                                             textsize = input$font_size_1d / 10,
                                                              linesize = linesize,
                                                              col = input$integer,   # color
                                                              legend_label1 = input$x_axis_label_1d,
@@ -6876,7 +6902,7 @@ function(input, output, session) {
                                                                     visualizeVariables = visualizeVariables(),
                                                                     imagewidth = imagewidth(),
                                                                     imageheight = imageheight(),
-                                                                    textsize = textsize,
+                                                                    textsize = input$font_size_1d,
                                                                     linesize = linesize,
                                                                     title_data1 = input$x_axis_label_1d,
                                                                     title_data2 = input$y_axis_label_1d))
@@ -6905,7 +6931,7 @@ function(input, output, session) {
                                                  text2_1d = input$text2_1d,   # subtitle
                                                  text3_1d = input$x_axis_label_1d, # X-Label
                                                  text4_1d = input$y_axis_label_1d, # Y-Label
-                                                 textsize = textsize,
+                                                 textsize = input$font_size_2d / 10,
                                                  linesize = linesize,
                                                  col = input$integer))   # color
       })
@@ -6925,7 +6951,7 @@ function(input, output, session) {
                                                  imageheight = imageheight(),
                                                  text1_1d = input$text1_1d,   # title
                                                  text2_1d = input$text2_1d,   # subtitle
-                                                 textsize = textsize,
+                                                 textsize = input$font_size_1d / 10,
                                                  linesize = linesize,
                                                  col = input$integer,   # color
                                                  timestep_1d_visualize = input$timestep_1d_visualize))
@@ -6981,11 +7007,15 @@ function(input, output, session) {
       input$bordercolor2,     # border color for outlines
       input$PAL,             # colorspace pallete
       db_text1_2(),
-      db_text2_2()
+      db_text2_2(),
+      input$font_size_2d
     )
     
     # Everything below this point is non-reactive.
     isolate({
+      # Scale font size proportionally
+      textsize_scaled <- input$font_size_2d / 10
+      colorbar_cex <- textsize_scaled
       # First check validity in region plot
       if (input$plot_region) {
         if (is.null(region_data()) && (is.null(shapeFile_path()) || !file.exists(shapeFile_path()))) {
@@ -7001,7 +7031,6 @@ function(input, output, session) {
             title = "Wrong file format.",
             size = "l"
           ))
-
           req(FALSE)
         }
         req(input$region != "Select region")
@@ -7077,7 +7106,7 @@ function(input, output, session) {
                                                       palettes = palettes,
                                                       num_brk = input$num_brk,
                                                       reverse = input$reverse,
-                                                      textsize = textsize,
+                                                      textsize = input$font_size_2d / 10,
                                                       bordercolor = input$bordercolor2,
                                                       plot_grid = plot_grid,
                                                       grid_col = grid_col,
@@ -7118,7 +7147,7 @@ function(input, output, session) {
                                                                text2 = input$text2,
                                                                text3 = input$text3,
                                                                int = input$int,
-                                                               textsize = textsize,
+                                                               textsize = input$font_size_2d / 10,
                                                                bordercolor = input$bordercolor2,
                                                                linesize = linesize,
                                                                na.color = na.color,
@@ -7161,7 +7190,7 @@ function(input, output, session) {
                                                  text2 = input$text2,
                                                  text3 = input$text3,
                                                  int = input$int,
-                                                 textsize = textsize,
+                                                 textsize = input$font_size_2d / 10,
                                                  bordercolor = input$bordercolor2,
                                                  linesize = linesize,
                                                  na.color = na.color,
@@ -7320,7 +7349,7 @@ function(input, output, session) {
                                                                   palettes = palettes,
                                                                   num_brk = input$num_brk,
                                                                   reverse = input$reverse,
-                                                                  textsize = textsize,
+                                                                  textsize = input$font_size_2d / 10,
                                                                   bordercolor = input$bordercolor2,
                                                                   plot_grid = plot_grid,
                                                                   grid_col = grid_col,
@@ -7359,7 +7388,7 @@ function(input, output, session) {
                                                            text2 = input$text2,
                                                            text3 = input$text3,
                                                            int = input$int,
-                                                           textsize = textsize,
+                                                           textsize = input$font_size_2d / 10,
                                                            bordercolor = input$bordercolor2,
                                                            linesize = linesize,
                                                            na.color = na.color,
@@ -7464,12 +7493,12 @@ function(input, output, session) {
     cat("This tool helps you to visualize 1D-timeseries and 2D-maps.", "\n")
     cat("\n")
     cat("This version ('Of Course I Still Love You') was tested with the cmsaf", "\n")
-    cat("R-package in version 3.5.1.", "\n")
+    cat("R-package in version 3.5.3.", "\n")
     cat("\n")
     cat("Suggestions for improvements and praise for the developers", "\n")
     cat("can be send to contact.cmsaf@dwd.de.", "\n")
     cat("\n")
-    cat("                              - Steffen Kothe - 2024-05-07 -", "\n")
+    cat("                              - Steffen Kothe - 2025-07-23 -", "\n")
     cat("\n")
     cat("\n")
   })

@@ -102,7 +102,7 @@ plot_fieldmean_and_map <- function(variable,
     field_source <- ncdf4::ncvar_get(nc_map, variable)
     lon <- ncdf4::ncvar_get(nc_map, "lon")
     lat <- ncdf4::ncvar_get(nc_map, "lat")
-    var_unit  <- ncdf4::ncatt_get(id, variable, "units")$value
+    var_unit  <- ncdf4::ncatt_get(nc_map, variable, "units")$value
   ncdf4::nc_close(nc_map)
 
   duration <- length(field_source[1, 1, ])

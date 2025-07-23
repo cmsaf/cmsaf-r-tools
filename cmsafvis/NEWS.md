@@ -1,9 +1,13 @@
 # Changelog for cmsafvis package
 
+## 1.2.10
+- Added option to change textsize in figures via Toolbox (cmsaf R-package)
+
 ## 1.2.9
 
 - For fieldmean plots unit is taken from metadata if it contains 
   the addition (neu) or (new)
+- Minor fix of test
 
 ## 1.2.8
 

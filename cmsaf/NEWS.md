@@ -1,5 +1,12 @@
 # Release notes for cmsaf
 
+## 3.5.3
+- Added option to change font size in plots (works with cmsafvis >= 1.2.10)
+- Added message for file chooser, which might open behind Toolbox window
+
+## 3.5.2
+- Minor fix of test 
+
 ## 3.5.1
 - Bug fix for CLAAS-3 files; for CLAAS-2 use `cmsafops::map_regular`
 

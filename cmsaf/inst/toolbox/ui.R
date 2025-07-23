@@ -3,13 +3,13 @@
 # You should not use this R-script on its own!
 #
 # Have fun with the CM SAF R TOOLBOX!
-#                                              (Steffen Kothe / CM SAF 2024-05-07)
+#                                              (Steffen Kothe / CM SAF 2025-07-23)
 #__________________________________________________________________________________
 
 descriptionString <-
   "
 
-The CM SAF R TOOLBOX 3.5.1 -- 'Of Course I Still Love You'
+The CM SAF R TOOLBOX 3.5.3 -- 'Of Course I Still Love You'
 
 The intention of the CM SAF R Toolbox is to help you using
 CM SAF NetCDF formatted climate data
@@ -25,7 +25,7 @@ right in and analyze or visualize a .nc file.
 Suggestions for improvements and praise for the developers
 can be sent to contact.cmsaf@dwd.de.
 
-- Steffen Kothe - 2024-05-07 -"
+- Steffen Kothe - 2025-07-23 -"
 
 # Variable can be found in global.R
 if (isRunningLocally) {
@@ -658,7 +658,17 @@ fluidPage(
                             uiOutput("subtitle_text"),
                             shinyjs::hidden(uiOutput("title_text2")),
                             shinyjs::hidden(uiOutput("subtitle_text2")),
-                            uiOutput("scale_caption")),
+                            uiOutput("scale_caption"),
+                            
+                            sliderInput(
+                              "font_size_2d",
+                              label = "Font Size",
+                              min = 5,
+                              max = 25,
+                              value = 12,  # default
+                              step = 1
+                            )
+                            ),
                    # FOR NOW NOT ALLOWING CHANGES TO WIDTH AND HEIGHT IN APP. (DO IT IN GLOBAL.R)
                    # uiOutput("width_height"),
 
@@ -698,7 +708,17 @@ fluidPage(
                               uiOutput("title_text_1d"),
                               uiOutput("subtitle_text_1d"),
                               uiOutput("x_axis_text_1d"),
-                              uiOutput("y_axis_text_1d"))),
+                              uiOutput("y_axis_text_1d"),
+                              
+                              sliderInput(
+                                "font_size_1d",
+                                label = "Font Size",
+                                min = 5,
+                                max = 25,
+                                value = 12,  # default
+                                step = 1
+                              )
+                              )),
 
                    # FOR NOW NOT ALLOWING CHANGES TO WIDTH AND HEIGHT IN APP. (DO IT IN GLOBAL.R)
                    # uiOutput("width_height"),
