@@ -1685,7 +1685,10 @@ function(input, output, session) {
       # choose variable 
       userOptions <- getUserOptions(nc_path(), claas_flag = 0)
       output$variable_ui_nc <- renderUI({
-        vars <- subset(userOptions$variables, !(userOptions$variables %in% c("lat", "lon", "latitude", "longitude","time_bnds", "nb2", "time", "crs")))
+        vars <- subset(userOptions$variables, !(userOptions$variables %in% c("lat", "lon", "latitude", "longitude",
+                                                                             "time_bnds", "nb2", "time", "crs",
+                                                                             "record_status", "lat_bnds", "lon_bnds",
+                                                                             "latlon_grid")))
         selectInput("variableInput360",
                     "Please choose a variable.",
                     choices = vars)
@@ -2159,7 +2162,11 @@ function(input, output, session) {
           "SATID",
           "latitude",
           "longitude",
-          "crs"
+          "crs",
+          "record_status",
+          "lat_bnds",
+          "lon_bnds",
+          "latlon_grid"
         )
       ))
 
@@ -2400,7 +2407,10 @@ function(input, output, session) {
     # Distinction between .tar-mode and .nc-mode
     if(nc_path() != "") {
       output$variable_ui <- renderUI({
-        vars <- subset(userOptions$variables, !(userOptions$variables %in% c("lat", "lon", "latitude", "longitude", "time_bnds", "nb2", "time", "crs")))
+        vars <- subset(userOptions$variables, !(userOptions$variables %in% c("lat", "lon", "latitude", "longitude", 
+                                                                             "time_bnds", "nb2", "time", "crs",
+                                                                             "record_status", "lat_bnds", "lon_bnds",
+                                                                             "latlon_grid")))
         selectInput("variableInput",
                     "You have selected the following variable",
                     choices = vars)
@@ -2408,7 +2418,10 @@ function(input, output, session) {
     }
     else{
       output$variable_ui <- renderUI({
-        vars <- subset(userOptions$variables, !(userOptions$variables %in% c("lat", "lon", "latitude", "longitude", "time_bnds", "nb2", "time", "crs")))
+        vars <- subset(userOptions$variables, !(userOptions$variables %in% c("lat", "lon", "latitude", "longitude", 
+                                                                             "time_bnds", "nb2", "time", "crs",
+                                                                             "record_status", "lat_bnds", "lon_bnds",
+                                                                             "latlon_grid")))
         selectInput("variableInput",
                     "We found the following variables",
                     choices = vars)
@@ -2954,7 +2967,10 @@ function(input, output, session) {
         resetToPreparePanel()
       } else {
 
-      var_default <- subset(vn, !(vn %in% c("lat", "lon", "latitude", "longitude", "time_bnds", "nb2", "time", "crs")))
+      var_default <- subset(vn, !(vn %in% c("lat", "lon", "latitude", "longitude", 
+                                            "time_bnds", "nb2", "time", "crs",
+                                            "record_status", "lat_bnds", "lon_bnds",
+                                            "latlon_grid")))
 
       # Stop if data are in sinusoidal projection
       if ("sinusoidal" %in% vn) {
@@ -5335,7 +5351,10 @@ function(input, output, session) {
       resetToPreparePanel()
     } else {
 
-    vn <- subset(vn, !(vn %in% c("lat", "lon", "latitude", "longitude", "time_bnds", "nb2", "time", "crs")))
+    vn <- subset(vn, !(vn %in% c("lat", "lon", "latitude", "longitude", 
+                                 "time_bnds", "nb2", "time", "crs",
+                                 "record_status", "lat_bnds", "lon_bnds",
+                                 "latlon_grid")))
 
     # If more than one we allow user to choose a variable. Catch this input here.
     if (!is.null(variable_visualize_modal())) {

@@ -154,18 +154,12 @@ plot_fieldmean <- function(variable,
   }
 
   # Preparing data
-  if (start_doy > 1 || !climatology_until_eoy) {
-    plot_stop <- finish_doy
-  } else {
-    plot_stop <- 365
-  }
-
-  duration <- length(var_current)
-  climate_duration <- plot_stop - start_doy + 1
-
-  var_current_to_plot <- var_current
-  var_climate_to_plot <- var_clima[start_doy:plot_stop]
-
+  duration <- finish_doy - start_doy + 1
+  climate_duration <- finish_doy - start_doy + 1
+  
+  var_current_to_plot <- var_current[start_doy:finish_doy]
+  var_climate_to_plot <- var_clima[start_doy:finish_doy]
+  
   if (start_doy > 1 && adjustAccumulation) {
     # If data was accumulated and we don't plot starting from January 1st, the data doesn't start at 0.
     # We correct this by subtracting the value of the first date from alle dates.
@@ -224,7 +218,7 @@ plot_fieldmean <- function(variable,
 
     #######################graphics::par(cex = 1.2,oma = c(0,0,0,0),mar = c(2,5,3,2))
     #graphics::par(cex = 1.2,oma = c(0,0,0,0),mar = c(2,5,3,1))
-    plot_length <- length(start_doy:plot_stop)
+    plot_length <- finish_doy - start_doy + 1
 
     graphics::par(
       cex = 1.2,
@@ -236,7 +230,7 @@ plot_fieldmean <- function(variable,
     set_time_locale(language)
     tryCatch(
       graphics::plot(
-        dates[start_doy:plot_stop],
+        dates[start_doy:finish_doy],
         var_climate_to_plot,
         type = "l",
         lwd = lwd1,
@@ -267,7 +261,7 @@ plot_fieldmean <- function(variable,
       set_time_locale(language)
       tryCatch(
         graphics::lines(
-          dates[start_doy:plot_stop],
+          dates[start_doy:finish_doy],
           dat,
           col = "grey",
           lwd = lwd2
@@ -293,7 +287,7 @@ plot_fieldmean <- function(variable,
 
     tryCatch({
       graphics::lines(
-        dates[start_doy:plot_stop],
+        dates[start_doy:finish_doy],
         var_climate_to_plot,
         col = "black",
         lwd = lwd1
@@ -420,7 +414,7 @@ plot_fieldmean <- function(variable,
           }
 
           limit_y <- signif(ceiling(limit + limit/15), digits = 2)
-          plot_length <- plot_stop - start_doy + 1
+          plot_length <- finish_doy - start_doy + 1
 
           corr_date <- start_doy + i - 1
 
@@ -434,7 +428,7 @@ plot_fieldmean <- function(variable,
           set_time_locale(language)
           tryCatch(
             graphics::plot(
-              dates[start_doy:plot_stop],
+              dates[start_doy:finish_doy],
               var_climate_to_plot,
               type = "l",
               lwd = lwd1,
@@ -466,7 +460,7 @@ plot_fieldmean <- function(variable,
             set_time_locale(language)
             tryCatch(
               graphics::lines(
-                dates[start_doy:plot_stop],
+                dates[start_doy:finish_doy],
                 dat,
                 col = "grey",
                 lwd = lwd2
@@ -493,7 +487,7 @@ plot_fieldmean <- function(variable,
           set_time_locale(language)
           tryCatch({
             graphics::lines(
-              dates[start_doy:plot_stop],
+              dates[start_doy:finish_doy],
               var_climate_to_plot,
               col = "black",
               lwd = lwd1
@@ -600,7 +594,7 @@ plot_fieldmean <- function(variable,
             set_time_locale(language)
             tryCatch(
               graphics::plot(
-                dates[start_doy:plot_stop],
+                dates[start_doy:finish_doy],
                 var_climate_to_plot,
                 type = "l",
                 lwd = lwd1,
@@ -623,7 +617,7 @@ plot_fieldmean <- function(variable,
               set_time_locale(language)
               tryCatch(
                 graphics::lines(
-                  dates[start_doy:plot_stop],
+                  dates[start_doy:finish_doy],
                   dat,
                   col = "grey",
                   lwd = lwd2
@@ -635,7 +629,7 @@ plot_fieldmean <- function(variable,
             set_time_locale(language)
             tryCatch({
               graphics::lines(
-                dates[start_doy:plot_stop],
+                dates[start_doy:finish_doy],
                 var_climate_to_plot,
                 col = "black",
                 lwd = lwd1
