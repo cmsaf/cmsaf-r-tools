@@ -12,10 +12,8 @@ dayx_wrapper <- function(op, var, infile, outfile, nc34, overwrite, p = NULL, ve
   ##### extract data from file #####
   file_data <- read_file(infile, var, nc = nc)
   
-  if (op > 2) {
-    file_data$variable$prec <- "float"
-  }
-  
+  file_data$variable$prec <- "float"
+
   if (op == 7) {
     if (length(p) > 1) {
       p <- p[1]

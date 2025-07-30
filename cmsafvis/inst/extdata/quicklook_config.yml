@@ -3318,6 +3318,16 @@
         legend: TRUE
         colorscale: Plasma
         logo: black
+    SDUma00110001I1MA:
+      Dataset: SARAH-3 Anomaly
+      SDU:
+        limits:
+          min: -118
+          max: 118
+        legend: TRUE
+        colorscale: Blue-Red 3
+        logo: black
+        var_name: Anomaly of Sunshine Duration
   SID:
     SIDdm4101000101MA:
       Dataset: ICDR Seviri Radiation
@@ -3542,6 +3552,16 @@
         legend: TRUE
         colorscale: Viridis
         logo: black
+    SISma00110001I1MA:
+      Dataset: SARAH-3 Anomaly
+      SIS:
+        limits:
+          min: -74
+          max: 74
+        legend: TRUE
+        colorscale: Blue-Red 3
+        logo: black
+        var_name: Anomaly of Surface Downwelling Shortwave Radiation
   SNL:
     SNLmm003AVPOS01GL:
       Dataset: CLARA-A3

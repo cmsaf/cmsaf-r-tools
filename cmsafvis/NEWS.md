@@ -2,6 +2,8 @@
 
 ## 1.2.10
 - Added option to change textsize in figures via Toolbox (cmsaf R-package)
+- Adapt quicklook config for anomalies
+- Bug fix: time period for fieldmean plots
 
 ## 1.2.9
 

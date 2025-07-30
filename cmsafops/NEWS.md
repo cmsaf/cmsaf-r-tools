@@ -1,5 +1,8 @@
 # Changelog for cmsafops package
 
+## 1.4.2
+- Bug fix: float precision of daymin and daymax output 
+
 ## 1.4.1
 - Bug fix: in case of just one missing value, `timcumsum` could give an error
 - Bug fix: `timcor` and `timcovar` generated rubbish
