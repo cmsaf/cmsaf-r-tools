@@ -45,7 +45,9 @@ render_plot(
   palettes,
   reverse,
   plot_grid,
-  grid_col
+  grid_col,
+  sig_values_to_plot = c(1, -1),
+  sig_na_color = "white"
 )
 }
 \arguments{
@@ -131,6 +133,10 @@ If NULL is passed a file is created in the R session temporary directory.}
 \item{plot_grid}{Whether to plot a grid using color grid_col (logical).}
 
 \item{grid_col}{Color used for the grid.}
+
+\item{sig_values_to_plot}{For trend plots significance to plot.}
+
+\item{sig_na_color}{Color for non-significant values.}
 }
 \description{
 This function renders a 2D image usually called by the CM SAF R Toolbox.

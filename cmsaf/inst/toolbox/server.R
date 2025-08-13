@@ -260,28 +260,14 @@ function(input, output, session) {
   # FOR NOW SETTING TO 2.5 GB, as this exceeds the largest test data.
   options(shiny.maxRequestSize = 2500 * 1024^2)
   
-  # Helper: show info when file dialog opens
-  showFileDialogHint <- function(inputId) {
-    observeEvent(input[[inputId]], {
-      showModal(modalDialog(
-        title = "File Selection",
-        "A file selection window has opened. If you don't see it, check behind the Toolbox window.",
-        easyClose = TRUE,
-        footer = modalButton("OK")
-      ))
-    })
-  }
-  
-  # Add observers for all file chooser buttons here:
-  lapply(c(
-    "tarFileLocal", "tarFileRemote",
-    "ncFileLocal", "ncFileRemote",
-    "ncFileLocal_analyze", "ncFileRemote_analyze",
-    "ncFileLocal_visualize", "ncFileRemote_visualize",
-    "shapefileLocal", "shapefileRemote",
-    "instat_file_local", "instat_file_remote",
-    "ncSecondFileRemote"
-  ), function(id) showFileDialogHint(id))
+  # Show notification once when file chooser is triggered
+  observeEvent(input$select_input_file, {
+    showNotification(
+      "The file selection window may open in the background. If you don't see it, check behind the Toolbox window.",
+      type = "message",
+      duration = 5
+    )
+  }, once = TRUE)
   
   # Check if is running locally or on remote server
   # Variable can be found in global.R
@@ -736,7 +722,8 @@ function(input, output, session) {
                  tags$p("Finally, a NetCDF file will be created for you. You can find it in the output directory"),
                  tags$p("located at ", tags$strong(dirname(userDir))),
                  br(),
-                 tags$p("The app guides through all steps."))
+                 tags$p("The app guides through all steps."),
+                 tags$p(tags$strong("Notice: The file selection dialog may open in the background!")))
       } else {
         tags$div(h2("Prepare"),
                  tags$p("Please select a TAR file", tags$strong("(.tar)"), "or a NetCDF file", tags$strong("(.nc)"), " to start the preparation."),
@@ -753,7 +740,8 @@ function(input, output, session) {
                  tags$p("Finally, a NetCDF file will be created for you."),
                  tags$p(tags$strong("Make sure to download your session files before closing this application.")),
                  br(),
-                 tags$p("The app guides through all steps."))
+                 tags$p("The app guides through all steps."),
+                 tags$p(tags$strong("Notice: The file selection dialog may open in the background!")))
       }
     })
   })
@@ -1332,24 +1320,52 @@ function(input, output, session) {
     shinyjs::enable("ncFileLocal_visualize")
     shinyjs::enable("useOutputFile_visualize")
   }, ignoreInit = TRUE)
-
+  
+  observeEvent(nc_path_visualize(), {
+    req(nc_path_visualize() != "")
+    req(file.exists(nc_path_visualize()))
+    
+    nc <- ncdf4::nc_open(nc_path_visualize())
+    sig_vars <- names(nc$var)
+    ncdf4::nc_close(nc)
+    
+    if ("sig" %in% sig_vars) {
+      shinyjs::show("sig_options")
+    } else {
+      shinyjs::hide("sig_options")
+    }
+  })
+  
   # Observing changes in selected nc file visualize. (remote)
   shinyFiles::shinyFileChoose(input, 'ncFileRemote_visualize', session = session, roots = volumes_output, filetypes=c('nc'))
 
   observeEvent(input$ncFileRemote_visualize, {
-    pth <- shinyFiles::parseFilePaths(volumes_output,input$ncFileRemote_visualize)
+    shinyjs::alert("observeEvent triggered!")
+    pth <- shinyFiles::parseFilePaths(volumes_output, input$ncFileRemote_visualize)
     req(nrow(pth) > 0)
     req(file.exists(pth$datapath))
     isolate(nc_object_visualize(NULL))
+    
     if (!endsWith(pth$datapath, ".nc")) {
       isolate(nc_path_visualize(""))
       wrong_file_modal(".nc")
     } else {
-      nc_path_visualize( pth$datapath )
+      nc_path_visualize(pth$datapath)
       actionVisualize(actionVisualize() + 1)
+      
+      # === Check for 'sig' variable ===
+      nc <- ncdf4::nc_open(pth$datapath)
+      sig_vars <- names(nc$var)
+      cat("Variables in file:", paste(sig_vars, collapse = ", "), "\n")
+      if ("sig" %in% sig_vars) {
+        shinyjs::show("sig_options")
+      } else {
+        shinyjs::hide("sig_options")
+      }
+      ncdf4::nc_close(nc)
     }
   })
-
+  
   # If user chooses to take generated nc file update nc_path_visualize. (output file)
   observeEvent(input$useOutputFile_visualize, {
     nc_path_visualize(outputFilepath())
@@ -5580,7 +5596,7 @@ function(input, output, session) {
             sliderInput("decimal",
                         label = "Image Ratio",
                         min = -0.9, max = 0.9,
-                        value = 0.1, ticks = FALSE)
+                        value = 0, ticks = FALSE)
           })
           
           output$title_text <- renderUI({
@@ -6816,7 +6832,10 @@ function(input, output, session) {
   
   db_text1_2 <- shiny::debounce(reactive({input$text1_2}), 750)
   db_text2_2 <- shiny::debounce(reactive({input$text2_2}), 750)
-
+  
+  db_sig_values_to_plot <- shiny::debounce(reactive({input$sig_values_to_plot}), 750)
+  db_sig_na_color       <- shiny::debounce(reactive({input$sig_na_color}), 750)
+  
   getPlot_1d <- reactive({
     req(readyToPlot())
     
@@ -7027,7 +7046,9 @@ function(input, output, session) {
       input$PAL,             # colorspace pallete
       db_text1_2(),
       db_text2_2(),
-      input$font_size_2d
+      input$font_size_2d,       # font size for 2d plots
+      db_sig_values_to_plot(),  # significance values of trend to plot
+      db_sig_na_color()         # color for non-significant values
     )
     
     # Everything below this point is non-reactive.
@@ -7217,7 +7238,9 @@ function(input, output, session) {
                                                  palettes = palettes,
                                                  reverse = input$reverse,
                                                  plot_grid = plot_grid,
-                                                 grid_col = grid_col))
+                                                 grid_col = grid_col,
+                                                 sig_values_to_plot = input$sig_values_to_plot,
+                                                 sig_na_color = input$sig_na_color))
         }
       }
     })
@@ -7415,7 +7438,9 @@ function(input, output, session) {
                                                            palettes = palettes,
                                                            reverse = input$reverse,
                                                            plot_grid = plot_grid,
-                                                           grid_col = grid_col)
+                                                           grid_col = grid_col,
+                                                           sig_values_to_plot = input$sig_values_to_plot,
+                                                           sig_na_color = input$sig_na_color)
                          in_plot <- res_plot$src
                        }
                        file.copy(in_plot,file)

@@ -4,6 +4,8 @@
 - Added option to change textsize in figures via Toolbox (cmsaf R-package)
 - Adapt quicklook config for anomalies
 - Bug fix: time period for fieldmean plots
+- Added option to plot trends using significance mask
+- Bug fix: Fixing white lines in map plots
 
 ## 1.2.9
 

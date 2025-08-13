@@ -37,7 +37,9 @@ if (isRunningLocally) {
   <p>(usually the output of step one (Prepare)).</p>
   <br>
   <p>This application will help you to analyze and manipulate your data.</p>
-  <p>The output is usually written in a NetCDF file in the according output folder.</p>"
+  <p>The output is usually written in a NetCDF file in the according output folder.</p>
+  <br>
+  <p><strong>Notice: The file selection dialog may open in the background!</strong></p>"
 } else {
   analyzeString <-
     "<h2>Analyze</h2>
@@ -47,7 +49,9 @@ if (isRunningLocally) {
   <p>(usually the output of step one (Prepare)).</p>
   <br>
   <p>This application will help you to analyze and manipulate your data.</p>
-  <p>Again, make sure to download your session files before closing the application.</p>"
+  <p>Again, make sure to download your session files before closing the application.</p>
+  <br>
+  <p><strong>Notice: The file selection dialog may open in the background!</strong></p>"
 }
 
 visualizeString <-
@@ -55,7 +59,9 @@ visualizeString <-
 <p>Please select a NetCDF file <strong>(.nc)</strong> to start the visualization.</p>
 <br>
 <p>This application can be used to display NetCDF data.</p>
-<p>In addition, it provides information on the data and the NetCDF file.</p>"
+<p>In addition, it provides information on the data and the NetCDF file.</p>
+<br>
+<p><strong>Notice: The file selection dialog may open in the background!</strong></p>"
 
 # render string for colorspace
 renderString <-
@@ -667,6 +673,19 @@ fluidPage(
                               max = 25,
                               value = 12,  # default
                               step = 1
+                            ),
+                            # For trend plots show only values which are significant
+                            tags$div(id = "sig_ui",
+                                     shinyjs::hidden(
+                                       tags$div(id = "sig_options",
+                                                checkboxGroupInput("sig_values_to_plot", "Significance levels to hide",
+                                                                   choices = list("Positive (1)" = 1, "Not significant (0)" = 0, "Negative (-1)" = -1),
+                                                                   selected = NULL),
+                                                selectInput("sig_na_color", "Color for masked areas",
+                                                            choices = list("White" = "white", "Light grey" = "lightgrey", "Grey" = "grey"),
+                                                            selected = "lightgrey")
+                                       )
+                                     )
                             )
                             ),
                    # FOR NOW NOT ALLOWING CHANGES TO WIDTH AND HEIGHT IN APP. (DO IT IN GLOBAL.R)

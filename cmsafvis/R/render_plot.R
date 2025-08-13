@@ -44,6 +44,8 @@
 #' @param na.color The color to be used for NA values.
 #' @param textsize Textsize to be used (cex).
 #' @param palettes Color palettes to be used.
+#' @param sig_values_to_plot For trend plots significance to plot.
+#' @param sig_na_color Color for non-significant values.
 #' @export
 render_plot <- function(plot_rinstat,
                         outfile = NULL,
@@ -85,7 +87,10 @@ render_plot <- function(plot_rinstat,
                         palettes,
                         reverse,
                         plot_grid,
-                        grid_col) {
+                        grid_col,
+                        sig_values_to_plot = c(1, -1),
+                        sig_na_color = "white"
+                        ) {
   # A temp file to save the output.
   if (is.null(outfile)) {
     outfile <- tempfile(fileext = fileExtension)
@@ -126,6 +131,36 @@ render_plot <- function(plot_rinstat,
     ylab[length(ylab)] <- " "
   }
 
+  # --- Build overlay for selected significance levels (rect plots) ---
+  sig_overlay <- NULL
+  if (!is.null(sig_values_to_plot) && length(sig_values_to_plot) > 0 && file.exists(nc_path_visualize)) {
+    nc <- ncdf4::nc_open(nc_path_visualize)
+    on.exit(ncdf4::nc_close(nc), add = TRUE)
+    
+    if ("sig" %in% names(nc$var)) {
+      sig_raw <- ncdf4::ncvar_get(nc, "sig")
+      
+      dx <- nrow(visualizeDataTimestep)
+      dy <- ncol(visualizeDataTimestep)
+      
+      # reshape to match data dims (dx x dy)
+      sig_mat <- try(matrix(sig_raw, nrow = dx, ncol = dy), silent = TRUE)
+      if (inherits(sig_mat, "try-error") || !identical(dim(sig_mat), c(dx, dy))) {
+        sig_mat <- try(matrix(sig_raw, nrow = dy, ncol = dx), silent = TRUE)
+        if (!inherits(sig_mat, "try-error")) sig_mat <- t(sig_mat)
+      }
+      
+      if (!inherits(sig_mat, "try-error") && identical(dim(sig_mat), dim(visualizeDataTimestep))) {
+        keep_levels <- as.numeric(sig_values_to_plot)
+        # NA everywhere; 1 where sig equals any chosen level
+        sig_overlay <- matrix(NA_real_, nrow = dx, ncol = dy)
+        sig_overlay[sig_mat %in% keep_levels] <- 1
+      } else {
+        sig_overlay <- NULL
+      }
+    }
+  }
+  
   # If rectangular projection
   if (proj == "rect") {
     # Use colorspace palette
@@ -197,38 +232,120 @@ render_plot <- function(plot_rinstat,
       grDevices::pdf(outfile, width = pdfWidth, height = pdfHeight)
     }
 
-    graphics::par(cex = textsize)
-
-    graphics::par(mar = c(2, 2, 2.6, 2))
-
-    # Plot with legend and title
-    fields::image.plot(
-      visualizeVariables$lon,
-      visualizeVariables$lat,
-      visualizeDataTimestep,
+    # --- kill white seams: regularize lon/lat and useRaster if possible ---
+    regularize_vec <- function(v, digits = 3, rel_tol = 1e-6) {
+      vr <- round(v, digits)                 # snap to grid
+      d  <- diff(vr)
+      md <- median(d, na.rm = TRUE)
+      if (!is.finite(md)) return(list(v = v, ok = FALSE))
+      rel_err <- max(abs(d - md), na.rm = TRUE) / max(abs(md), 1e-12)
+      if (rel_err < rel_tol) {
+        # rebuild exact arithmetic progression to remove tiny jitter
+        vfix <- vr[1] + md * (0:(length(vr) - 1))
+        list(v = as.numeric(vfix), ok = TRUE)
+      } else {
+        list(v = v, ok = FALSE)
+      }
+    }
+    
+    lon_reg <- regularize_vec(visualizeVariables$lon, digits = 3)
+    lat_reg <- regularize_vec(visualizeVariables$lat, digits = 3)
+    lon_plot <- lon_reg$v
+    lat_plot <- lat_reg$v
+    use_raster <- isTRUE(lon_reg$ok) && isTRUE(lat_reg$ok)
+    
+    # avoid auto 4% expansion that can reveal seams
+    op_ax <- graphics::par(xaxs = "i", yaxs = "i")
+    on.exit(graphics::par(op_ax), add = TRUE)
+    
+    ## --- Smart sizing from text metrics ---
+    cex_units         <- textsize                  # overall map/axis size
+    legend_title_cex  <- textsize                  # colorbar caption follows textsize
+    
+    # Compute label/tick sizes in inches, then convert to "lines"
+    old_par <- par(no.readonly = TRUE)
+    on.exit(par(old_par), add = TRUE)
+    
+    # we need csi at the cex we’ll use
+    par(cex = cex_units)
+    line_in <- par("csi")                          # 1 "line" = this many inches
+    
+    tick_labs <- as.character(tlab[tlab != ""])
+    max_tick_in <- if (length(tick_labs)) {
+      max(strwidth(tick_labs, cex = cex_units, units = "inches"), na.rm = TRUE)
+    } else 0
+    tick_lines <- max_tick_in / line_in
+    
+    caption_in   <- strwidth(text3 %||% "", cex = legend_title_cex, units = "inches")
+    caption_lines <- caption_in / line_in
+    
+    title_in    <- strheight(text1 %||% "", cex = cex_units, units = "inches")
+    title_lines <- title_in / line_in
+    
+    # --- Margins ---
+    # Top margin: enough for title + a little padding
+    base_top_lines  <- 2.6
+    pad_top_lines   <- 0.6 + 0.6 * (cex_units - 1)
+    top_mar         <- base_top_lines + title_lines + pad_top_lines
+    
+    # Right plot margin (NOT the legend strip; this is the figure edge margin)
+    # Give a touch of space so axes/box don’t clip
+    base_right_lines <- 2
+    right_mar        <- base_right_lines + 0.3 * tick_lines
+    
+    # Bottom/left can stay modest
+    bottom_mar <- 2
+    left_mar   <- 2
+    
+    par(mar = c(bottom_mar, left_mar, top_mar, right_mar))
+    
+    # --- Legend layout ---
+    # Space between image and legend + room for tick labels (in "lines")
+    # Use tick_lines plus a bit more as fonts grow.
+    gap_lines        <- 0.8 + 0.7 * (cex_units - 1)
+    legend_mar_val   <- 2 + tick_lines + gap_lines
+    
+    # Thickness of the colorbar (in inches)
+    base_legend_w_in <- 1.10
+    legend_width_in  <- base_legend_w_in + 0.30 * max(0, cex_units - 1)
+    
+    # Caption offset: positive pushes the caption *away* from the plot (to the right on side=4)
+    legend_line_val  <- -2 * (1 - 0.4 * ((legend_title_cex - 1.4) / 1.4))
+    
+    # --- Draw main image + legend ---
+    fields::imagePlot(
+      x = lon_plot,
+      y = lat_plot,
+      z = visualizeDataTimestep,
       main = text1,
       xlab = " ",
       ylab = " ",
       xlim = lon_bounds,
       ylim = lat_bounds,
       zlim = c(num_rmin, num_rmax),
-      col = col,
+      col  = col,
       axis.args = list(
-        cex.axis = textsize,
-        at = as.numeric(tlab[tlab != ""]),
+        cex.axis = cex_units,
+        at   = as.numeric(tlab[tlab != ""]),
         labels = tlab[tlab != ""],
-        mgp = c(1, 0.4, 0),
-        tck = c(-0.3)
+        mgp  = c(1, 0.4, 0),
+        tck  = c(-0.3)
       ),
-      legend.lab = text3,
-      legend.line = -2 * (1 - 0.4 * ((textsize - 1.2) / 1.2)),
-      axes = FALSE
+      legend.args = list(
+        text = text3,
+        cex  = legend_title_cex,
+        line = legend_line_val,
+        side = 4
+      ),
+      legend.mar   = legend_mar_val,    # gap + label room (in lines)
+      legend.width = legend_width_in,   # bar thickness (in inches)
+      axes = FALSE,
+      useRaster = use_raster
     )
-
+    
     # linesize, bordercolor, plot_grid, and grid_col, na.color can be found in global.R
     graphics::image(
-      visualizeVariables$lon,
-      visualizeVariables$lat,
+      x = lon_plot, y = lat_plot,
       array(1:2, dim(visualizeDataTimestep)),
       xlab = " ",
       ylab = " ",
@@ -236,12 +353,12 @@ render_plot <- function(plot_rinstat,
       axes = FALSE,
       xlim = lon_bounds,
       ylim = lat_bounds,
+      useRaster = use_raster,
       add = TRUE
     )
 
     graphics::image(
-      visualizeVariables$lon,
-      visualizeVariables$lat,
+      x = lon_plot, y = lat_plot,
       visualizeDataTimestep,
       xlab = " ",
       ylab = " ",
@@ -250,9 +367,28 @@ render_plot <- function(plot_rinstat,
       zlim = c(num_rmin, num_rmax),
       col = col,
       axes = FALSE,
+      useRaster = use_raster,
       add = TRUE
     )
-
+    
+    # Overlay NA areas with selected color
+    # --- Draw overlay ONLY on selected sig cells ---
+    if (!is.null(sig_overlay) && any(!is.na(sig_overlay))) {
+      # convert NA->0, selected->1 so we can use explicit breaks
+      overlay01 <- ifelse(is.na(sig_overlay), 0, 1)
+      
+      transparent <- grDevices::rgb(0, 0, 0, 0)  # fully transparent
+      graphics::image(
+        x = lon_plot, y = lat_plot,
+        z = overlay01,
+        xlim = lon_bounds, ylim = lat_bounds,
+        axes = FALSE, add = TRUE,
+        col = c(transparent, sig_na_color),
+        useRaster = use_raster,
+        breaks = c(-0.5, 0.5, 1.5)  # only values >0.5 get the sig color
+      )
+    }
+    
     # Add borderlines or coastlines
     if (as.logical(int)) {
       countriesHigh <- numeric(0)  # Hack to prevent IDE warning in second next line (see https://stackoverflow.com/questions/62091444/how-to-load-data-from-other-package-in-my-package)
@@ -507,6 +643,45 @@ render_plot <- function(plot_rinstat,
       grDevices::pdf(outfile, width = pdfWidth, height = pdfHeight)
     }
 
+    ## --- Smart sizing from text metrics (orthographic quilt) ---
+    cex_units         <- textsize
+    legend_title_cex  <- textsize   # keep same as textsize
+    
+    # Save and restore par
+    old_par <- par(no.readonly = TRUE)
+    on.exit(par(old_par), add = TRUE)
+    
+    par(cex = cex_units)
+    line_in <- par("csi")
+    
+    # Tick label width (use tlab from earlier)
+    tick_labs <- as.character(tlab[tlab != ""])
+    max_tick_in <- if (length(tick_labs)) {
+      max(strwidth(tick_labs, cex = cex_units, units = "inches"), na.rm = TRUE)
+    } else 0
+    tick_lines <- max_tick_in / line_in
+    
+    # Caption width in "lines"
+    caption_in    <- strwidth(text3 %||% "", cex = legend_title_cex, units = "inches")
+    caption_lines <- caption_in / line_in
+    
+    # Title height in "lines"
+    title_in    <- strheight(text1 %||% "", cex = cex_units, units = "inches")
+    title_lines <- title_in / line_in
+    
+    # Margins (top/right adjusted for size)
+    base_top_lines  <- 2.6
+    pad_top_lines   <- 0.6 + 0.6 * (cex_units - 1)
+    top_mar         <- base_top_lines + title_lines + pad_top_lines
+    
+    base_right_lines <- 2
+    right_mar        <- base_right_lines + 0.3 * tick_lines
+    
+    bottom_mar <- 2
+    left_mar   <- 2
+    par(mar = c(bottom_mar, left_mar, top_mar, right_mar))
+    
+    ## --- quilt.plot with matching legend sizing ---
     fields::quilt.plot(
       a$x,
       a$y,
@@ -521,17 +696,18 @@ render_plot <- function(plot_rinstat,
       main = text1,
       col = pcol,
       axis.args = list(
-        cex.axis = textsize,
+        cex.axis = cex_units,
         at = as.numeric(tlab[tlab != ""]),
         labels = tlab[tlab != ""],
         mgp = c(1, 0.4, 0),
         tck = c(-0.3)
       ),
-      legend.lab = text3,
-      legend.line = -2,
+      legend.lab  = text3,
+      legend.cex  = legend_title_cex,  # colorbar caption
+      legend.line = -2 * (1 - 0.4 * ((legend_title_cex - 1.4) / 1.4)),  # offset like in image.plot
       axes = FALSE
     )
-
+    
     graphics::polygon(
       sin(seq(0, 2 * pi, length.out = 100)),
       cos(seq(0, 2 * pi, length.out = 100)),
@@ -554,10 +730,10 @@ render_plot <- function(plot_rinstat,
         border = NA
       )
     )
+    
+    # Re-draw data on top of the filled polygons; no legend/axes/title
     fields::quilt.plot(
-      a$x,
-      a$y,
-      datav,
+      a$x, a$y, datav,
       xlim = c(-1, 1),
       ylim = c(-1, 1),
       zlim = c(num_rmin, num_rmax),
@@ -565,20 +741,13 @@ render_plot <- function(plot_rinstat,
       ny = ny / yf,
       xlab = " ",
       ylab = " ",
-      main = text1,
-      col = pcol,
-      axis.args = list(
-        cex.axis = textsize,
-        at = as.numeric(tlab[tlab != ""]),
-        labels = tlab[tlab != ""],
-        mgp = c(1, 0.4, 0),
-        tck = c(-0.3)
-      ),
-      legend.lab = text3,
-      legend.line = -2,
+      main = NULL,           # no title on the overlay pass
+      col  = pcol,
       axes = FALSE,
-      add = TRUE
+      add  = TRUE,
+      add.legend = FALSE     # <- important: no second colorbar
     )
+    
     # Plot borders
     if (!as.logical(int)) {
       suppressWarnings(
