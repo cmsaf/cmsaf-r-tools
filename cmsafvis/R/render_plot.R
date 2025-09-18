@@ -276,10 +276,12 @@ render_plot <- function(plot_rinstat,
     } else 0
     tick_lines <- max_tick_in / line_in
     
-    caption_in   <- strwidth(text3 %||% "", cex = legend_title_cex, units = "inches")
+    caption_in <- strwidth(if (is.null(text3)) "" else text3,
+                           cex = legend_title_cex, units = "inches")
     caption_lines <- caption_in / line_in
     
-    title_in    <- strheight(text1 %||% "", cex = cex_units, units = "inches")
+    title_in <- strheight(if (is.null(text1)) "" else text1,
+                          cex = cex_units, units = "inches")
     title_lines <- title_in / line_in
     
     # --- Margins ---
@@ -662,11 +664,13 @@ render_plot <- function(plot_rinstat,
     tick_lines <- max_tick_in / line_in
     
     # Caption width in "lines"
-    caption_in    <- strwidth(text3 %||% "", cex = legend_title_cex, units = "inches")
+    caption_in <- strwidth(if (is.null(text3)) "" else text3,
+                           cex = legend_title_cex, units = "inches")
     caption_lines <- caption_in / line_in
     
     # Title height in "lines"
-    title_in    <- strheight(text1 %||% "", cex = cex_units, units = "inches")
+    title_in <- strheight(if (is.null(text1)) "" else text1,
+                          cex = cex_units, units = "inches")
     title_lines <- title_in / line_in
     
     # Margins (top/right adjusted for size)
