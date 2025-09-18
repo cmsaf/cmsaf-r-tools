@@ -108,6 +108,21 @@ arithc_wrapper <- function(op, var, const, infile, outfile, nc34, overwrite,
   if(is.null(nc)) nc_close(nc_in)
   nc_close(nc_out)
 
+  ## --- carry 'sig' if present in the source file -------------------------
+  if (isTRUE(getOption("cmsaf.keep_sig", TRUE))) {
+    inpath <- if (is.null(nc)) infile else nc$filename
+    # result variable name is the original var name used to define the output
+    res_var <- file_data$variable$name
+    # best-effort: never crash the operator if copying sig fails
+    try(
+      keep_sig_alongside(infile = inpath,
+                         outfile = outfile,
+                         result_varname = res_var),
+      silent = TRUE
+    )
+  }
+  ## -----------------------------------------------------------------------
+
   calc_time_end <- Sys.time()
   if (verbose) message(get_processing_time_string(calc_time_start, calc_time_end))
 }

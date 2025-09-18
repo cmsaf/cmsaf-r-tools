@@ -2,6 +2,9 @@
 #'
 #' This function renders a 2D image usually called by the CM SAF R Toolbox.
 #'
+#' @importFrom graphics par strheight strwidth
+#' @importFrom stats median
+#'
 #' @param plot_rinstat Whether to create an R-Instat plot (logical).
 #' @param outfile Name of the outfile (NULL or character). Should match the fileExtension.
 #' If NULL is passed a file is created in the R session temporary directory.

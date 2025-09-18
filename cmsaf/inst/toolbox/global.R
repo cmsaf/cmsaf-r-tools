@@ -3,7 +3,7 @@
 # You should not use this R-script on its own!
 #
 # Have fun with the CM SAF R TOOLBOX!
-#                                              (Steffen Kothe / CM SAF 2022-03-15)
+#                                              (Steffen Kothe / CM SAF 2025-08-13)
 #__________________________________________________________________________________
 
 # Use home directory for storing config file (e.g. C:\Users\<user>\Documents
@@ -309,6 +309,35 @@ operatorOptionsDict[["compare_data"]] <- c( "cmsaf.diff.absolute",
                                             "cmsaf.time.series",
                                             "cmsaf.hovmoller",
                                             "cmsaf.stats")
+
+## ---- CM SAF Toolbox runtime dependency check ----
+.check_app_dependencies <- function() {
+  # Packages the Shiny app needs at runtime.
+  # Keep this list in sync with DESCRIPTION Suggests:
+  req <- c(
+    "shiny", "shinyjs", "shinyWidgets", "shinyFiles", "shinythemes",
+    "colourpicker", "colorspace", "ncdf4",
+    "data.table", "maps", "raster",
+    "FNN", "R.utils", "SearchTrees",
+    "tcltk", "xml2"
+  )
+  
+  missing <- req[!vapply(req, requireNamespace, logical(1), quietly = TRUE)]
+  if (length(missing)) {
+    stop(
+      paste0(
+        "The CM SAF Toolbox app requires additional packages:\n  ",
+        paste(missing, collapse = ", "),
+        "\nPlease install them, e.g.:\n  install.packages(c(",
+        paste(sprintf('"%s"', missing), collapse = ", "),
+        "))"
+      ),
+      call. = FALSE
+    )
+  }
+}
+
+.check_app_dependencies()
 
 # default plot settings
 textsize    <- 1.2

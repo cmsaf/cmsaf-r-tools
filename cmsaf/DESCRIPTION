@@ -30,28 +30,30 @@ URL: https://www.cmsaf.eu
 License: GPL (>= 3)
 BugReports: https://github.com/cmsaf/cmsaf-r-tools/issues
 Depends: R (>= 4.0), cmsafops (>= 1.4.0), cmsafvis (>= 1.2.0)
-Imports: 
-    colourpicker (>= 1.0),
-    colorspace (>= 1.4),
-    FNN (>= 1.1),
-    maps (>= 3.3),
-    ncdf4 (>= 1.17),
-    R.utils (>= 2.9),
-    raster (>= 3.0),
-    shiny (>= 1.4),
-    shinyFiles (>= 0.8.0),
-    shinyjs (>= 1.1),
-    shinythemes (>= 1.1),
-    shinyWidgets (>= 0.6),
-    tcltk (>= 3.5),
+Suggests:
+    shiny,
+    shinyjs,
+    shinyWidgets,
+    shinyFiles,
+    shinythemes,
+    colourpicker,
+    colorspace,
     data.table,
+    maps,
+    ncdf4,
+    raster,
+    rworldxtra,
+    FNN,
+    R.utils,
     SearchTrees,
+    spelling,
+    tcltk,
+    testthat,
     xml2
 NeedsCompilation: no
 Repository: CRAN
-Suggests: rworldxtra (>= 1.01), spelling (>= 2.1), testthat (>= 2.3)
 RoxygenNote: 7.3.2
 Encoding: UTF-8
 Language: en-US
-Packaged: 2025-07-23 12:34:00 UTC; SK
+Packaged: 2025-08-13 12:34:00 UTC; SK
 Maintainer: Steffen Kothe <Steffen.Kothe@dwd.de>

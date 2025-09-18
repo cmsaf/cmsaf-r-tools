@@ -2,6 +2,7 @@
 
 ## 1.4.2
 - Bug fix: float precision of daymin and daymax output 
+- Add helper function to keep `sig` variable if existing
 
 ## 1.4.1
 - Bug fix: in case of just one missing value, `timcumsum` could give an error
