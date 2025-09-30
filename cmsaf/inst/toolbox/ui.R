@@ -682,7 +682,8 @@ fluidPage(
                                                                    choices = list("Positive (1)" = 1, "Not significant (0)" = 0, "Negative (-1)" = -1),
                                                                    selected = NULL),
                                                 selectInput("sig_na_color", "Color for masked areas",
-                                                            choices = list("White" = "white", "Light grey" = "lightgrey", "Grey" = "grey"),
+                                                            choices = list("White" = "white", "Light grey" = "lightgrey", "Grey" = "grey",
+                                                                           "Dark Grey" = "grey42", "Pink" = "pink", "Slate grey" = "slategray2"),
                                                             selected = "lightgrey")
                                        )
                                      )
