@@ -1,11 +1,12 @@
 # Changelog for cmsafvis package
 
-## 1.2.10
+## 1.3.0
 - Added option to change textsize in figures via Toolbox (cmsaf R-package)
 - Adapt quicklook config for anomalies
 - Bug fix: time period for fieldmean plots
 - Added option to plot trends using significance mask
 - Bug fix: Fixing white lines in map plots
+- Bug fix: Fix issue in render_region_plot to use own shapefiles 
 
 ## 1.2.9
 

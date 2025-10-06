@@ -1,15 +1,15 @@
 ################################################################################
 # Helper functions
 entered_define <- FALSE
-safe_redef  <- function() { 
+safe_redef <- function(dst) {
   res <- try(ncdf4::nc_redef(dst), silent = TRUE)
-  if (!inherits(res, "try-error")) entered_define <<- TRUE
+  if (!inherits(res, "try-error")) state$in_define <- TRUE
   invisible(TRUE)
 }
-safe_enddef <- function() {
-  if (isTRUE(entered_define)) {
+safe_enddef <- function(dst) {
+  if (isTRUE(state$in_define)) {
     try(ncdf4::nc_enddef(dst), silent = TRUE)
-    entered_define <<- FALSE
+    state$in_define <- FALSE
   }
   invisible(TRUE)
 }

@@ -3,7 +3,7 @@
 # You should not use this R-script on its own!
 #
 # Have fun with the CM SAF R TOOLBOX!
-#                                              (Steffen Kothe / CM SAF 2025-07-23)
+#                                              (Steffen Kothe / CM SAF 2025-10-06)
 #__________________________________________________________________________________
 
 descriptionString <-
@@ -25,7 +25,7 @@ right in and analyze or visualize a .nc file.
 Suggestions for improvements and praise for the developers
 can be sent to contact.cmsaf@dwd.de.
 
-- Steffen Kothe - 2025-07-28 -"
+- Steffen Kothe - 2025-10-06 -"
 
 # Variable can be found in global.R
 if (isRunningLocally) {
@@ -682,8 +682,8 @@ fluidPage(
                                                                    choices = list("Positive (1)" = 1, "Not significant (0)" = 0, "Negative (-1)" = -1),
                                                                    selected = NULL),
                                                 selectInput("sig_na_color", "Color for masked areas",
-                                                            choices = list("White" = "white", "Light grey" = "lightgrey", "Grey" = "grey",
-                                                                           "Dark Grey" = "grey42", "Pink" = "pink", "Slate grey" = "slategray2"),
+                                                            choices = list("White" = "white", "Light grey" = "lightgrey", "Grey" = "grey", "Dark Grey I" = "grey62",
+                                                                           "Dark Grey II" = "grey42", "Pink" = "pink", "Slate grey" = "slategray2"),
                                                             selected = "lightgrey")
                                        )
                                      )

@@ -3,7 +3,7 @@
 # You should not use this R-script on its own!
 #
 # Have fun with the CM SAF R TOOLBOX!
-#                                              (Steffen Kothe / CM SAF 2025-07-23)
+#                                              (Steffen Kothe / CM SAF 2025-10-06)
 #__________________________________________________________________________________
 
 # Function to compute first of month
@@ -6287,45 +6287,87 @@ function(input, output, session) {
 
   # Set divisions
   observeEvent(region_data(), {
-    all_divisions <- names(region_data())
+    dat <- region_data()
+    cols <- names(dat)
+    
+    keep <- vapply(cols, function(nm) {
+      v <- dat[[nm]]
+      is.atomic(v) && (length(na.omit(v)) > 0)
+    }, logical(1))
+    
+    all_divisions <- cols[keep]
+    
     if (!is.element("COUNTRY", all_divisions)) {
       all_divisions <- c("COUNTRY", all_divisions)
     }
+    
     output$division_options <- renderUI({
-      selectInput("division",
-                  "Division",
-                  choices = c("Select division", all_divisions))
+      selectInput("division", "Division", choices = c("Select division", all_divisions))
     })
   })
-
+  
   # Set regions
+  # Helper: robustly extract region values for a chosen division column
+  .regions_from_division <- function(dat, division) {
+    if (is.null(dat) || is.null(division) || !nzchar(division)) return(character())
+    v <- dat[[division]]
+    if (is.null(v)) return(character())
+    
+    # Convert to character and build unique values; factors keep their levels
+    if (is.factor(v)) {
+      vals <- levels(v)
+    } else {
+      vals <- unique(as.character(v))
+    }
+    
+    # Drop NAs and empty strings
+    vals <- vals[!is.na(vals) & nzchar(vals)]
+    
+    # Stable, case-insensitive sort
+    vals[order(tolower(vals), vals)]
+  }
+  
+  # Set regions (replace your original "Set regions" observer with this block)
   observeEvent(input$division, {
     if (input$division != "Select division") {
       if (input$division != "COUNTRY") {
-        all_regions <- levels(region_data()[[input$division]])
+        all_regions <- .regions_from_division(region_data(), input$division)
+        
+        # Friendly fallback if no values are found in the chosen attribute
+        if (!length(all_regions)) {
+          all_regions <- c("(no values found in selected attribute)")
+        }
+        
+        output$region_options <- renderUI({
+          selectInput(
+            "region",
+            "Region",
+            choices = c("Select region", all_regions),
+            selected = "Select region"
+          )
+        })
+        
       } else {
-        # data of all countries
+        # COUNTRY mode: offer countries by ISO3 with English names as labels
         countries_choosable <- codes[, "iso3c"]
         names(countries_choosable) <- codes[, "country.name.en"]
-
-        all_regions <- countries_choosable
+        
+        output$region_options <- renderUI({
+          selectInput(
+            "region",
+            "Region",
+            choices = c("Select region", countries_choosable),
+            selected = "Select region"
+          )
+        })
       }
-
-      output$region_options <- renderUI({
-        selectInput("region",
-                    "Region",
-                    choices = c("Select region", all_regions),
-                    selected = "Select region")
-      })
     } else {
       output$region_options <- renderUI({
-        selectInput("region",
-                    "Region",
-                    choices = c("Select region"))
+        selectInput("region", "Region", choices = c("Select region"))
       })
     }
   })
-
+  
   # Toggle instat file upload
   observeEvent(input$plot_rinstat, {
     # Is set in global.R
@@ -7542,7 +7584,7 @@ function(input, output, session) {
     cat("Suggestions for improvements and praise for the developers", "\n")
     cat("can be send to contact.cmsaf@dwd.de.", "\n")
     cat("\n")
-    cat("                              - Steffen Kothe - 2025-07-28 -", "\n")
+    cat("                              - Steffen Kothe - 2025-10-06 -", "\n")
     cat("\n")
     cat("\n")
   })
