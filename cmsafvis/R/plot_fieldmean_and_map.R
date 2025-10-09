@@ -290,16 +290,23 @@ plot_fieldmean_and_map <- function(variable,
   duration <- length(var_current)
   climate_duration <- plot_stop - start_doy + 1
 
-  var_current_to_plot <- var_current
-  var_climate_to_plot <- var_clima[start_doy:plot_stop]
-
+  # After slicing:
+  var_current_to_plot <- var_current[start_doy:finish_doy]
+  var_climate_to_plot <- var_clima[start_doy:finish_doy]
+  
   if (start_doy > 1 && adjustAccumulation) {
-    # If data was accumulated and we don't plot starting from January 1st, the data doesn't start at 0.
-    # We correct this by subtracting the value of the first date from alle dates.
-    var_current_to_plot <- var_current_to_plot - rep(var_current[1], duration)
-    var_climate_to_plot <- var_climate_to_plot - rep(var_climate_to_plot[1], climate_duration)
+    # Use the window's first value as offset (consistent with climatology handling)
+    offset_curr <- var_current_to_plot[1]
+    # Fallback: if the first value inside the window is NA, try the last value before the window
+    if (is.na(offset_curr)) {
+      # Use previous day's value (start_doy - 1) if available; otherwise 0
+      offset_curr <- if (start_doy > 1) var_current[start_doy - 1] else NA_real_
+      if (is.na(offset_curr)) offset_curr <- 0
+    }
+    var_current_to_plot  <- var_current_to_plot  - offset_curr
+    var_climate_to_plot  <- var_climate_to_plot - var_climate_to_plot[1]
   }
-
+  
   ############################################################################################
   # plot graphic
 
@@ -1135,8 +1142,36 @@ plot_fieldmean_and_map <- function(variable,
                          dat_min[length(var_current_to_plot)])
 
     final_values <- data.frame(title = titles, years = standout_years, value = standout_values)
-    ranking.values <- ranking(out_dir, variable, country_code, climate_year_start, climate_year_end, finish_doy)
+    # --- Build consistent ranking values based on plotted data ---
+    
+    # Vector of years corresponding to climatology files
+    years_all <- as.integer(firstyear):as.integer(lastyear)
+    
+    # Derive one representative value per year
+    # If accumulation is active: take the final day value (sum)
+    # Otherwise: use the mean over the selected period
+    values_all <- vapply(
+      years_all,
+      function(yy) {
+        dat <- get(paste0(variable, "_acc_", yy))  # already cropped & adjusted in plot loop
+        if (adjustAccumulation) {
+          tail(dat, 1)  # final accumulated value
+        } else {
+          mean(dat, na.rm = TRUE)  # or sum(dat, na.rm = TRUE) if desired
+        }
+      },
+      numeric(1)
+    )
+    
+    # Create ranking dataframe directly from these values
+    ranking.values <- ranking(
+      out_dir, variable, country_code, firstyear, lastyear, finish_doy,
+      years = years_all, values = values_all
+    )
+    
+    # Pass to existing output routine
     calc.parameters.monitor.climate(final_values, ranking.values)
+    
     # Print message
     if (adjustAccumulation) {
       message("Significant values at the final time period:")
