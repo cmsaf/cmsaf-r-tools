@@ -1,3 +1,50 @@
+#' Render a regional raster plot with optional custom boundaries
+#'
+#' Produces a map image for a selected region by cropping/masking a NetCDF raster,
+#' handling longitude wrap (0–360 -> -180–180), CRS alignment, and setting sane
+#' plot limits/aspect. Designed for use in the CM SAF R Toolbox.
+#'
+#' @param infile Character path to the NetCDF input file.
+#' @param outfile Optional path for the output image file. If \code{NULL}, a temp file is used.
+#' @param fileExtension Output file extension, one of \code{".png"}, \code{".jpg"}, \code{".pdf"}.
+#' @param visualizeVariables List with at least \code{$vn} (variable name) and \code{$date.time}.
+#' @param visualizeDataMax Numeric; used for colorbar tick calculation.
+#' @param lon_bounds,lat_bounds Numeric vectors of visible longitude/latitude bounds (unused here but part of API).
+#' @param lon_loc_vec,lat_loc_vec,name_loc_vec Optional location markers (lon/lat + labels).
+#' @param division Character name of the attribute/level used to select the region (e.g. \code{"COUNTRY"} or a shapefile field).
+#' @param selectedRegion Character code/value of the selected region (e.g. ISO3).
+#' @param region_data Spatial or sf object with user-provided regions (when \code{division != "COUNTRY"}).
+#' @param timestep Selected timestep (should match an entry of \code{visualizeVariables$date.time}).
+#' @param num_tick,num_rmin,num_rmax Numeric settings for legend ticks and z range.
+#' @param location Logical; draw location markers if \code{TRUE}.
+#' @param text1,text2,text3 Character strings for title, footer, and legend label.
+#' @param PAL,palettes,num_brk,reverse Color palette settings passed to \code{getColors()}.
+#' @param textsize Numeric base text size used in plotting.
+#' @param bordercolor Color for region borders and markers.
+#' @param plot_grid,grid_col Currently unused plotting options (kept for API compatibility).
+#' @param image_def,ihsf Image sizing settings from the Toolbox.
+#' @param nc Optional opened NetCDF handle; if provided, \code{infile <- nc$filename}.
+#'
+#' @return A named list with \code{src} (file path), \code{contentType}, \code{width}, \code{height}.
+#'
+#' @details
+#' The function:
+#' \enumerate{
+#'   \item Loads the raster brick for the requested variable.
+#'   \item Normalizes longitudes to [-180, 180] if input is 0–360 (via \code{raster::rotate}).
+#'   \item Validates/aligns the region geometry (sf -> Spatial, EPSG:4326, transform to raster CRS).
+#'   \item Crops/masks the raster by the region and draws the image with geographic aspect.
+#' }
+#' The package \pkg{lwgeom} is used \emph{optionally} (via \code{requireNamespace}) to fix invalid geometries;
+#' a \code{st_buffer(., 0)} fallback is applied if \pkg{lwgeom} is not available.
+#'
+#' @seealso \code{\link{getColors}}
+#'
+#' @importFrom methods as
+#' @importFrom raster brick crop mask xFromCol yFromRow extent rotate crs
+#' @importFrom fields image.plot
+#' @importFrom graphics par points text mtext
+#' @export
 render_region_plot <- function(infile,
                                outfile = NULL,
                                fileExtension = ".png",
