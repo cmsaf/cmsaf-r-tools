@@ -155,24 +155,46 @@ plot_fieldmean <- function(variable,
 
   # Preparing data
   duration <- finish_doy - start_doy + 1
-  climate_duration <- finish_doy - start_doy + 1
+  climate_duration <- duration
   
-  # After slicing:
-  var_current_to_plot <- var_current[start_doy:finish_doy]
-  var_climate_to_plot <- var_clima[start_doy:finish_doy]
+  len_curr <- length(var_current)
+  len_clim <- length(var_clima)
   
-  if (start_doy > 1 && adjustAccumulation) {
-    # Use the window's first value as offset (consistent with climatology handling)
-    offset_curr <- var_current_to_plot[1]
-    # Fallback: if the first value inside the window is NA, try the last value before the window
-    if (is.na(offset_curr)) {
-      # Use previous day's value (start_doy - 1) if available; otherwise 0
-      offset_curr <- if (start_doy > 1) var_current[start_doy - 1] else NA_real_
-      if (is.na(offset_curr)) offset_curr <- 0
-    }
-    var_current_to_plot  <- var_current_to_plot  - offset_curr
-    var_climate_to_plot  <- var_climate_to_plot - var_climate_to_plot[1]
+  # --- Slice current safely ---
+  if (len_curr == duration) {
+    # current is already windowed (e.g., 02-Mar .. 03-Oct), do not slice again
+    var_current_to_plot <- as.numeric(var_current)
+  } else {
+    # slice by DOY but clamp to available range
+    s_idx <- max(1, start_doy)
+    e_idx <- min(finish_doy, len_curr)
+    var_current_to_plot <- as.numeric(var_current[s_idx:e_idx])
   }
+  
+  # --- Slice climatology safely (usually full year) ---
+  s_idx_clim <- max(1, start_doy)
+  e_idx_clim <- min(finish_doy, len_clim)
+  var_climate_to_plot <- as.numeric(var_clima[s_idx_clim:e_idx_clim])
+  
+  # --- De-accumulate relative to the in-window start (if requested) ---
+  if (start_doy > 1 && adjustAccumulation) {
+    # Use first in-window values as offsets; robust against NA at Jan 1
+    off_curr <- var_current_to_plot[1]
+    if (is.na(off_curr)) off_curr <- 0
+    var_current_to_plot <- var_current_to_plot - off_curr
+    
+    off_clim <- var_climate_to_plot[1]
+    if (is.na(off_clim)) off_clim <- 0
+    var_climate_to_plot <- var_climate_to_plot - off_clim
+  }
+  
+  # Keep a consistent plot length downstream
+  plot_length <- min(length(var_current_to_plot), length(var_climate_to_plot))
+  
+  #### DEBUGGING
+  message(sprintf("[DBG] curr_len=%d clim_len=%d duration=%d tail(curr)=%s",
+                  length(var_current_to_plot), length(var_climate_to_plot), duration,
+                  as.character(utils::tail(var_current_to_plot,1))))
   
   ############################################################################################
   # plot var_2018_graphic
@@ -223,9 +245,7 @@ plot_fieldmean <- function(variable,
       pointsize = 12
     )
 
-    #######################graphics::par(cex = 1.2,oma = c(0,0,0,0),mar = c(2,5,3,2))
-    #graphics::par(cex = 1.2,oma = c(0,0,0,0),mar = c(2,5,3,1))
-    plot_length <- finish_doy - start_doy + 1
+    # plot_length <- finish_doy - start_doy + 1
 
     graphics::par(
       cex = 1.2,
@@ -421,7 +441,7 @@ plot_fieldmean <- function(variable,
           }
 
           limit_y <- signif(ceiling(limit + limit/15), digits = 2)
-          plot_length <- finish_doy - start_doy + 1
+          # plot_length <- finish_doy - start_doy + 1
 
           corr_date <- start_doy + i - 1
 
@@ -732,7 +752,7 @@ plot_fieldmean <- function(variable,
       function(yy) {
         dat <- get(paste0(variable, "_acc_", yy))  # already cropped & adjusted in plot loop
         if (adjustAccumulation) {
-          tail(dat, 1)  # final accumulated value
+          utils::tail(dat, 1)  # final accumulated value
         } else {
           mean(dat, na.rm = TRUE)  # or sum(dat, na.rm = TRUE) if desired
         }

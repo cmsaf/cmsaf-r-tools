@@ -1,22 +1,3 @@
-################################################################################
-# Helper functions
-entered_define <- FALSE
-safe_redef <- function(dst) {
-  res <- try(ncdf4::nc_redef(dst), silent = TRUE)
-  if (!inherits(res, "try-error")) state$in_define <- TRUE
-  invisible(TRUE)
-}
-safe_enddef <- function(dst) {
-  if (isTRUE(state$in_define)) {
-    try(ncdf4::nc_enddef(dst), silent = TRUE)
-    state$in_define <- FALSE
-  }
-  invisible(TRUE)
-}
-
-################################################################################
-# Keep sig variable in the resulting file
-
 keep_sig_alongside <- function(infile, outfile, result_varname,
                                verbose = TRUE,
                                read_back_check = TRUE,
@@ -42,6 +23,16 @@ keep_sig_alongside <- function(infile, outfile, result_varname,
   
   dst <- try(ncdf4::nc_open(outfile, write = TRUE), silent = TRUE)
   if (inherits(dst, "try-error")) { logf("! nc_open(dst) failed"); return(FALSE) }
+  
+  # define-mode helper only for schema changes
+  safe_redef <- function() {
+    invisible(try(ncdf4::nc_redef(dst), silent = TRUE))
+  }
+
+  put_att <- function(var, name, value) {
+    if (is.null(value)) return(invisible(TRUE))
+    invisible(try(ncdf4::ncatt_put(dst, var, name, value), silent = TRUE))
+  }
   
   # --- src dims ---
   sigv   <- src$var[["sig"]]
@@ -110,15 +101,13 @@ keep_sig_alongside <- function(infile, outfile, result_varname,
            "int"   = as.integer(val),
            "float" = as.numeric(val),
            "double"= as.numeric(val),
-           as.numeric(val)
-    )
+           as.numeric(val))
   }
   if (isTRUE(cast_byte)) {
     # map data to int8 flags -1/0/1; set fill as 127
     sig_data <- ifelse(is.na(sig_data), 127L, as.integer(sig_data))
     fill_att <- 127L
     units_att <- "1"
-    long_att  <- long_att
   } else {
     fill_att <- coerce_fill(fill_att, dst_prec)
   }
@@ -129,15 +118,14 @@ keep_sig_alongside <- function(infile, outfile, result_varname,
   cs[grepl("lat|y", names(cs), ignore.case = TRUE)] <- min(cs[grepl("lat|y", names(cs), ignore.case = TRUE)], chunks_xy)
   cs[grepl("time", names(cs), ignore.case = TRUE)]  <- 1L
   chunksizes <- as.integer(cs)
-  
-  # --- define var if missing ---
-  # --- define var if missing (robust to ncdf4 version) ---
+
+  # --- define var if missing (robust to ncdf4 versions) ---
   need_define <- !("sig" %in% names(dst$var))
   if (need_define) {
     logf("defining 'sig' in dst...")
-    safe_redef()
+    # 1) enter define mode explicitly
+    invisible(try(ncdf4::nc_redef(dst), silent = TRUE))
     
-    # Build a safe argument list for ncvar_def() based on supported formals
     fmls <- names(formals(ncdf4::ncvar_def))
     args <- list(
       name     = "sig",
@@ -147,44 +135,55 @@ keep_sig_alongside <- function(infile, outfile, result_varname,
       longname = long_att,
       prec     = dst_prec
     )
+    # Optional compression/chunking only if supported AND file is NetCDF-4
+    # (skip these if your outputs can be NetCDF-3 classic)
+    if ("compression" %in% fmls && isTRUE(compress)) args$compression <- deflate_level
+    if ("shuffle"     %in% fmls && isTRUE(compress)) args$shuffle     <- TRUE
+    if ("chunksizes"  %in% fmls && isTRUE(compress)) args$chunksizes  <- chunksizes
     
-    # Optional compression/chunking only if your ncdf4 supports them
-    if ("compression" %in% fmls && isTRUE(compress)) {
-      # many ncdf4 versions expect compression=0..9
-      args$compression <- deflate_level
+    quiet_nc <- function(expr) {
+      tf <- tempfile()
+      con <- file(tf, open = "wt")
+      on.exit({ try(close(con), TRUE); try(sink(NULL), TRUE); try(sink(type="message", NULL), TRUE) }, add = TRUE)
+      sink(con)                         # stdout
+      sink(con, type = "message")       # stderr/messages
+      invisible(try(force(expr), silent = TRUE))
     }
-    if ("shuffle" %in% fmls && isTRUE(compress)) {
-      args$shuffle <- TRUE
-    }
-    if ("chunksizes" %in% fmls && isTRUE(compress)) {
-      args$chunksizes <- chunksizes
-    }
-    # (Do NOT add deflate/deflate_level if they aren't supported)
+
+    quiet_nc(ncdf4::nc_enddef(dst))
     
-    # Call ncvar_def() with only-supported args
     sig_def <- try(do.call(ncdf4::ncvar_def, args), silent = TRUE)
     if (inherits(sig_def, "try-error")) {
-      safe_enddef()  # leave define mode cleanly
+      # leave define mode if we entered it
+      # invisible(try(ncdf4::nc_enddef(dst), silent = TRUE))
+      quiet_nc(ncdf4::nc_enddef(dst))
       logf("! ncvar_def failed: %s", as.character(sig_def))
       return(FALSE)
     }
     
     add_res <- try(ncdf4::ncvar_add(dst, sig_def), silent = TRUE)
     if (inherits(add_res, "try-error")) {
-      safe_enddef()
+      # invisible(try(ncdf4::nc_enddef(dst), silent = TRUE))
+      quiet_nc(ncdf4::nc_enddef(dst))
       logf("! ncvar_add failed: %s", as.character(add_res))
       return(FALSE)
     }
     
-    safe_enddef()
+    # 3) leave define mode right away (quietly)
+    # invisible(try(ncdf4::nc_enddef(dst), silent = TRUE))
+    quiet_nc(ncdf4::nc_enddef(dst))
     
-    # Refresh handle to avoid stale-var issues
+    # refresh handle
     try(ncdf4::nc_close(dst), silent = TRUE)
     dst <- try(ncdf4::nc_open(outfile, write = TRUE), silent = TRUE)
     if (inherits(dst, "try-error")) { logf("! re-open dst failed after add"); return(FALSE) }
     logf("...defined 'sig' and refreshed handle.")
-  } else {
-    logf("'sig' already exists in dst.")
+    
+    # sanity assert the var is present
+    if (!("sig" %in% names(dst$var))) {
+      logf("! 'sig' not visible in dst after define; aborting")
+      return(FALSE)
+    }
   }
   
   # --- confirm dst sig dims ---
@@ -215,18 +214,7 @@ keep_sig_alongside <- function(infile, outfile, result_varname,
   if (inherits(wr, "try-error")) { logf("! ncvar_put failed: %s", as.character(wr)); return(FALSE) }
   logf("wrote sig_data successfully.")
   
-  # try attributes in data mode first
-  put_att <- function(var, name, value) {
-    if (is.null(value)) return(invisible(TRUE))
-    res <- try(ncdf4::ncatt_put(dst, var, name, value), silent = TRUE)
-    if (inherits(res, "try-error")) {
-      safe_redef()
-      try(ncdf4::ncatt_put(dst, var, name, value), silent = TRUE)
-      safe_enddef()
-    }
-    invisible(TRUE)
-  }
-  
+  # attributes (try in data mode; fallback to define mode)
   put_att("sig", "units",          units_att)
   put_att("sig", "long_name",      long_att)
   put_att("sig", "standard_name",  stdname)
@@ -234,15 +222,16 @@ keep_sig_alongside <- function(infile, outfile, result_varname,
   put_att("sig", "flag_values",    fvals)
   put_att("sig", "flag_meanings",  fmeans)
   put_att("sig", "valid_range",    vrange)
-
+  # _FillValue should be set at definition time; changing it later is often disallowed
+  
   # ancillary link
   if (result_varname %in% names(dst$var)) {
     cur <- try(ncdf4::ncatt_get(dst, result_varname, "ancillary_variables"), silent = TRUE)
     cur <- if (!inherits(cur, "try-error") && isTRUE(cur$hasatt)) cur$value else ""
     new <- if (nzchar(cur) && !grepl("\\bsig\\b", cur)) paste(cur, "sig")
     else if (!nzchar(cur)) "sig" else cur
-      put_att(result_varname, "ancillary_variables", new)
-      logf("ancillary_variables(%s): %s", result_varname, new)
+    put_att(result_varname, "ancillary_variables", new)
+    logf("ancillary_variables(%s): %s", result_varname, new)
   }
   
   # optional read-back

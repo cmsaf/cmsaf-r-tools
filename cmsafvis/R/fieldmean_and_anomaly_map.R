@@ -90,11 +90,12 @@ fieldmean_and_anomaly_map <- function(config = NULL,
   dwd_logo <- parsedArguments$dwd_logo
   verbose <- parsedArguments$verbose
   nc <- parsedArguments$nc
+  color_pal <- if (is.null(parsedArguments$color_pal)) color_pal else parsedArguments$color_pal
   
-  # check_infile_monitor_climate
-  # if(accumulate == FALSE)
-  #   stop("Creating a multi day graphic of non accumulated data is not possible. Please choose to accumulate the infile, or plot format 'animation', or select a single day in the date range")
-
+  if (is.null(show_extreme_climate_years)) {
+    show_extreme_climate_years <- isTRUE(accumulate)
+  }
+  
   if (attach) {
     attach_file(variable = variable,
                 infile = infile,
@@ -174,6 +175,7 @@ fieldmean_and_anomaly_map <- function(config = NULL,
     )
   } else {
     climate_masked_file <- climatology_file
+    mask_file_final <- NULL 
   }
 
 
@@ -218,7 +220,7 @@ fieldmean_and_anomaly_map <- function(config = NULL,
     climate_year_end = climate_year_end,
     start_date = start_date,
     end_date = end_date,
-    accumulate = TRUE, 
+    accumulate = TRUE 
   )
 
   fieldmean_ensemble(
@@ -271,6 +273,7 @@ fieldmean_and_anomaly_map <- function(config = NULL,
     adjustAccumulation = accumulate,
     states = states,
     dwd_logo = dwd_logo,
+    color_pal = color_pal,
     verbose = verbose
   )
 }

@@ -3,7 +3,7 @@
 # You should not use this R-script on its own!
 #
 # Have fun with the CM SAF R TOOLBOX!
-#                                              (Steffen Kothe / CM SAF 2025-10-06)
+#                                              (Steffen Kothe / CM SAF 2025-10-20)
 #__________________________________________________________________________________
 
 # Function to compute first of month
@@ -7502,44 +7502,82 @@ function(input, output, session) {
     req(visualizeDataMax())
     req(visualizeVariables()$plot_dim == 2)
 
-    # compute some statistics
-    xr <- which(visualizeVariables()$lon >= (input$slider1[1]) & visualizeVariables()$lon <= (input$slider1[2]))
-    yr <- which(visualizeVariables()$lat >= (input$slider2[1]) & visualizeVariables()$lat <= (input$slider2[2]))
-    dastat <- visualizeDataTimestep()[xr, yr]
-    # dastat <- visualizeVariables()$data[xr, yr, which(visualizeVariables()$date.time == input$timestep, arr.ind = TRUE)]
-
-    dg <- 2
-    if (abs(visualizeDataMax()) >= 10) (dg <- 1)
-    if (abs(visualizeDataMax()) >= 100) (dg <- 0)
-
-    da_mean   <- round(mean(dastat, na.rm = TRUE), digits = dg)
-    da_median <- round(stats::median(dastat, na.rm = TRUE), digits = dg)
-    da_sd     <- round(stats::sd(dastat, na.rm = TRUE), digits = dg)
-    da_max    <- round(max(dastat, na.rm = TRUE), digits = dg)
-    da_min    <- round(min(dastat, na.rm = TRUE), digits = dg)
-
-    # some numbers
-    output$statistics <- renderPrint({
-      cat(paste0("Mean:               ", da_mean), "\n")
-      cat(paste0("Median:             ", da_median), "\n")
-      cat(paste0("Standard deviation: ", da_sd), "\n")
-      cat(paste0("Maximum:            ", da_max), "\n")
-      cat(paste0("Minimum:            ", da_min), "\n")
-      cat(paste0("Unit:               ", visualizeVariables()$unit), "\n")
-      cat("\n")
-      cat(paste0("To save the histogram figure: right-click + save image as..."), "\n")
-    })
-
-    # Missing values can be found in global.R
-    # histogram
-    output$myHist <- renderPlot({
-      cmsafvis::render_hist_plot(dastat = as.numeric(dastat),
-                                 shortDescription = input$text1,
-                                 xlab = input$text3,
-                                 grid_col = grid_col,
-                                 bordercolor = bordercolor,
-                                 linesize = linesize)
-    })
+    # compute some statistics (robust to all-NA / empty selections)
+    xr <- which(visualizeVariables()$lon >= input$slider1[1] &
+                  visualizeVariables()$lon <= input$slider1[2])
+    yr <- which(visualizeVariables()$lat >= input$slider2[1] &
+                  visualizeVariables()$lat <= input$slider2[2])
+    
+    # coerce to numeric and keep only finite values
+    dastat_raw <- as.numeric(visualizeDataTimestep()[xr, yr])
+    x <- dastat_raw[is.finite(dastat_raw)]
+    
+    # digits based on data max; guard against NA
+    vm <- suppressWarnings(visualizeDataMax())
+    dg <- 2L
+    if (is.finite(vm) && abs(vm) >= 10)  dg <- 1L
+    if (is.finite(vm) && abs(vm) >= 100) dg <- 0L
+    
+    if (!length(x)) {
+      # no finite data in selection
+      da_mean   <- NA_real_
+      da_median <- NA_real_
+      da_sd     <- NA_real_
+      da_max    <- NA_real_
+      da_min    <- NA_real_
+      
+      output$statistics <- renderPrint({
+        cat("No finite data in the selected area.\n\n")
+        cat(paste0("Mean:               ", da_mean), "\n")
+        cat(paste0("Median:             ", da_median), "\n")
+        cat(paste0("Standard deviation: ", da_sd), "\n")
+        cat(paste0("Maximum:            ", da_max), "\n")
+        cat(paste0("Minimum:            ", da_min), "\n")
+        cat(paste0("Unit:               ", visualizeVariables()$unit), "\n\n")
+        cat("To save the histogram figure: right-click + save image as...\n")
+      })
+      
+      output$myHist <- renderPlot({
+        # let the plotting function show a minimal "no data" plot
+        cmsafvis::render_hist_plot(
+          dastat = numeric(0),
+          shortDescription = input$text1,
+          xlab = input$text3,
+          grid_col = grid_col,
+          bordercolor = bordercolor,
+          linesize = linesize
+        )
+      })
+      
+    } else {
+      # compute stats on finite data
+      da_mean   <- round(mean(x),            digits = dg)
+      da_median <- round(stats::median(x),   digits = dg)
+      da_sd     <- round(stats::sd(x),       digits = dg)
+      da_max    <- round(max(x),             digits = dg)
+      da_min    <- round(min(x),             digits = dg)
+      
+      output$statistics <- renderPrint({
+        cat(paste0("Mean:               ", da_mean), "\n")
+        cat(paste0("Median:             ", da_median), "\n")
+        cat(paste0("Standard deviation: ", da_sd), "\n")
+        cat(paste0("Maximum:            ", da_max), "\n")
+        cat(paste0("Minimum:            ", da_min), "\n")
+        cat(paste0("Unit:               ", visualizeVariables()$unit), "\n\n")
+        cat("To save the histogram figure: right-click + save image as...\n")
+      })
+      
+      output$myHist <- renderPlot({
+        cmsafvis::render_hist_plot(
+          dastat = x,
+          shortDescription = input$text1,
+          xlab = input$text3,
+          grid_col = grid_col,
+          bordercolor = bordercolor,
+          linesize = linesize
+        )
+      })
+    }
   })
 
   # Observing changes to instat file
@@ -7584,7 +7622,7 @@ function(input, output, session) {
     cat("Suggestions for improvements and praise for the developers", "\n")
     cat("can be send to contact.cmsaf@dwd.de.", "\n")
     cat("\n")
-    cat("                              - Steffen Kothe - 2025-10-06 -", "\n")
+    cat("                              - Steffen Kothe - 2025-10-20 -", "\n")
     cat("\n")
     cat("\n")
   })

@@ -17,8 +17,8 @@ plot_fieldmean_and_map <- function(variable,
                                    output_format,
                                    min_value,
                                    max_value,
-								                   color_pal,
-                                   nbreaks,
+                                   color_pal = 1,
+                                   nbreaks = NULL,
                                    freeze_animation,
                                    outfile_name,
                                    adjustAccumulation,
@@ -236,6 +236,9 @@ plot_fieldmean_and_map <- function(variable,
   coldiff <- max_value - min_value
 
   ####################
+  
+  palettes <- GetPaletteConfig(gui = FALSE)
+  colors <- getColors(PAL = color_pal, palettes = palettes, num_brk = ncol - 1, reverse = FALSE)
 
   # Set the colors and the color bar
   k <- 8:12
@@ -287,25 +290,39 @@ plot_fieldmean_and_map <- function(variable,
     plot_stop <- 365
   }
 
-  duration <- length(var_current)
-  climate_duration <- plot_stop - start_doy + 1
-
-  # After slicing:
-  var_current_to_plot <- var_current[start_doy:finish_doy]
-  var_climate_to_plot <- var_clima[start_doy:finish_doy]
+  # --- Safe slicing (identical logic to plot_fieldmean) ---
+  duration <- finish_doy - start_doy + 1
+  climate_duration <- duration
   
-  if (start_doy > 1 && adjustAccumulation) {
-    # Use the window's first value as offset (consistent with climatology handling)
-    offset_curr <- var_current_to_plot[1]
-    # Fallback: if the first value inside the window is NA, try the last value before the window
-    if (is.na(offset_curr)) {
-      # Use previous day's value (start_doy - 1) if available; otherwise 0
-      offset_curr <- if (start_doy > 1) var_current[start_doy - 1] else NA_real_
-      if (is.na(offset_curr)) offset_curr <- 0
-    }
-    var_current_to_plot  <- var_current_to_plot  - offset_curr
-    var_climate_to_plot  <- var_climate_to_plot - var_climate_to_plot[1]
+  len_curr <- length(var_current)
+  len_clim <- length(var_clima)
+  
+  # Current: if already windowed (length equals duration), do NOT slice again.
+  if (len_curr == duration) {
+    var_current_to_plot <- as.numeric(var_current)
+  } else {
+    s_idx <- max(1, start_doy)
+    e_idx <- min(finish_doy, len_curr)
+    var_current_to_plot <- as.numeric(var_current[s_idx:e_idx])
   }
+  
+  # Climatology: usually full year, but still clamp to be safe.
+  s_idx_clim <- max(1, start_doy)
+  e_idx_clim <- min(finish_doy, len_clim)
+  var_climate_to_plot <- as.numeric(var_clima[s_idx_clim:e_idx_clim])
+  
+  # De-accumulate relative to in-window start if requested.
+  if (start_doy > 1 && adjustAccumulation) {
+    off_curr <- var_current_to_plot[1]; if (is.na(off_curr)) off_curr <- 0
+    off_clim <- var_climate_to_plot[1]; if (is.na(off_clim)) off_clim <- 0
+    var_current_to_plot  <- var_current_to_plot  - off_curr
+    var_climate_to_plot  <- var_climate_to_plot - off_clim
+  }
+  
+  # Convenience: build x-index for current series length (avoid using finish_doy directly)
+  idx_seq_curr <- seq.int(from = start_doy, length.out = length(var_current_to_plot))
+  idx_seq_clim <- seq.int(from = start_doy, length.out = length(var_climate_to_plot))
+  plot_length   <- min(length(idx_seq_curr), length(idx_seq_clim))
   
   ############################################################################################
   # plot graphic
@@ -358,7 +375,7 @@ plot_fieldmean_and_map <- function(variable,
 
     graphics::par(mfrow = c(1, 2))
 
-    plot_length <- length(start_doy:plot_stop)
+    # plot_length <- length(start_doy:plot_stop)
 
     graphics::par(
       cex = 1.2,
@@ -432,7 +449,7 @@ plot_fieldmean_and_map <- function(variable,
         lwd = lwd1
       )
       graphics::lines(
-        dates[start_doy:finish_doy],
+        dates[idx_seq_curr],
         var_current_to_plot,
         col = "red",
         lwd =  lwd1
@@ -641,7 +658,7 @@ plot_fieldmean_and_map <- function(variable,
 
           limit_y <- signif(ceiling(limit + limit/15), digits = 2)
 
-          plot_length <- plot_stop - start_doy + 1
+          # plot_length <- plot_stop - start_doy + 1
           corr_date <- start_doy + i - 1
 
           graphics::par(mfrow = c(1, 2))
@@ -711,8 +728,12 @@ plot_fieldmean_and_map <- function(variable,
             }
           }
 
-          var_current_seq <- var_current_to_plot[1:i]
-
+          # ensure we do not run past the available current series
+          i_curr <- min(i, length(var_current_to_plot))
+          var_current_seq <- var_current_to_plot[1:i_curr]
+          
+          corr_date_idx <- idx_seq_curr[i_curr]  # last plotted date index for "current"
+          
           set_time_locale(language)
           tryCatch({
             graphics::lines(
@@ -722,7 +743,7 @@ plot_fieldmean_and_map <- function(variable,
               lwd = lwd1
             )
             graphics::lines(
-              dates[start_doy:corr_date],
+              dates[start_doy:corr_date_idx],
               var_current_seq,
               col = "red",
               lwd = lwd1
@@ -915,7 +936,7 @@ plot_fieldmean_and_map <- function(variable,
 
             limit_y <- signif(ceiling(limit + limit/15), digits = 2)
 
-            plot_length <- plot_stop - start_doy
+            # plot_length <- plot_stop - start_doy
 
             graphics::par(mfrow = c(1, 2))
 
@@ -1126,56 +1147,52 @@ plot_fieldmean_and_map <- function(variable,
   } #end of if
 
   # Print stats
-  if (verbose) {
-    dat_max <- get(paste0(variable, "_acc_", yearMaxEnd))
-    dat_min <- get(paste0(variable, "_acc_", yearMinEnd))
-    titles <- c("Analyzed year", "Climatology", "Maximum valued year", "Minimum valued year")
+  # --- Print stats (am Ende) ---
+if (isTRUE(verbose)) {
+  # Jahre-Vector konsistent zur Klimatologie
+  years_all <- as.integer(climate_year_start):as.integer(climate_year_end)
 
-    standout_years <- c(format(start_date, format = "%Y"),
-                        paste(climate_year_start, climate_year_end, sep = " - "),
-                        yearMaxEnd,
-                        yearMinEnd)
+  # Werte je Jahr aus den bereits zugeschnittenen Reihen:
+  values_all <- vapply(
+    years_all,
+    function(yy) {
+      dat <- get(paste0(variable, "_acc_", yy))
+      if (isTRUE(adjustAccumulation)) utils::tail(dat, 1) else mean(dat, na.rm = TRUE)
+    },
+    numeric(1)
+  )
 
-    standout_values <- c(var_current_to_plot[length(var_current_to_plot)],
-                         var_climate_to_plot[length(var_current_to_plot)],
-                         dat_max[length(var_current_to_plot)],
-                         dat_min[length(var_current_to_plot)])
+  # max/min Jahr aus den Werten ableiten
+  imax <- which.max(values_all); imin <- which.min(values_all)
+  yearMaxEnd <- years_all[imax];  yearMinEnd <- years_all[imin]
 
-    final_values <- data.frame(title = titles, years = standout_years, value = standout_values)
-    # --- Build consistent ranking values based on plotted data ---
-    
-    # Vector of years corresponding to climatology files
-    years_all <- as.integer(firstyear):as.integer(lastyear)
-    
-    # Derive one representative value per year
-    # If accumulation is active: take the final day value (sum)
-    # Otherwise: use the mean over the selected period
-    values_all <- vapply(
-      years_all,
-      function(yy) {
-        dat <- get(paste0(variable, "_acc_", yy))  # already cropped & adjusted in plot loop
-        if (adjustAccumulation) {
-          tail(dat, 1)  # final accumulated value
-        } else {
-          mean(dat, na.rm = TRUE)  # or sum(dat, na.rm = TRUE) if desired
-        }
-      },
-      numeric(1)
+  dat_max <- get(paste0(variable, "_acc_", yearMaxEnd))
+  dat_min <- get(paste0(variable, "_acc_", yearMinEnd))
+
+  final_values <- data.frame(
+    title = c("Analyzed year","Climatology","Maximum valued year","Minimum valued year"),
+    years = c(format(start_date, "%Y"),
+              paste(climate_year_start, climate_year_end, sep=" - "),
+              yearMaxEnd, yearMinEnd),
+    value = c(
+      utils::tail(var_current_to_plot, 1),
+      utils::tail(var_climate_to_plot, 1),
+      utils::tail(dat_max, 1),
+      utils::tail(dat_min, 1)
     )
-    
-    # Create ranking dataframe directly from these values
-    ranking.values <- ranking(
-      out_dir, variable, country_code, firstyear, lastyear, finish_doy,
-      years = years_all, values = values_all
-    )
-    
-    # Pass to existing output routine
-    calc.parameters.monitor.climate(final_values, ranking.values)
-    
-    # Print message
-    if (adjustAccumulation) {
-      message("Significant values at the final time period:")
-      print(final_values)
-    }
+  )
+
+  ranking.values <- ranking(
+    out_dir, variable, country_code, climate_year_start, climate_year_end, finish_doy,
+    years = years_all, values = values_all
+  )
+
+  calc.parameters.monitor.climate(final_values, ranking.values)
+
+  if (isTRUE(adjustAccumulation)) {
+    message("Significant values at the final time period:")
+    print(final_values)
   }
+}
+
 }

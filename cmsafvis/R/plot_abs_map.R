@@ -155,6 +155,16 @@ plot_abs_map <- function(variable,
     field_for_setup_last <- field_source[, , duration]
   }
 
+  # Determine last time index safely (protect against off-by-one / shorter files)
+  t_len <- if (length(dim(field_source)) >= 3) dim(field_source)[3] else 1L
+  last_idx <- max(1L, min(duration, t_len))
+  
+  # Last slice to which the map is actually tied
+  field_last <- if (t_len > 1L) field_source[, , last_idx] else field_source
+  
+  # Spatial mean of the shown map (what “Analyzed year” should reflect)
+  analyzed_value <- mean(field_last, na.rm = TRUE)
+  
   # define colors
   bwr_col <-
     grDevices::colorRampPalette(
@@ -877,14 +887,17 @@ plot_abs_map <- function(variable,
     
     titles <- c("Analyzed year", "Maximum", "Minimum")
     
-    standout_years <- c(format(start_date, format = "%Y"),
-                        "-",
-                        "-")
+    standout_years <- c(format(start_date, "%Y"), "-", "-")
     
-    standout_values <- c(mean(field_source, na.rm = TRUE), max(field_source, na.rm = TRUE), min(field_source, na.rm = TRUE))
+    # Use the last displayed slice for consistency with the plot
+    standout_values <- c(
+      analyzed_value,                 # spatial mean of the last slice
+      max(field_last, na.rm = TRUE),  # spatial max of the last slice
+      min(field_last, na.rm = TRUE)   # spatial min of the last slice
+    )
     
     final_values <- data.frame(title = titles, years = standout_years, value = standout_values)
-    calc.parameters.monitor.climate(final_values)#, ranking[order(ranking$Value),])
+    calc.parameters.monitor.climate(final_values)
     
     # remove if it exists
     if (dir.exists(tmp_climate_dir)) {
@@ -930,15 +943,23 @@ plot_abs_map <- function(variable,
     
     titles <- c("Analyzed year", "Climatology Mean Value", "Maximum", "Minimum")
     
-    standout_years <- c(format(start_date, format = "%Y"),
-                        paste(climate_year_start, climate_year_end, sep = " - "),
-                        "-",
-                        "-")
+    standout_years <- c(
+      format(start_date, "%Y"),
+      paste(climate_year_start, climate_year_end, sep = " - "),
+      "-",
+      "-"
+    )
     
-    standout_values <- c(mean(field_source, na.rm = TRUE), mean(dum_dat_mean, na.rm = TRUE), max(field_source, na.rm = TRUE), min(field_source, na.rm = TRUE))
+    # Use last slice for analyzed/max/min; keep climatology as is
+    standout_values <- c(
+      analyzed_value,                  # matches the map’s slice
+      mean(dum_dat_mean, na.rm = TRUE),
+      max(field_last, na.rm = TRUE),
+      min(field_last, na.rm = TRUE)
+    )
     
     final_values <- data.frame(title = titles, years = standout_years, value = standout_values)
-    calc.parameters.monitor.climate(final_values)#, ranking[order(ranking$Value),])
+    calc.parameters.monitor.climate(final_values)
     
     # remove if it exists
     if (dir.exists(tmp_climate_dir)) {
