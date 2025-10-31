@@ -5,8 +5,6 @@
 #' Dependent on the output format a PNG is created.
 #'
 #' @inheritParams monitor_climate
-# #' @param trend_line Draw trend line (logical)
-# #' @param title Set title (character)
 #'
 #' @export
 #' @importFrom assertthat assert_that is.date is.dir is.flag is.number is.readable is.string is.writeable
@@ -34,8 +32,6 @@ trend_plot <- function(variable = NULL,
                        states = FALSE,
                        attach = FALSE,
                        infile_attach = "auto",
-                       # trend_line = TRUE,
-                       # title = "",
                        verbose = TRUE,
                        nc = NULL)
 {

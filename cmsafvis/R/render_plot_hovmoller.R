@@ -1,15 +1,15 @@
 #' Plotting routine designed for the CM SAF R Toolbox.
 #'
-#' This function renders a hovmoller plot of two variables.
-#' 
+#' This function renders a Hovmöller plot of two variables.
+#'
 #' @inheritParams render_plot
-#' @param title_data1 Title of the first data set
-#' @param title_data2 Title of the second data set
-#'@param nc Alternatively to \code{infile1} you can specify the input as an
-#'  object of class `ncdf4` (as returned from \code{ncdf4::nc_open}).
-#'@param nc2 Alternatively to \code{infile2} you can specify the input as an
-#'  object of class `ncdf4` (as returned from \code{ncdf4::nc_open}).
-#' 
+#' @param title_data1 Character. Title of the first data set.
+#' @param title_data2 Character. Title of the second data set.
+#' @param nc  Alternatively to `infile1` you can specify the input as an
+#'   object of class `ncdf4` (as returned from `ncdf4::nc_open`).
+#' @param nc2 Alternatively to `infile2` you can specify the input as an
+#'   object of class `ncdf4` (as returned from `ncdf4::nc_open`).
+#'
 #' @export
 render_plot_hovmoller <- function(outfile = NULL,
                                 fileExtension = ".png",

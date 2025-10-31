@@ -4,7 +4,7 @@
 #' 
 #' @param result.fileslist A data frame containing all meta data (data.frame).
 #' @param ordpath NetCDF file path
-#'@export
+#' @export
 calc_allDatesNc <- function(result.fileslist, ordpath){
   institution <- NULL
   timestep <- NULL

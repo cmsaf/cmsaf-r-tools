@@ -1,5 +1,9 @@
 # Changelog for cmsafops package
 
+## 1.4.3
+- Fix for extract.level(level="all"): derived output files now preserve dirname(outfile) 
+  (no write into working directory). Added checks; tests write only to temporary directories
+  
 ## 1.4.2
 - Bug fix: float precision of daymin and daymax output 
 - Add helper function to keep `sig` variable if existing

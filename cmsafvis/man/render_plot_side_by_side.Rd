@@ -53,8 +53,7 @@ render_plot_side_by_side(
 \arguments{
 \item{plot_rinstat}{Whether to create an R-Instat plot (logical).}
 
-\item{outfile}{Name of the outfile (NULL or character). Should match the fileExtension.
-If NULL is passed a file is created in the R session temporary directory.}
+\item{outfile}{Name of the outfile (NULL or character). Should match the fileExtension.}
 
 \item{fileExtension}{The file extension of the image (character). Has to be one of the following: 'png', 'jpg', 'tif', 'kml', 'pdf'.}
 

@@ -7,8 +7,16 @@
 #' @param dateformat Date format for constructing a date label.
 #' @param sliderx Limiting the time series with a two valued vector for min and max (numeric).
 #' @param slidery Limiting the y axis with a two valued vector for min and max (numeric).
-#' @param checkGroup_type An integer between 1 and 5 indicating group type (numeric).
-#' 1 for Line, 2 for Points, 3 for Line and Points, 4 for steps, 5 for histogram.
+#' @param checkGroup_type Integer in 1-5. See Details. (numeric)
+#'
+#' @details
+#' \describe{
+#'   \item{1}{Line}
+#'   \item{2}{Points}
+#'   \item{3}{Line and Points}
+#'   \item{4}{Steps}
+#'   \item{5}{Histogram}
+#' }
 #' @param text1_1d Title text (character).
 #' @param text2_1d Text to be passed to graphics::mtext (character).
 #' @param col A color chosen via colourpicker::colourInput.

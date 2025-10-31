@@ -34,9 +34,9 @@ If NULL is passed a file is created in the R session temporary directory.}
 
 \item{linesize}{Line width to be used (positive numeric).}
 
-\item{title_data1}{Title of the first data set}
+\item{title_data1}{Character. Title of the first data set.}
 
-\item{title_data2}{Title of the second data set}
+\item{title_data2}{Character. Title of the second data set.}
 
 \item{nc}{Alternatively to \code{infile1} you can specify the input as an
 object of class \code{ncdf4} (as returned from \code{ncdf4::nc_open}).}
@@ -45,5 +45,5 @@ object of class \code{ncdf4} (as returned from \code{ncdf4::nc_open}).}
 object of class \code{ncdf4} (as returned from \code{ncdf4::nc_open}).}
 }
 \description{
-This function renders a hovmoller plot of two variables.
+This function renders a Hovmöller plot of two variables.
 }

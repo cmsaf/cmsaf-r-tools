@@ -1,6 +1,6 @@
 Package: cmsafops
 Title: Tools for CM SAF NetCDF Data
-Version: 1.4.2
+Version: 1.4.3
 Authors@R: 
     c(person(given = "Steffen",
            family = "Kothe",
@@ -35,8 +35,8 @@ NeedsCompilation: no
 Repository: CRAN
 Suggests: cmsaf, cmsafvis, spelling (>= 2.1), testthat (>= 2.3)
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 Encoding: UTF-8
 Language: en-US
-Packaged: 2025-10-20 12:00:00 UTC; SK
+Packaged: 2025-10-27 12:00:00 UTC; SK
 Maintainer: Steffen Kothe <Steffen.Kothe@dwd.de>

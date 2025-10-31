@@ -19,8 +19,7 @@ render_plot_hist_compare(
 )
 }
 \arguments{
-\item{outfile}{Name of the outfile (NULL or character). Should match the fileExtension.
-If NULL is passed a file is created in the R session temporary directory.}
+\item{outfile}{Name of the outfile (NULL or character). Should match the fileExtension.}
 
 \item{fileExtension}{The file extension of the image (character). Has to be one of the following: 'png', 'jpg', 'tif', 'kml', 'pdf'.}
 

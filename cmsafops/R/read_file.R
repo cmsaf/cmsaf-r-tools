@@ -2,12 +2,11 @@
 #'
 #' This function is a helper function called by the CM SAF R Toolbox.
 #' 
-#'@param infile Filename of input NetCDF file. This may include the directory 
-#' (character).
-#'@param var_name Name of NetCDF variable (character).
-#'@param nc Alternatively to \code{infile} you can specify the input as an
+#' @param infile Filename of input NetCDF file. This may include the directory (character).
+#' @param var_name Name of NetCDF variable (character).
+#' @param nc Alternatively to \code{infile} you can specify the input as an
 #'  object of class `ncdf4` (as returned from \code{ncdf4::nc_open}).
-#'@export
+#' @export
 read_file <- function(infile, var_name, nc = NULL) {
   if (!is.null(nc)) id <- nc
   else id <- nc_open(infile)

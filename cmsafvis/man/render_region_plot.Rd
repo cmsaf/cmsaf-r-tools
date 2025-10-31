@@ -92,13 +92,10 @@ plot limits/aspect. Designed for use in the CM SAF R Toolbox.
 The function:
 \enumerate{
 \item Loads the raster brick for the requested variable.
-\item Normalizes longitudes to \link{-180, 180} if input is 0–360 (via \code{raster::rotate}).
+\item Normalizes longitudes to -180 to 180 if input is 0–360 (via \code{raster::rotate}).
 \item Validates/aligns the region geometry (sf -> Spatial, EPSG:4326, transform to raster CRS).
 \item Crops/masks the raster by the region and draws the image with geographic aspect.
 }
 The package \pkg{lwgeom} is used \emph{optionally} (via \code{requireNamespace}) to fix invalid geometries;
 a \code{st_buffer(., 0)} fallback is applied if \pkg{lwgeom} is not available.
-}
-\seealso{
-\code{\link{getColors}}
 }

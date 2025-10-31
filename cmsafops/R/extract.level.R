@@ -80,6 +80,13 @@ extract.level <- function(var, infile, outfile, level = 1, nc34 = 4,
 
   if (is.null(nc)) check_infile(infile)
   check_outfile(outfile)
+  
+  outdir <- dirname(outfile)
+  base   <- tools::file_path_sans_ext(basename(outfile))
+  
+  if (!dir.exists(outdir)) {
+    dir.create(outdir, recursive = TRUE, showWarnings = FALSE)
+  }
 
   outfile <- correct_filename(outfile)
   check_overwrite(outfile, overwrite)
@@ -94,7 +101,7 @@ extract.level <- function(var, infile, outfile, level = 1, nc34 = 4,
   if (!is.null(nc)) nc_in <- nc
   else nc_in <- nc_open(infile)
     # check level
-    if (length(names(nc_in$dim) == 4)) {
+    if (length(nc_in$dim) == 4) {
       start <- c(1, 1, 1, 1)
       count <- c(-1, -1, -1, -1)
       # identify level dimension
@@ -138,7 +145,8 @@ extract.level <- function(var, infile, outfile, level = 1, nc34 = 4,
       outfile1 <- outfile
       data1 <- result1
     } else {
-      outfile1 <- paste0(strsplit(outfile, split = ".nc"), "_level", i, ".nc")
+      outfile1 <- file.path(outdir, sprintf("%s_level%d.nc", base, i))
+      
       if (length(dim(result1)) == 3) {
         data1 <- switch(leveldim,
                result1[i, , ],
@@ -154,12 +162,6 @@ extract.level <- function(var, infile, outfile, level = 1, nc34 = 4,
           )
           }
     }
-
-    # if (length(time1)==1) {
-    #   dummy <- array(NA,dim=c(dim(data1)[1],dim(data1)[2],1))
-    #   dummy[,,1] <- data1
-    #   data1 <- dummy
-    # }
 
     data1[is.na(data1)] <- file_data$variable$attributes$missing_value
     result <- data1

@@ -7,9 +7,9 @@
 get_dimensions(id, dimnames)
 }
 \arguments{
-\item{id}{An object of the class NetCDF4}
+\item{id}{An object of the class 'ncdf4'}
 
-\item{dimnames}{Dimension names (data.frame)}
+\item{dimnames}{Dimension names ('data.frame')}
 }
 \description{
 This function is a helper function called by the CM SAF R Toolbox.

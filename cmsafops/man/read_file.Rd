@@ -7,8 +7,7 @@
 read_file(infile, var_name, nc = NULL)
 }
 \arguments{
-\item{infile}{Filename of input NetCDF file. This may include the directory
-(character).}
+\item{infile}{Filename of input NetCDF file. This may include the directory (character).}
 
 \item{var_name}{Name of NetCDF variable (character).}
 

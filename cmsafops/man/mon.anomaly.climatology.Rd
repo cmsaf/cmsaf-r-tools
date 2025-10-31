@@ -18,14 +18,11 @@ mon.anomaly.climatology(
 \arguments{
 \item{var}{Name of NetCDF variable (character).}
 
-\item{infile}{Filename of input NetCDF file. This may include the directory
-(character).}
+\item{infile}{Filename of input NetCDF file. This may include the directory (character).}
 
-\item{outfile}{Filename of output NetCDF file. This may include the directory
-(character).}
+\item{outfile}{Filename of output NetCDF file. This may include the directory (character).}
 
-\item{climatology_file}{Filename of input NetCDF climatology file. This may include the directory
-(character).}
+\item{climatology_file}{Filename of input NetCDF climatology file. This may include the directory (character).}
 
 \item{nc34}{NetCDF version of output file. If \code{nc34 = 3} the output file will be
 in NetCDFv3 format (numeric). Default output is NetCDFv4.}

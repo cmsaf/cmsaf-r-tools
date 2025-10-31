@@ -14,7 +14,7 @@
 #' @param na_replace Replacing NA values with either 'mean' or 'previous' 
 #'   for monthly mean or previous value, respectively (character).
 #' @param verbose logical; if TRUE, progress messages are shown
-#'@param nc Alternatively to \code{infile} you can specify the input as an
+#' @param nc Alternatively to \code{infile} you can specify the input as an
 #'  object of class `ncdf4` (as returned from \code{ncdf4::nc_open}).
 #'
 #' @export

@@ -6,7 +6,7 @@
 #' @param nc_temp_path Destination NetCDF file path
 #' @param var Name of NetCDF variable (character)
 #' @param filelist NetCDF file names (data.frame)
-#'@export
+#' @export
 check.coordinate.system <- function(nc_path, nc_temp_path, var, filelist){
   
   # if coordinate system have to convert

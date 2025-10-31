@@ -41,8 +41,7 @@ If NULL is passed a file is created in the R session temporary directory.}
 
 \item{slidery}{Limiting the y axis with a two valued vector for min and max (numeric).}
 
-\item{checkGroup_type}{An integer between 1 and 5 indicating group type (numeric).
-1 for Line, 2 for Points, 3 for Line and Points, 4 for steps, 5 for histogram.}
+\item{checkGroup_type}{Integer in 1-5. See Details. (numeric)}
 
 \item{imagewidth}{Width of the image (numeric).}
 
@@ -66,4 +65,13 @@ If NULL is passed a file is created in the R session temporary directory.}
 }
 \description{
 This function provides a time series comparison of two data sets.
+}
+\details{
+\describe{
+\item{1}{Line}
+\item{2}{Points}
+\item{3}{Line and Points}
+\item{4}{Steps}
+\item{5}{Histogram}
+}
 }

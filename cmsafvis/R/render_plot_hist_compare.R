@@ -3,7 +3,6 @@
 #' This function renders a histogram of two variables.
 #' 
 #' @param outfile Name of the outfile (NULL or character). Should match the fileExtension.
-#' If NULL is passed a file is created in the R session temporary directory.
 #' @param fileExtension The file extension of the image (character). Has to be one of the following: 'png', 'jpg', 'tif', 'kml', 'pdf'.
 #' @param visualizeVariables A data frame containing all meta data for the plotting process (data.frame).
 #' @param imagewidth Width of the image (numeric).

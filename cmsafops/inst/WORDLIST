@@ -5,6 +5,7 @@ CLAAS
 CMSAF
 CRU
 Changelog
+dirname
 DJF
 EUMETSAT
 EUMETSATs
@@ -18,6 +19,7 @@ Infile
 Infiles
 Instat
 JJA
+ncdf
 NetCDF
 NetCDFv
 ORD

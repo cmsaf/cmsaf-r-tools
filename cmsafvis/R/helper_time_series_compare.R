@@ -2,8 +2,8 @@
 #'
 #' This function is a helper function for render_plot_time_series_compare.
 #'
-#'@param visualizeVariables A data frame containing all meta data for the plotting process (data.frame).
-#'@export
+#' @param visualizeVariables A data frame containing all meta data for the plotting process (data.frame).
+#' @export
 helper_time_series_compare <- function(visualizeVariables) {
   list_data_station <- list()
   data_nc <- visualizeVariables$data

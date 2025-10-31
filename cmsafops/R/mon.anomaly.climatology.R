@@ -2,20 +2,17 @@
 #'
 #' This function is a helper function (warming stripes plot, trend plot, time series plot) called by the CM SAF R Toolbox.
 #' 
-#'@param var Name of NetCDF variable (character).
-#'@param infile Filename of input NetCDF file. This may include the directory
-#'  (character).
-#'@param outfile Filename of output NetCDF file. This may include the directory
-#'  (character).
-#' @param climatology_file Filename of input NetCDF climatology file. This may include the directory
-#'  (character).
-#'@param nc34 NetCDF version of output file. If \code{nc34 = 3} the output file will be
+#' @param var Name of NetCDF variable (character).
+#' @param infile Filename of input NetCDF file. This may include the directory (character).
+#' @param outfile Filename of output NetCDF file. This may include the directory (character).
+#' @param climatology_file Filename of input NetCDF climatology file. This may include the directory (character).
+#' @param nc34 NetCDF version of output file. If \code{nc34 = 3} the output file will be
 #'  in NetCDFv3 format (numeric). Default output is NetCDFv4.
-#'@param overwrite logical; should existing output file be overwritten?
-#'@param verbose logical; if TRUE, progress messages are shown
-#'@param nc Alternatively to \code{infile} you can specify the input as an
+#' @param overwrite logical; should existing output file be overwritten?
+#' @param verbose logical; if TRUE, progress messages are shown
+#' @param nc Alternatively to \code{infile} you can specify the input as an
 #'  object of class `ncdf4` (as returned from \code{ncdf4::nc_open}).
-#'@export
+#' @export
 mon.anomaly.climatology <- function(var, 
                                     infile,
                                     outfile,

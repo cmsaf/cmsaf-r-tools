@@ -2,11 +2,11 @@
 #'
 #' Given regional bounds image width and height are computed in order to display a region without distortion.
 #'
-#'@param visualizeVariables A dataframe containing $lon and $lat values which will be bounded by lon/lat_bounds (data.frame).
-#'@param lon_bounds Array containing two values for longitude min and max (numeric).
-#'@param lat_bounds Array containing two values for latitude min and max (numeric).
-#'@param image_def Minimal image default size for width and height (numeric).
-#'@param ihsf Image height rescaling factor (numeric).
+#' @param visualizeVariables A dataframe containing $lon and $lat values which will be bounded by lon/lat_bounds (data.frame).
+#' @param lon_bounds Array containing two values for longitude min and max (numeric).
+#' @param lat_bounds Array containing two values for latitude min and max (numeric).
+#' @param image_def Minimal image default size for width and height (numeric).
+#' @param ihsf Image height rescaling factor (numeric).
 #'
 #' @export
 recalculateImageDimensions <- function(visualizeVariables,
