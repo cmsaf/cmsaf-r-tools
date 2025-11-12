@@ -78,6 +78,29 @@ renderString <-
 months_list <- c("January", "February", "March", "April", "May", "June",
                  "July", "August", "September", "October", "November", "December")
 
+na_colors <- c(
+  "White"        = "white",
+  "Light grey"   = "lightgrey",
+  "Grey"         = "grey",
+  "Dark Grey I"  = "grey62",
+  "Dark Grey II" = "grey42",
+  "Pink"         = "pink",
+  "Slate grey"   = "slategray2"
+)
+
+to_hex <- function(cols) {
+  m <- grDevices::col2rgb(cols) # 3 x n
+  apply(m, 2, function(v) grDevices::rgb(v[1], v[2], v[3], maxColorValue = 255))
+}
+na_colors_hex <- to_hex(unname(na_colors))
+
+swatch_html <- sprintf(
+  "<span style='display:inline-block;width:14px;height:14px;
+                margin-right:6px;border:1px solid #aaa;vertical-align:middle;
+                background:%s;'></span>%s",
+  na_colors_hex, names(na_colors)
+)
+
 fluidPage(
   theme = shinythemes::shinytheme("flatly"),
   tags$head(tags$link(rel = "stylesheet", type = "text/css", href = "style.css")),
@@ -675,18 +698,35 @@ fluidPage(
                               step = 1
                             ),
                             # For trend plots show only values which are significant
-                            tags$div(id = "sig_ui",
-                                     shinyjs::hidden(
-                                       tags$div(id = "sig_options",
-                                                checkboxGroupInput("sig_values_to_plot", "Significance levels to hide",
-                                                                   choices = list("Positive (1)" = 1, "Not significant (0)" = 0, "Negative (-1)" = -1),
-                                                                   selected = NULL),
-                                                selectInput("sig_na_color", "Color for masked areas",
-                                                            choices = list("White" = "white", "Light grey" = "lightgrey", "Grey" = "grey", "Dark Grey I" = "grey62",
-                                                                           "Dark Grey II" = "grey42", "Pink" = "pink", "Slate grey" = "slategray2"),
-                                                            selected = "lightgrey")
-                                       )
-                                     )
+                            tags$div(
+                              id = "sig_ui",
+                              shinyjs::hidden(
+                                tags$div(
+                                  id = "sig_options",
+                                  checkboxGroupInput(
+                                    "sig_values_to_plot", "Significance levels to hide",
+                                    choices  = list("Positive (1)" = 1, "Not significant (0)" = 0, "Negative (-1)" = -1),
+                                    selected = NULL
+                                  ),
+                                  shinyWidgets::pickerInput(
+                                    inputId = "sig_na_color",
+                                    label   = "Color for masked areas",
+                                    choices = na_colors,            # R-Namen als values
+                                    selected = "lightgrey",
+                                    width    = "100%",
+                                    options  = list(
+                                      dropupAuto    = TRUE,
+                                      size          = 8,
+                                      liveSearch    = TRUE,
+                                      windowPadding = 10,
+                                      virtualScroll = TRUE
+                                    ),
+                                    choicesOpt = list(content = swatch_html)
+                                  )
+                                  # optional: kleiner Spacer
+                                  # ,div(style = "height: 60px;")
+                                )
+                              )
                             )
                             ),
                    # FOR NOW NOT ALLOWING CHANGES TO WIDTH AND HEIGHT IN APP. (DO IT IN GLOBAL.R)

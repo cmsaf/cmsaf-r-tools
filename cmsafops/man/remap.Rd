@@ -15,7 +15,10 @@ remap(
   overwrite = FALSE,
   verbose = FALSE,
   nc1 = NULL,
-  nc2 = NULL
+  nc2 = NULL,
+  keep_sig = getOption("cmsaf.keep_sig", TRUE),
+  keep_sig_mode = getOption("cmsaf.keep_sig_mode", "nearest"),
+  cast_sig_byte = TRUE
 )
 }
 \arguments{
@@ -53,10 +56,15 @@ object of class \code{ncdf4} (as returned from \code{ncdf4::nc_open}).}
 
 \item{nc2}{Alternatively to \code{infile2} you can specify the input as an
 object of class \code{ncdf4} (as returned from \code{ncdf4::nc_open}).}
+
+\item{keep_sig}{Logical; if TRUE, copy/remap a 'sig' variable (if present in infile1) into the output.}
+
+\item{keep_sig_mode}{One of "nearest" (default), "conservative", "auto", "off"}
+
+\item{cast_sig_byte}{Logical; store 'sig' as byte (-1/0/+1, _FillValue=127) when remapped.}
 }
 \value{
-A NetCDF file including the interpolated data of infile1 on the grid of
-infile2 is written.
+A NetCDF file including the interpolated data of infile1 on the grid of infile2 is written.
 }
 \description{
 The function interpolates the data of infile1 to the grid of infile2. From

@@ -1,5 +1,5 @@
 Package: cmsaf
-Version: 3.6.0
+Version: 3.6.1
 Title: A Toolbox for CM SAF NetCDF Data
 Authors@R: 
     c(person(given = "Steffen",
@@ -52,8 +52,8 @@ Suggests:
     xml2
 NeedsCompilation: no
 Repository: CRAN
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 Encoding: UTF-8
 Language: en-US
-Packaged: 2025-10-20 12:34:00 UTC; SK
+Packaged: 2025-11-12 12:34:00 UTC; SK
 Maintainer: Steffen Kothe <Steffen.Kothe@dwd.de>

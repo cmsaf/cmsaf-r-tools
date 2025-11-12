@@ -32,12 +32,14 @@
 #'  object of class `ncdf4` (as returned from \code{ncdf4::nc_open}).
 #' @param nc2 Alternatively to \code{infile2} you can specify the input as an
 #'  object of class `ncdf4` (as returned from \code{ncdf4::nc_open}).
+#' @param keep_sig Logical; if TRUE, copy/remap a 'sig' variable (if present in infile1) into the output.
+#' @param keep_sig_mode One of "nearest" (default), "conservative", "auto", "off"
+#' @param cast_sig_byte Logical; store 'sig' as byte (-1/0/+1, _FillValue=127) when remapped.
 #'
-#' @return A NetCDF file including the interpolated data of infile1 on the grid of
-#' infile2 is written.
+#' @return A NetCDF file including the interpolated data of infile1 on the grid of infile2 is written.
 #' @export
 #'
-#'@family data manipulation functions
+#' @family data manipulation functions
 #'
 #' @examples
 #'## Create an example NetCDF file with a similar structure as used by CM
@@ -92,7 +94,11 @@
 #'  file.path(tempdir(),"CMSAF_example_file_2.nc"),
 #'  file.path(tempdir(),"CMSAF_example_file_remap.nc")))
 remap <- function(var, infile1, infile2, outfile, method = "nearest", dxy_factor = 1, nc34 = 4,
-                  overwrite = FALSE, verbose = FALSE, nc1 = NULL, nc2 = NULL) {
+                  overwrite = FALSE, verbose = FALSE, nc1 = NULL, nc2 = NULL,
+                  keep_sig = getOption("cmsaf.keep_sig", TRUE),
+                  keep_sig_mode = getOption("cmsaf.keep_sig_mode", "nearest"),
+                  cast_sig_byte = TRUE) {
+  
   calc_time_start <- Sys.time()
 
   check_variable(var)
@@ -103,7 +109,9 @@ remap <- function(var, infile1, infile2, outfile, method = "nearest", dxy_factor
   check_overwrite(outfile, overwrite)
   check_nc_version(nc34)
   stopifnot(method %in% c("bilinear", "conservative", "nearest"))
-
+  
+  keep_sig_mode <- match.arg(keep_sig_mode, c("nearest","conservative","auto","off"))
+  
   ##### extract data from file #####
   file_data1 <- read_file(infile1, var, nc = nc1)
   file_data1$variable$prec <- PRECISIONS_VAR$FLOAT
@@ -324,7 +332,40 @@ remap <- function(var, infile1, infile2, outfile, method = "nearest", dxy_factor
 
   nc_close(nc_out)
   if (is.null(nc1)) nc_close(nc_in)
-
+  
+  # --- keep/remap 'sig' if requested ---------------------------------------
+  if (isTRUE(keep_sig)) {
+    # Default: nearest (weil keep_sig_mode jetzt "nearest" ist, außer der User wählt etwas anderes)
+    sig_mode <- keep_sig_mode
+    if (identical(sig_mode, "auto")) {
+      sig_mode <- switch(method,
+                         conservative = "conservative",
+                         bilinear     = "nearest",   # nie bilinear für Flags
+                         nearest      = "nearest",
+                         "nearest")
+    }
+    
+    .sig_args <- list(
+      infile          = if (!is.null(nc1)) nc1$filename else infile1,
+      outfile         = outfile,
+      result_varname  = var,
+      verbose         = isTRUE(verbose),
+      read_back_check = isTRUE(verbose),
+      compress        = TRUE,
+      deflate_level   = 4,
+      chunks_xy       = 256,
+      cast_byte       = isTRUE(cast_sig_byte)
+    )
+    .fmls <- try(names(formals(keep_sig_alongside)), silent = TRUE)
+    if (!inherits(.fmls, "try-error")) {
+      if ("remap_sig"  %in% .fmls) .sig_args$remap_sig  <- sig_mode
+      if ("dxy_factor" %in% .fmls) .sig_args$dxy_factor <- dxy_factor
+    }
+    res_sig <- try(do.call(keep_sig_alongside, .sig_args), silent = TRUE)
+    if (isTRUE(verbose) && !isTRUE(res_sig)) message("NOTE: 'sig' could not be kept/remapped.")
+  }
+  # -------------------------------------------------------------------------
+  
   calc_time_end <- Sys.time()
   if (verbose) message(get_processing_time_string(calc_time_start, calc_time_end))
 }
