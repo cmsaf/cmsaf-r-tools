@@ -1,12 +1,28 @@
+# Keep the "sig" (trend significance) variable alongside a computed result,
+# optionally remapping it to the result grid, and (optionally) masking "sig"
+# wherever the result data are NA.
+#
+# Typical usage:
+#   keep_sig_alongside(
+#     infile         = "source.nc",         # contains result + sig (or at least sig)
+#     outfile        = "result.nc",         # file you just wrote (result on target grid)
+#     result_varname = "SIS_trend1",        # name of the result variable in outfile
+#     remap_sig      = "auto",              # "auto","conservative","nearest","off"
+#     dxy_factor     = 1,                   # like remap's distance filter (nearest)
+#     cast_byte      = TRUE,                # store sig as int8 (-1/0/1, fill 127)
+#     mask_sig_with_result_na = TRUE        # mask sig where result is NA
+#   )
+#
 keep_sig_alongside <- function(infile, outfile, result_varname,
                                verbose = TRUE,
                                read_back_check = TRUE,
                                compress = TRUE,           # deflate/shuffle if possible
-                               deflate_level = 4,         # 0–9, 2–4 is usually enough
+                               deflate_level = 9,         # 0–9, 2–4 is usually enough
                                chunks_xy = 256,           # chunk size for x/y
                                cast_byte = TRUE,          # store -1/0/1 as int8 when (re)mapping
                                remap_sig = c("auto","conservative","nearest","off"),
-                               dxy_factor = 1) {
+                               dxy_factor = 1,
+                               mask_sig_with_result_na = TRUE) {
   logf <- function(...) if (isTRUE(verbose)) message(sprintf(...))
   remap_sig <- match.arg(remap_sig)
   
@@ -26,7 +42,7 @@ keep_sig_alongside <- function(infile, outfile, result_varname,
   dst <- try(ncdf4::nc_open(outfile, write = TRUE), silent = TRUE)
   if (inherits(dst, "try-error")) { logf("! nc_open(dst) failed"); return(FALSE) }
   
-  # --- helpers -------------------------------------------------------------
+  # -------------------- helpers --------------------
   put_att <- function(var, name, value) {
     if (is.null(value)) return(invisible(TRUE))
     invisible(try(ncdf4::ncatt_put(dst, var, name, value), silent = TRUE))
@@ -37,7 +53,7 @@ keep_sig_alongside <- function(infile, outfile, result_varname,
   }
   `%||%` <- function(x, y) if (is.null(x) || (is.character(x) && !nzchar(x))) y else x
   
-  # try to get 1D lon/lat coordinate vectors (regular grid heuristic)
+  # For regular 1D lon/lat detection (used by remap path)
   get_lonlat_1d <- function(nc) {
     lon_nm <- if (!is.null(nc$dim$lon)) "lon" else if (!is.null(nc$dim$x)) "x" else NULL
     lat_nm <- if (!is.null(nc$dim$lat)) "lat" else if (!is.null(nc$dim$y)) "y" else NULL
@@ -49,19 +65,13 @@ keep_sig_alongside <- function(infile, outfile, result_varname,
     list(reg = TRUE, lon = as.vector(lon), lat = as.vector(lat), lon_name = lon_nm, lat_name = lat_nm)
   }
   
-  # small utility to silence any console output (ncdf4 C layer)
+  # Silence C-layer chatter (used around define-mode ops)
   quiet_nc <- function(expr) {
     tf <- tempfile()
     con <- file(tf, open = "wt")
     on.exit({ try(close(con), TRUE); try(sink(NULL), TRUE); try(sink(type="message", NULL), TRUE) }, add = TRUE)
     sink(con); sink(con, type = "message")
     invisible(try(force(expr), silent = TRUE))
-  }
-  
-  safe_match <- function(x, y) {
-    x <- if (is.null(x)) character() else as.vector(x)
-    y <- if (is.null(y)) character() else as.vector(y)
-    match(x, y)
   }
   
   resolve_dim <- function(nc, nm) {
@@ -71,15 +81,13 @@ keep_sig_alongside <- function(infile, outfile, result_varname,
     nc$dim[[alt]]
   }
   
-  # --- inspect source sig and dims ----------------------------------------
+  # -------------------- inspect source sig --------------------
   sigv   <- src$var[["sig"]]
   dn_src <- vapply(sigv$dim, function(d) d$name, character(1))
   dl_src <- vapply(sigv$dim, function(d) d$len,  integer(1))
   logf("src sig dims (order/len): %s | %s", paste(dn_src, collapse=","), paste(dl_src, collapse=","))
   
-  # destination dims must exist, but may differ in length (remap case)
   dims_dst <- lapply(dn_src, function(nm) resolve_dim(dst, nm))
-  
   if (any(vapply(dims_dst, is.null, logical(1)))) {
     logf("! dst missing dims: %s", paste(dn_src[vapply(dims_dst, is.null, logical(1))], collapse=","))
     return(FALSE)
@@ -87,11 +95,10 @@ keep_sig_alongside <- function(infile, outfile, result_varname,
   dl_dst <- vapply(dims_dst, function(d) d$len, integer(1))
   logf("dst dims (same names, len): %s | %s", paste(dn_src, collapse=","), paste(dl_dst, collapse=","))
   
-  # read source data (preserve singleton time)
   sig_data_src <- try(ncdf4::ncvar_get(src, "sig", raw_datavals = TRUE, collapse_degen = FALSE), silent = TRUE)
   if (inherits(sig_data_src, "try-error")) { logf("! ncvar_get(src,'sig') failed"); return(FALSE) }
   
-  # attributes we may propagate
+  # Attributes to propagate
   units_att <- get_att(src, "sig", "units")       %||% "1"
   long_att  <- get_att(src, "sig", "long_name")   %||% "significance"
   stdname   <- get_att(src, "sig", "standard_name")
@@ -101,7 +108,10 @@ keep_sig_alongside <- function(infile, outfile, result_varname,
   vrange    <- get_att(src, "sig", "valid_range")
   fill_src  <- get_att(src, "sig", "_FillValue") %||% get_att(src, "sig", "missing_value")
   
-  # quick time alignment if only time length differs but coords match
+  # -------------------- copy vs. remap decision --------------------
+  same_xy_shape <- all(dl_dst[1:2] == dl_src[1:2])
+  
+  # quick time alignment helper (if needed)
   align_time_if_needed <- function(data) {
     if (all(dl_dst == dl_src)) return(data)
     t_ix <- which(grepl("time", tolower(dn_src)))
@@ -118,29 +128,21 @@ keep_sig_alongside <- function(infile, outfile, result_varname,
     do.call(`[`, c(list(data), idx, list(drop = FALSE)))
   }
   
-  # --- decide whether to copy or remap ------------------------------------
-  same_xy_shape <- all(dl_dst[1:2] == dl_src[1:2])
   if (same_xy_shape) {
-    # try a plain copy path (fast)
     sig_data <- align_time_if_needed(sig_data_src)
-    # if shapes still mismatch (e.g. re-ordered dims), fall back to remap path
     if (!identical(as.integer(dim(sig_data)), as.integer(dl_dst))) same_xy_shape <- FALSE
   }
   
   need_remap <- !same_xy_shape && remap_sig != "off"
-  # for remap we need lon/lat from both files
+  
+  # Prepare sig_data (copy or remap)
   if (need_remap) {
     src_grid <- get_lonlat_1d(src)
     dst_grid <- get_lonlat_1d(dst)
-    if (!isTRUE(src_grid$reg) || !isTRUE(dst_grid$reg)) {
-      logf("Grid(s) are not regular 1D lon/lat: falling back to nearest.")
-      which_method <- "nearest"
-    } else if (remap_sig == "conservative" || (remap_sig == "auto")) {
-      which_method <- if (isTRUE(src_grid$reg) && isTRUE(dst_grid$reg)) "conservative" else "nearest"
-    } else {
-      which_method <- "nearest"
+    which_method <- "nearest"
+    if (isTRUE(src_grid$reg) && isTRUE(dst_grid$reg) && (remap_sig %in% c("auto","conservative"))) {
+      which_method <- "conservative"
     }
-    
     if (which_method == "conservative" && !requireNamespace("rainfarmr", quietly = TRUE)) {
       logf("! rainfarmr not available → falling back to nearest.")
       which_method <- "nearest"
@@ -150,35 +152,29 @@ keep_sig_alongside <- function(infile, outfile, result_varname,
       return(FALSE)
     }
     
-    # Prepare remap mapping structures
-    ref_lon <- src_grid$lon; ref_lat <- src_grid$lat
-    tgt_lon <- dst_grid$lon; tgt_lat <- dst_grid$lat
+    ref_lon <- if (isTRUE(src_grid$reg)) src_grid$lon else stop("Source grid not regular 1D; cannot remap 'sig' conservatively.")
+    ref_lat <- if (isTRUE(src_grid$reg)) src_grid$lat else stop("Source grid not regular 1D; cannot remap 'sig' conservatively.")
+    tgt_lon <- if (isTRUE(dst_grid$reg)) dst_grid$lon else stop("Target grid not regular 1D; cannot remap 'sig' conservatively.")
+    tgt_lat <- if (isTRUE(dst_grid$reg)) dst_grid$lat else stop("Target grid not regular 1D; cannot remap 'sig' conservatively.")
     
     if (which_method == "nearest") {
       fnn_a <- FNN::get.knnx(ref_lon, tgt_lon, k = 1)
       fnn_b <- FNN::get.knnx(ref_lat, tgt_lat, k = 1)
     }
     
-    # build sig_data with target shape
-    sig_data <- array(NA_integer_, dim = c(length(tgt_lon), length(tgt_lat), dl_dst[which(grepl("time", tolower(dn_src))) %||% 3]))
-    # ensure we have a time loop index
     nt <- if (length(dim(sig_data_src)) >= 3) dim(sig_data_src)[3] else 1L
-    if (length(dim(sig_data)) < 3) dim(sig_data) <- c(dim(sig_data)[1:2], nt)
+    sig_data <- array(NA_integer_, dim = c(length(tgt_lon), length(tgt_lat), nt))
     
-    # remap per time slice
     for (ti in seq_len(nt)) {
-      # read source slice and coerce to numeric
       src_slice <- if (length(dim(sig_data_src)) >= 3) sig_data_src[ , , ti, drop = TRUE] else sig_data_src
-      # treat source fill/NA as NA
       src_slice[!is.finite(src_slice)] <- NA
       if (!is.null(fill_src)) src_slice[src_slice == fill_src] <- NA
       
       if (which_method == "nearest") {
         tmp <- src_slice[fnn_a$nn.index, fnn_b$nn.index]
-        # optional distance mask like in remap(): not strictly needed for sig
+        # Optional distance mask for sig is typically not needed; keep simple
         sig_data[ , , ti] <- tmp
       } else {
-        # conservative vote via area-weighted fraction per class
         one_if <- function(x) { y <- ifelse(x, 1, 0); y[is.na(y)] <- 0; y }
         f_pos <- rainfarmr::remapcon(ref_lon, ref_lat, one_if(src_slice ==  1L), tgt_lon, tgt_lat)
         f_nul <- rainfarmr::remapcon(ref_lon, ref_lat, one_if(src_slice ==  0L), tgt_lon, tgt_lat)
@@ -195,25 +191,28 @@ keep_sig_alongside <- function(infile, outfile, result_varname,
       }
     }
     
-    # when remapped, store as byte with fill 127 by default
     dst_prec <- if (isTRUE(cast_byte)) "byte" else sigv$prec
     fill_att <- if (isTRUE(cast_byte)) 127L else (get_att(src, "sig", "_FillValue") %||% NA_real_)
   } else {
-    # copy path; preserve original precision unless cast_byte requested
+    # direct copy (maybe with time-align)
+    sig_data <- sig_data_src
     dst_prec <- if (isTRUE(cast_byte)) "byte" else sigv$prec
     fill_att <- if (isTRUE(cast_byte)) 127L else (get_att(src, "sig", "_FillValue") %||% NA_real_)
-    # ensure shape matches destination dims order
-    dn_dst <- vapply(dst$var[[result_varname]]$dim, function(d) d$name, character(1))
-    if (!identical(dn_src, dn_dst)) {
-      if (length(dn_src) && length(dn_dst) && all(nzchar(dn_src)) && all(nzchar(dn_dst))) {
-        perm <- safe_match(dn_dst, dn_src)
+    
+    # reorder to destination result var's dim order if needed
+    if (!missing(result_varname) && (result_varname %in% names(dst$var))) {
+      dn_dst_for_res <- vapply(dst$var[[result_varname]]$dim, function(d) d$name, character(1))
+      if (!identical(dn_src, dn_dst_for_res)) {
+        perm <- match(dn_dst_for_res, dn_src)
         if (!any(is.na(perm))) sig_data <- aperm(sig_data, perm)
+        # also update the dimension descriptors to match the new order
+        dims_dst <- lapply(dn_dst_for_res, function(nm) resolve_dim(dst, nm))
+        dl_dst   <- vapply(dims_dst, function(d) d$len, integer(1))
       }
     }
   }
   
-  # --- ensure variable exists in destination and write it ------------------
-  # build chunk sizes
+  # -------------------- ensure 'sig' exists, then write --------------------
   cs <- vapply(dims_dst, function(d) d$len, integer(1))
   cs[grepl("lon|x", names(cs), ignore.case = TRUE)] <- pmin(cs[grepl("lon|x", names(cs), ignore.case = TRUE)], chunks_xy)
   cs[grepl("lat|y", names(cs), ignore.case = TRUE)] <- pmin(cs[grepl("lat|y", names(cs), ignore.case = TRUE)], chunks_xy)
@@ -232,7 +231,6 @@ keep_sig_alongside <- function(infile, outfile, result_varname,
       longname = long_att,
       prec     = dst_prec
     )
-    # Compression/chunking only if supported (NetCDF-4)
     if ("compression" %in% fmls && isTRUE(compress)) args$compression <- deflate_level
     if ("shuffle"     %in% fmls && isTRUE(compress)) args$shuffle     <- TRUE
     if ("chunksizes"  %in% fmls && isTRUE(compress)) args$chunksizes  <- chunksizes
@@ -252,20 +250,85 @@ keep_sig_alongside <- function(infile, outfile, result_varname,
     }
     quiet_nc(ncdf4::nc_enddef(dst))
     
-    # refresh handle for safety
+    # refresh handle after schema change
     try(ncdf4::nc_close(dst), silent = TRUE)
     dst <- try(ncdf4::nc_open(outfile, write = TRUE), silent = TRUE)
     if (inherits(dst, "try-error")) { logf("! re-open dst failed after add"); return(FALSE) }
     logf("...defined 'sig' and refreshed handle.")
   }
   
-  # write data (cast to byte if requested)
+  # -------------------- optional masking by result NA --------------------
+  # If requested, blank out 'sig' wherever the result variable is NA.
+  if (isTRUE(mask_sig_with_result_na) && !missing(result_varname) && (result_varname %in% names(dst$var))) {
+    dn_sig_out <- vapply(dst$var[["sig"]]$dim,    function(d) d$name, character(1))
+    dn_res_out <- vapply(dst$var[[result_varname]]$dim, function(d) d$name, character(1))
+    
+    # Determine time length (if any)
+    t_idx_sig <- grep("time", tolower(dn_sig_out))
+    nt <- if (length(t_idx_sig) == 1) dst$var[["sig"]]$dim[[t_idx_sig]]$len else 1L
+    
+    # Helper to align a result slice to sig-dim order
+    align_res_to_sig <- function(res_slice) {
+      if (identical(dn_res_out, dn_sig_out)) return(res_slice)
+      perm <- match(dn_sig_out, dn_res_out)
+      if (any(is.na(perm))) return(res_slice)
+      aperm(res_slice, perm)
+    }
+    
+    # Decide fill to write for sig
+    fill_to_write <- if (identical(dst_prec, "byte")) 127L else (fill_att %||% NA)
+    
+    for (ti in seq_len(nt)) {
+      # Build start/count for res slice
+      start_res <- rep(1L, length(dn_res_out))
+      count_res <- vapply(dst$var[[result_varname]]$dim, function(d) d$len, integer(1))
+      if (length(t_idx_res <- grep("time", tolower(dn_res_out))) == 1) {
+        start_res[t_idx_res] <- ti
+        count_res[t_idx_res] <- 1L
+      }
+      res_slice <- try(ncdf4::ncvar_get(dst, result_varname,
+                                        start = start_res, count = count_res,
+                                        raw_datavals = FALSE,      # interpret Fill as NA
+                                        collapse_degen = FALSE),
+                       silent = TRUE)
+      if (inherits(res_slice, "try-error")) next
+      res_slice <- align_res_to_sig(res_slice)
+      
+      # Extract the corresponding sig slice from sig_data (already in sig order)
+      start_sig <- rep(1L, length(dn_sig_out))
+      count_sig <- vapply(dst$var[["sig"]]$dim, function(d) d$len, integer(1))
+      if (length(t_idx_sig) == 1) {
+        start_sig[t_idx_sig] <- ti
+        count_sig[t_idx_sig] <- 1L
+      }
+      
+      # Get the current sig slice from the prepared array
+      cur_sig <- if (length(dim(sig_data)) >= 3) sig_data[ , , ti, drop = TRUE] else sig_data
+      
+      # Apply mask: wherever result is NA, set sig to fill/NA
+      mask <- is.na(res_slice)
+      if (any(mask)) {
+        if (is.na(fill_to_write)) cur_sig[mask] <- NA else cur_sig[mask] <- fill_to_write
+      }
+      
+      # Write back into the prepared array
+      if (length(dim(sig_data)) >= 3) {
+        sig_data[ , , ti] <- cur_sig
+      } else {
+        sig_data <- cur_sig
+      }
+    }
+    logf("Applied NA mask of '%s' to 'sig'.", result_varname)
+  }
+  
+  # -------------------- write 'sig' --------------------
   if (identical(dst_prec, "byte")) {
     sig_write <- ifelse(is.na(sig_data), 127L, as.integer(sig_data))
   } else {
     sig_write <- sig_data
     sig_write[is.na(sig_write)] <- fill_att
   }
+  
   wr <- try(ncdf4::ncvar_put(dst, "sig", sig_write,
                              start = rep(1L, length(dl_dst)),
                              count = as.integer(dl_dst)),
@@ -273,7 +336,7 @@ keep_sig_alongside <- function(infile, outfile, result_varname,
   if (inherits(wr, "try-error")) { logf("! ncvar_put(sig) failed: %s", as.character(wr)); return(FALSE) }
   logf("wrote sig_data successfully.")
   
-  # attributes (data mode; ncatt_put handles mode internally)
+  # Attributes (ncatt_put handles define/data mode internally)
   put_att("sig", "units",          units_att)
   put_att("sig", "long_name",      long_att)
   put_att("sig", "standard_name",  stdname)
@@ -287,8 +350,8 @@ keep_sig_alongside <- function(infile, outfile, result_varname,
   }
   if (!is.null(vrange))  put_att("sig", "valid_range",  vrange)
   
-  # ancillary link on the result variable
-  if (result_varname %in% names(dst$var)) {
+  # Ancillary link on the result variable
+  if (!missing(result_varname) && (result_varname %in% names(dst$var))) {
     cur <- try(ncdf4::ncatt_get(dst, result_varname, "ancillary_variables"), silent = TRUE)
     cur <- if (!inherits(cur, "try-error") && isTRUE(cur$hasatt)) cur$value else ""
     new <- if (nzchar(cur) && !grepl("\\bsig\\b", cur)) paste(cur, "sig")
@@ -297,7 +360,7 @@ keep_sig_alongside <- function(infile, outfile, result_varname,
     logf("ancillary_variables(%s): %s", result_varname, new)
   }
   
-  # optional read-back
+  # Optional read-back check
   if (isTRUE(read_back_check)) {
     tmp <- try(ncdf4::nc_open(outfile), silent = TRUE)
     if (!inherits(tmp, "try-error")) {

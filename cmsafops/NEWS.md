@@ -1,7 +1,7 @@
 # Changelog for cmsafops package
 
 ## 1.4.4
-- Include keep_sig in remap to keep `sig` variable if existing 
+- Include keep_sig in remap and arith_wrapper to keep `sig` variable if existing 
 
 ## 1.4.3
 - Fix for extract.level(level="all"): derived output files now preserve dirname(outfile) 

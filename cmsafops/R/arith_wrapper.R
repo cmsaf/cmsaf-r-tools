@@ -217,6 +217,28 @@ arith_wrapper <- function(op, var1, var2, infile1, infile2, outfile, nc34,
   if (is.null(nc1)) nc_close(nc_in1)
   if (is.null(nc2)) nc_close(nc_in2)
   nc_close(nc_out)
+  
+  ## --- carry 'sig' if present in the source file -------------------------
+  # if (isTRUE(getOption("cmsaf.keep_sig", TRUE))) {
+  inpath <- if (is.null(nc1)) infile1 else nc$filename
+  # result variable name is the original var name used to define the output
+  res_var <- file_data1$variable$name
+  
+  options(warn = 1)  # show warnings immediately
+  ok <- keep_sig_alongside(
+    infile  = inpath,
+    outfile = outfile,
+    result_varname = res_var,
+    verbose = FALSE,
+    read_back_check = TRUE,
+    compress = TRUE,          # deflate + shuffle
+    deflate_level = 9,        # 0–9; 2–4 is usually sweet spot
+    chunks_xy = 256,          # good default for 2D slices
+    cast_byte = TRUE          # store -1/0/1 as int8 if applicable
+  )
+  
+  # }
+  ## -----------------------------------------------------------------------
 
   calc_time_end <- Sys.time()
   if (verbose) message(get_processing_time_string(calc_time_start, calc_time_end))
