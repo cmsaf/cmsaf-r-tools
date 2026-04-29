@@ -1,5 +1,9 @@
 # Changelog for cmsafvis package
 
+## 1.4.0
+- Added optional `ticks` and `tick_labels` parameters to the quicklook 
+configuration to allow explicit control of colorbar tick positions and labels.
+
 ## 1.3.0
 - Added option to change textsize in figures via Toolbox (cmsaf R-package)
 - Adapt quicklook config for anomalies
