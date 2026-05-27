@@ -1,10 +1,14 @@
 adjust_location <- function(variable,
                             variable_mask,
                             is_country,
-                            mask_file,
+                            mask_file = NULL,
                             var_file,
                             outfile) {
   if (is_country) {
+    if (is.null(mask_file) || !file.exists(mask_file)) {
+      stop("Country mask file is missing. Please create the country mask before applying it.")
+    }
+    
     tryCatch(
       cmsafops::cmsaf.add(
         var1 = variable,
@@ -18,14 +22,18 @@ adjust_location <- function(variable,
         if (endsWith(mask_file, "_final.nc")) {
           sub <- substr(mask_file, 1, nchar(mask_file) - 9)
           file2 <- paste0(sub, ".nc")
-          stop(paste("An error occured while applying country mask.\nConsider deleting the files", mask_file, "and", file2, "and restarting the process."))
+          stop(paste("An error occurred while applying country mask.\nConsider deleting the files", mask_file, "and", file2, "and restarting the process."))
         } else {
-          stop(paste("An error occured while applying country mask.\nConsider deleting the file", mask_file, "and restarting the process."))
+          stop(paste("An error occurred while applying country mask.\nConsider deleting the file", mask_file, "and restarting the process."))
         }
       })
   } else {
-    if (!file.rename(var_file, outfile)) {
-      stop(paste("Failed to rename", var_file, "to", outfile))
+    if (file.exists(outfile)) {
+      file.remove(outfile)
+    }
+    
+    if (!file.copy(from = var_file, to = outfile, overwrite = TRUE)) {
+      stop(paste("Failed to copy", var_file, "to", outfile))
     }
   }
 }

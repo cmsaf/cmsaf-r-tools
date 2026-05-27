@@ -7,6 +7,7 @@ parse_arguments <- function(plot_type,
                             config = NULL,
                             variable = NULL,
                             accumulate = FALSE,
+                            time_resolution = "auto",
                             mean_value = FALSE,
                             infile = NULL,
                             temp_dir = tempdir(),
@@ -210,6 +211,27 @@ parse_arguments <- function(plot_type,
   }
 
   assert_that(is.flag(accumulate))
+
+  #### time_resolution ####
+  if (missing(time_resolution)) {
+    if (configRead) {
+      time_resolution <- tryCatch(
+        configParams$time_resolution,
+        error = function(cond) {
+          stop(paste0(
+            "Can't read 'time_resolution' from config file: ",
+            normalizePath(config)
+          ))
+        }
+      )
+    }
+    if (!configRead || is.null(time_resolution)) {
+      time_resolution <- "auto"
+    }
+  }
+
+  assert_that(is.string(time_resolution))
+  assert_that(time_resolution %in% c("auto", "daily", "monthly"))
 
   #### show_extreme_climate_years ####
   if (missing(show_extreme_climate_years) && configRead) {
@@ -865,6 +887,7 @@ parse_arguments <- function(plot_type,
   result <- list(
     variable = variable,
     accumulate = accumulate,
+    time_resolution = time_resolution,
     mean_value = mean_value,
     temp_dir = temp_dir,
     infile = infile,

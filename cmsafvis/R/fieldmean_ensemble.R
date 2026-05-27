@@ -16,18 +16,30 @@ fieldmean_ensemble <-
            keep_files,
            nc = NULL) {
 
-	# Get full time range of infile
-	id <- ncdf4::nc_open(infile)
-	  date_time <- as.Date(cmsafops::get_time(ncdf4::ncatt_get(id, "time", "units")$value, ncdf4::ncvar_get(id, "time")))
-	  firstyear <- format(min(date_time), "%Y")
-	  lastyear  <- format(max(date_time), "%Y")
-	  lastyear  <- as.character(as.numeric(lastyear) - 1)
-	ncdf4::nc_close(id)
+    # Keep the original input file separate from the yearly climate files.
+    # The previous implementation overwrote `infile` inside the loop, which
+    # meant that missing yearly files could trigger extract_climate_files()
+    # with a missing file as input.
+    source_infile <- infile
+    
+    # Get full time range of infile.
+    id <- ncdf4::nc_open(source_infile)
+    date_time <- as.Date(cmsafops::get_time(ncdf4::ncatt_get(id, "time", "units")$value,
+                                                     +                                            ncdf4::ncvar_get(id, "time")))
+    firstyear <- as.numeric(format(min(date_time), "%Y"))
+    lastyear <- as.numeric(format(max(date_time), "%Y")) - 1
+    ncdf4::nc_close(id)
+    
+    if (lastyear < firstyear) {
+      stop("The input file does not contain enough years to build an ensemble fieldmean plot.")
+    }
+    
+    comparison_years <- firstyear:lastyear
 
     if (verbose) {
       pb <- progress::progress_bar$new(
         format = "Computing field mean for :year [:bar] :percent eta: :eta",
-		total = length(firstyear:lastyear),
+        total = length(comparison_years),
         clear = TRUE,
         callback = function(x) {message("Computed field means")},
         show_after = 0
@@ -35,9 +47,9 @@ fieldmean_ensemble <-
     }
 
     # Compute field mean for each year.
-	for (climate_year in firstyear:lastyear) {
-      if (verbose) {
-		if (climate_year == firstyear) {
+	   for (climate_year in comparison_years) {
+       if (verbose) {
+		    if (climate_year == firstyear) {
           pb$tick(0, tokens = list(year = climate_year))
         } else {
           pb$tick(tokens = list(year = climate_year))
@@ -66,43 +78,40 @@ fieldmean_ensemble <-
       }
 
       if (!reuse_file) {
-        # These files are created in extractClimaFiles.R
+        # These files are created by extract_climate_files()
         if (accumulate) {
-          infile <- add_ncdf_ext(
+          year_file_name <- add_ncdf_ext(
             construct_filename(
               variable,
               climate_year,
               "timsum"))
         } 
-        # else if (mean_value)
-        # {
-        #   infile <- add_ncdf_ext(
-        #     construct_filename(
-        #       variable,
-        #       climate_year,
-        #       "timmean"))
-        # } 
         else {
-          infile <- add_ncdf_ext(construct_filename(variable,
-                                                    climate_year))
+          year_file_name <- add_ncdf_ext(construct_filename(variable, climate_year))
         }
-        infile <- file.path(climate_dir, infile)
-		
-        # Need to extract yearly files if climate files do not exist
-        if (!file.exists(infile)) {
+        
+        year_infile <- file.path(climate_dir, year_file_name)
+        
+        # Need to extract yearly files if climate files do not exist. Use the
+        # original source input, not the yearly file path that is missing.
+        if (!file.exists(year_infile)) {
           extract_climate_files(
             # Question: How does this work if infile doesn't exist?
             variable = variable,
-            infile = infile,
+            infile = source_infile,
             climate_dir = climate_dir,
 			      climate_year_start = firstyear,
             climate_year_end = lastyear,
             accumulate = accumulate,
-            #mean_value = mean_value,
-            verbose = verbose
+            verbose = verbose,
+			      nc = nc
           )
         }
-
+        
+        if (!file.exists(year_infile)) {
+          stop(paste("Expected yearly climate file was not created:", year_infile))
+        }
+        
         var_file <- add_ncdf_ext(
           construct_filename(
             variable,
@@ -112,7 +121,7 @@ fieldmean_ensemble <-
 
         cmsafops::sellonlatbox(
           var = variable,
-          infile = infile,
+          infile = year_infile,
           outfile = var_file,
           lon1 = lon_min,
           lon2 = lon_max,
@@ -130,9 +139,11 @@ fieldmean_ensemble <-
           var_file = var_file,
           outfile = tmpfile)
 
-        # If not Europe, Africa, Totaldisc, or arbitrary, also remove var_file
-        if (is_country(country_code) && file.exists(var_file)) {
-          file.remove(var_file)
+       # var_file is only an intermediate subset. adjust_location() either
+       # creates a masked file for countries or copies the subset for larger
+       # regions, so var_file can be removed in both cases.
+       if (file.exists(var_file)) {
+         file.remove(var_file)
         }
       }
 
@@ -150,13 +161,13 @@ fieldmean_ensemble <-
         overwrite = TRUE)
 
       # Remove auxiliar file
-      if (!keep_files) {
+      if (!keep_files && file.exists(tmpfile)) {
         file.remove(tmpfile)
       }
     }
     if (verbose) pb$update(1)  # Finishes the progress bar
 
-    # Will return the outfile from the latest year... Not sure if this is what we want...
-    # These files are only used in the plotting process (and the return value of this function call is never caught).
+    # These files are only used in the plotting process and the return value of
+    # this function call is currently not caught by the caller.
     return(outfile)
   }

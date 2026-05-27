@@ -1,5 +1,8 @@
 # Changelog for cmsafvis package
 
+## 1.5.0
+- fieldmean update
+
 ## 1.4.0
 - Added optional `ticks` and `tick_labels` parameters to the quicklook 
 configuration to allow explicit control of colorbar tick positions and labels.
