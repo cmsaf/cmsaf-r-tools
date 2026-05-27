@@ -6,9 +6,9 @@ adjust_location <- function(variable,
                             outfile) {
   if (is_country) {
     if (is.null(mask_file) || !file.exists(mask_file)) {
-      stop("Country mask file is missing. Please create the country mask before applying it.")
+      stop("Country mask file is missing.")
     }
-    
+
     tryCatch(
       cmsafops::cmsaf.add(
         var1 = variable,
@@ -31,9 +31,11 @@ adjust_location <- function(variable,
     if (file.exists(outfile)) {
       file.remove(outfile)
     }
-    
-    if (!file.copy(from = var_file, to = outfile, overwrite = TRUE)) {
+
+    if (!file.copy(var_file, outfile, overwrite = TRUE)) {
       stop(paste("Failed to copy", var_file, "to", outfile))
     }
   }
+
+  invisible(outfile)
 }

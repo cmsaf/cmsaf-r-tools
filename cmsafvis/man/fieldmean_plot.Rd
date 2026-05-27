@@ -8,6 +8,7 @@ fieldmean_plot(
   config = NULL,
   variable = NULL,
   accumulate = FALSE,
+  time_resolution = "auto",
   infile = NULL,
   temp_dir = tempdir(),
   out_dir = getwd(),

@@ -11,32 +11,32 @@ detect_fieldmean_time_resolution <- function(variable,
     nc_in <- ncdf4::nc_open(infile)
     close_nc <- TRUE
   }
-  
+
   if (close_nc) {
     on.exit(ncdf4::nc_close(nc_in), add = TRUE)
   }
-  
+
   time_values <- ncdf4::ncvar_get(nc_in, "time")
   time_units <- ncdf4::ncatt_get(nc_in, "time", "units")$value
   date_time <- as.Date(cmsafops::get_time(time_units, time_values))
-  
+
   if (length(date_time) < 2) {
     stop("Cannot detect the temporal resolution from fewer than two time steps. Please set time_resolution explicitly.")
   }
-  
+
   unique_dates <- sort(unique(date_time))
   median_step_days <- stats::median(as.numeric(diff(unique_dates)))
   steps_per_year <- table(format(date_time, "%Y"))
   max_steps <- max(as.integer(steps_per_year))
-  
+
   if (max_steps <= 12 && median_step_days >= 25) {
     return("monthly")
   }
-  
+
   if (max_steps >= 300 || median_step_days <= 2) {
     return("daily")
   }
-  
+
   stop(
     paste0(
       "Could not detect temporal resolution automatically. ",
@@ -57,7 +57,7 @@ fieldmean_monthly_tempfile <- function(variable, country_code, step, temp_dir) {
     x <- gsub("[^A-Za-z0-9_-]+", "_", x)
     x
   }
-  
+
   file.path(
     temp_dir,
     paste0(
@@ -69,6 +69,38 @@ fieldmean_monthly_tempfile <- function(variable, country_code, step, temp_dir) {
       ".nc"
     )
   )
+}
+
+#' Remove temporary files created by the monthly fieldmean workflow.
+#'
+#' @noRd
+fieldmean_monthly_cleanup <- function(files, verbose = FALSE) {
+  files <- unique(files[!is.na(files) & nzchar(files)])
+  if (length(files) == 0) {
+    return(invisible(NULL))
+  }
+
+  for (file in files) {
+    if (file.exists(file)) {
+      removed <- suppressWarnings(file.remove(file))
+      if (verbose && isTRUE(removed)) {
+        message(paste("Removed temporary monthly fieldmean file:", file))
+      }
+    }
+  }
+
+  invisible(NULL)
+}
+
+#' Stop if an expected monthly workflow file is missing.
+#'
+#' @noRd
+fieldmean_monthly_check_file <- function(file, description) {
+  if (!file.exists(file)) {
+    stop(paste("Expected", description, "file was not created:", file))
+  }
+
+  invisible(file)
 }
 
 #' Create fieldmean plots from monthly data.
@@ -106,7 +138,7 @@ fieldmean_plot_monthly <- function(variable,
   if (!is.null(nc)) {
     stop("Monthly fieldmean plots currently require an input file path. The 'nc' object interface is not supported for this path yet.")
   }
-  
+
   time_series <- prepare_monthly_fieldmean_timeseries(
     variable = variable,
     infile = infile,
@@ -120,7 +152,7 @@ fieldmean_plot_monthly <- function(variable,
     states = states,
     verbose = verbose
   )
-  
+
   plot_data <- build_monthly_fieldmean_plot_data(
     time_series = time_series,
     climate_year_start = climate_year_start,
@@ -129,7 +161,7 @@ fieldmean_plot_monthly <- function(variable,
     end_date = end_date,
     accumulate = accumulate
   )
-  
+
   draw_monthly_fieldmean_plot(
     variable = variable,
     infile = infile,
@@ -147,11 +179,15 @@ fieldmean_plot_monthly <- function(variable,
     dwd_logo = dwd_logo,
     verbose = verbose
   )
-  
+
   invisible(plot_data)
 }
 
 #' Compute one monthly fieldmean time series for the selected region.
+#'
+#' The monthly workflow reduces the spatial input to one fieldmean time series
+#' before any climatological statistics are computed. This keeps the memory
+#' footprint small for larger regions such as Europe or Africa.
 #'
 #' @noRd
 prepare_monthly_fieldmean_timeseries <- function(variable,
@@ -165,17 +201,35 @@ prepare_monthly_fieldmean_timeseries <- function(variable,
                                                  keep_files,
                                                  states,
                                                  verbose) {
+  if (!file.exists(infile)) {
+    stop(paste("Monthly fieldmean input file does not exist:", infile))
+  }
+
+  if (!dir.exists(temp_dir)) {
+    dir.create(temp_dir, recursive = TRUE, showWarnings = FALSE)
+  }
+
+  if (!dir.exists(temp_dir)) {
+    stop(paste("Temporary directory for monthly fieldmean workflow does not exist and could not be created:", temp_dir))
+  }
+
   if (verbose) {
     message("Preparing monthly regional fieldmean time series.")
   }
-  
+
+  files_to_remove <- character(0)
+  if (!keep_files) {
+    on.exit(fieldmean_monthly_cleanup(files_to_remove, verbose = verbose), add = TRUE)
+  }
+
   region_file <- fieldmean_monthly_tempfile(
     variable = variable,
     country_code = country_code,
     step = "region",
     temp_dir = temp_dir
   )
-  
+  files_to_remove <- c(files_to_remove, region_file)
+
   cmsafops::sellonlatbox(
     var = variable,
     infile = infile,
@@ -186,10 +240,10 @@ prepare_monthly_fieldmean_timeseries <- function(variable,
     lat2 = lat_max,
     overwrite = TRUE
   )
-  
+  fieldmean_monthly_check_file(region_file, "regional subset")
+
   fieldmean_input <- region_file
-  files_to_remove <- region_file
-  
+
   if (is_country(country_code)) {
     mask_file <- create_country_mask(
       infile = infile,
@@ -198,7 +252,8 @@ prepare_monthly_fieldmean_timeseries <- function(variable,
       states = states,
       verbose = verbose
     )
-    
+    files_to_remove <- c(files_to_remove, mask_file)
+
     mask_file_final <- create_country_mask_final(
       mask_infile = mask_file,
       temp_dir = temp_dir,
@@ -209,14 +264,16 @@ prepare_monthly_fieldmean_timeseries <- function(variable,
       lat_max = lat_max,
       verbose = verbose
     )
-    
+    files_to_remove <- c(files_to_remove, mask_file_final)
+
     masked_file <- fieldmean_monthly_tempfile(
       variable = variable,
       country_code = country_code,
       step = "mask",
       temp_dir = temp_dir
     )
-    
+    files_to_remove <- c(files_to_remove, masked_file)
+
     adjust_location(
       variable = variable,
       variable_mask = get_country_name(country_code),
@@ -225,42 +282,36 @@ prepare_monthly_fieldmean_timeseries <- function(variable,
       var_file = region_file,
       outfile = masked_file
     )
-    
+    fieldmean_monthly_check_file(masked_file, "masked regional subset")
+
     fieldmean_input <- masked_file
-    files_to_remove <- c(files_to_remove, masked_file)
-    
-    if (!keep_files) {
-      files_to_remove <- c(files_to_remove, mask_file, mask_file_final)
-    }
   }
-  
+
   fieldmean_file <- fieldmean_monthly_tempfile(
     variable = variable,
     country_code = country_code,
     step = "fldmean",
     temp_dir = temp_dir
   )
-  
+  files_to_remove <- c(files_to_remove, fieldmean_file)
+
   cmsafops::fldmean(
     var = variable,
     infile = fieldmean_input,
     outfile = fieldmean_file,
     overwrite = TRUE
   )
-  
+  fieldmean_monthly_check_file(fieldmean_file, "fieldmean time series")
+
   time_series <- read_monthly_fieldmean_timeseries(
     variable = variable,
     infile = fieldmean_file
   )
-  
-  if (!keep_files) {
-    for (file in unique(files_to_remove)) {
-      if (file.exists(file)) {
-        file.remove(file)
-      }
-    }
+
+  if (verbose) {
+    message(paste("Monthly fieldmean time series contains", nrow(time_series), "time steps."))
   }
-  
+
   time_series
 }
 
@@ -269,30 +320,73 @@ prepare_monthly_fieldmean_timeseries <- function(variable,
 #' @noRd
 read_monthly_fieldmean_timeseries <- function(variable,
                                               infile) {
+  if (!file.exists(infile)) {
+    stop(paste("Monthly fieldmean NetCDF file does not exist:", infile))
+  }
+
   nc_in <- ncdf4::nc_open(infile)
   on.exit(ncdf4::nc_close(nc_in), add = TRUE)
-  
+
+  if (!"time" %in% names(nc_in$dim) && !"time" %in% names(nc_in$var)) {
+    stop("Monthly fieldmean NetCDF file does not contain a 'time' coordinate.")
+  }
+
+  if (!variable %in% names(nc_in$var)) {
+    stop(paste("Variable", variable, "was not found in monthly fieldmean NetCDF file."))
+  }
+
   time_values <- ncdf4::ncvar_get(nc_in, "time")
-  time_units <- ncdf4::ncatt_get(nc_in, "time", "units")$value
+  time_units_att <- ncdf4::ncatt_get(nc_in, "time", "units")
+  if (!isTRUE(time_units_att$hasatt)) {
+    stop("Monthly fieldmean NetCDF file does not contain a time units attribute.")
+  }
+  time_units <- time_units_att$value
   date_time <- as.Date(cmsafops::get_time(time_units, time_values))
-  
+
   values <- as.numeric(ncdf4::ncvar_get(nc_in, variable))
-  
-  fill_value <- ncdf4::ncatt_get(nc_in, variable, "_FillValue")$value
-  missing_value <- ncdf4::ncatt_get(nc_in, variable, "missing_value")$value
-  invalid_values <- c(fill_value, missing_value)
-  invalid_values <- invalid_values[!is.null(invalid_values) & !is.na(invalid_values)]
-  
+
+  if (length(values) != length(date_time)) {
+    stop(
+      paste0(
+        "Monthly fieldmean variable length (", length(values),
+        ") does not match time coordinate length (", length(date_time), ")."
+      )
+    )
+  }
+
+  get_optional_att <- function(attname) {
+    att <- ncdf4::ncatt_get(nc_in, variable, attname)
+    if (isTRUE(att$hasatt)) {
+      return(att$value)
+    }
+    NULL
+  }
+
+  invalid_values <- c(
+    get_optional_att("_FillValue"),
+    get_optional_att("missing_value")
+  )
+  invalid_values <- invalid_values[!is.na(invalid_values)]
+
   if (length(invalid_values) > 0) {
     values[values %in% invalid_values] <- NA_real_
   }
-  
-  data.frame(
+
+  time_series <- data.frame(
     date = date_time,
     year = as.integer(format(date_time, "%Y")),
     month = as.integer(format(date_time, "%m")),
     value = values
   )
+  time_series <- time_series[order(time_series$date), ]
+  rownames(time_series) <- NULL
+
+  duplicated_months <- duplicated(time_series[c("year", "month")])
+  if (any(duplicated_months)) {
+    warning("Monthly fieldmean time series contains duplicate year-month combinations. Values will be averaged before plotting.")
+  }
+
+  time_series
 }
 
 #' Build plot-ready monthly matrices and vectors.
@@ -304,49 +398,94 @@ build_monthly_fieldmean_plot_data <- function(time_series,
                                               start_date,
                                               end_date,
                                               accumulate) {
+  start_year <- as.integer(format(start_date, "%Y"))
   current_year <- as.integer(format(end_date, "%Y"))
   start_month <- as.integer(format(start_date, "%m"))
   end_month <- as.integer(format(end_date, "%m"))
-  
-  if (start_month > end_month) {
-    stop("Monthly fieldmean plots require start_date and end_date to be in the same year and in chronological month order.")
+
+  if (start_year != current_year) {
+    stop("Monthly fieldmean plots require start_date and end_date to be in the same year.")
   }
-  
+
+  if (start_month > end_month) {
+    stop("Monthly fieldmean plots require start_date and end_date to be in chronological month order.")
+  }
+
   selected_months <- start_month:end_month
-  
+
   mean_or_na <- function(x) {
     if (all(is.na(x))) {
       return(NA_real_)
     }
     mean(x, na.rm = TRUE)
   }
-  
+
   time_series <- time_series[time_series$month %in% selected_months, ]
+  if (nrow(time_series) == 0) {
+    stop("No monthly fieldmean values are available for the selected month range.")
+  }
+
   monthly_values <- stats::aggregate(
     value ~ year + month,
     data = time_series,
     FUN = mean_or_na,
     na.action = stats::na.pass
   )
-  
+
   years <- sort(unique(monthly_values$year))
   if (!current_year %in% years) {
     stop(paste("The selected current year", current_year, "is not available in the monthly input data."))
   }
-  
+
   value_matrix <- matrix(
     NA_real_,
     nrow = length(years),
     ncol = length(selected_months),
     dimnames = list(as.character(years), sprintf("%02d", selected_months))
   )
-  
+
   for (i in seq_len(nrow(monthly_values))) {
     year_index <- as.character(monthly_values$year[i])
     month_index <- sprintf("%02d", monthly_values$month[i])
     value_matrix[year_index, month_index] <- monthly_values$value[i]
   }
-  
+
+  current_month_missing <- is.na(value_matrix[as.character(current_year), ])
+  if (any(current_month_missing)) {
+    warning(
+      paste(
+        "The selected current year is missing monthly values for month(s):",
+        paste(selected_months[current_month_missing], collapse = ", ")
+      )
+    )
+  }
+
+  climatology_years_requested <- as.character(climate_year_start:climate_year_end)
+  climatology_years <- climatology_years_requested[climatology_years_requested %in% rownames(value_matrix)]
+  missing_climatology_years <- setdiff(climatology_years_requested, climatology_years)
+
+  if (length(missing_climatology_years) > 0) {
+    warning(
+      paste(
+        "Some requested climatology years are not available in the monthly input data:",
+        paste(missing_climatology_years, collapse = ", ")
+      )
+    )
+  }
+
+  if (length(climatology_years) == 0) {
+    stop("None of the requested climatology years are available in the monthly input data.")
+  }
+
+  incomplete_climatology <- rowSums(is.na(value_matrix[climatology_years, , drop = FALSE])) > 0
+  if (any(incomplete_climatology)) {
+    warning("Some climatology years have missing monthly values. The climatology is computed with na.rm = TRUE.")
+  }
+
+  if (accumulate && any(is.na(value_matrix))) {
+    warning("Monthly cumulative fieldmean curves contain missing values. Missing values propagate through the cumulative sums.")
+  }
+
   if (accumulate) {
     value_matrix <- t(apply(value_matrix, 1, function(x) {
       if (all(is.na(x))) {
@@ -356,31 +495,19 @@ build_monthly_fieldmean_plot_data <- function(time_series,
     }))
     colnames(value_matrix) <- sprintf("%02d", selected_months)
   }
-  
-  climatology_years <- as.character(climate_year_start:climate_year_end)
-  climatology_years <- climatology_years[climatology_years %in% rownames(value_matrix)]
-  
-  if (length(climatology_years) == 0) {
-    stop("None of the requested climatology years are available in the monthly input data.")
-  }
-  
+
   current <- as.numeric(value_matrix[as.character(current_year), ])
   climatology <- apply(value_matrix[climatology_years, , drop = FALSE], 2, mean_or_na)
-  
+
   comparison_years <- as.integer(rownames(value_matrix))
   comparison_years <- comparison_years[comparison_years < current_year]
-  
+
   if (length(comparison_years) == 0) {
     stop("The monthly input data do not contain any comparison years before the selected current year.")
   }
-  
+
   ensemble <- value_matrix[as.character(comparison_years), , drop = FALSE]
-  
-  incomplete_climatology <- rowSums(is.na(value_matrix[climatology_years, , drop = FALSE])) > 0
-  if (any(incomplete_climatology)) {
-    warning("Some climatology years have missing monthly values. The climatology is computed with na.rm = TRUE.")
-  }
-  
+
   list(
     current_year = current_year,
     selected_months = selected_months,
@@ -411,15 +538,23 @@ draw_monthly_fieldmean_plot <- function(variable,
                                         freeze_animation,
                                         dwd_logo,
                                         verbose) {
+  if (!output_format %in% c("graphic", "animation")) {
+    stop("Monthly fieldmean plots support output_format = 'graphic' or output_format = 'animation'.")
+  }
+
+  if (verbose) {
+    message("Drawing monthly fieldmean plot.")
+  }
+
   oldpar <- graphics::par(no.readonly = TRUE)
   on.exit(suppressWarnings(graphics::par(oldpar)), add = TRUE)
-  
+
   pic.width <- 500
   pic.height <- 500
   logo.size <- 0.4
   logo.x <- 0.81
   logo.y <- 0.06
-  
+
   logo_cmsaf_path <- system.file(
     "extdata",
     "CMSAF_logo.png",
@@ -429,12 +564,12 @@ draw_monthly_fieldmean_plot <- function(variable,
   logo_cmsaf <- png::readPNG(logo_cmsaf_path)
   dims <- dim(logo_cmsaf)[1:2]
   AR <- dims[1] / dims[2] * pic.width / pic.height
-  
+
   if (dwd_logo) {
     logo.size2 <- 0.1
     logo.x2 <- 0.92
     logo.y2 <- 0.22
-    
+
     logo_dwd_path <- system.file(
       "extdata",
       "DWD_logo.png",
@@ -445,7 +580,7 @@ draw_monthly_fieldmean_plot <- function(variable,
     dims2 <- dim(logo_dwd)[1:2]
     AR2 <- dims2[1] / dims2[2] * pic.width / pic.height
   }
-  
+
   country_name <- get_country_name(country_code, language = language)
   plot_title <- get_title(
     variable = variable,
@@ -454,11 +589,12 @@ draw_monthly_fieldmean_plot <- function(variable,
   )
   plot_title <- paste0(plot_title, " (", country_name, ")")
   ylab_text <- get_axis_label(variable, language)
-  
+
   nc_in <- ncdf4::nc_open(infile)
-  var_unit <- ncdf4::ncatt_get(nc_in, variable, "units")$value
+  var_unit_att <- ncdf4::ncatt_get(nc_in, variable, "units")
+  var_unit <- if (isTRUE(var_unit_att$hasatt)) var_unit_att$value else NA_character_
   ncdf4::nc_close(nc_in)
-  
+
   if (!is.null(var_unit) && !is.na(var_unit) && (grepl("(neu)", var_unit, fixed = TRUE) || grepl("(new)", var_unit, fixed = TRUE))) {
     remove_substrings <- c("\\(neu\\)", "\\(new\\)")
     for (substring in remove_substrings) {
@@ -468,7 +604,7 @@ draw_monthly_fieldmean_plot <- function(variable,
     pattern <- "\\[.*?\\]"
     ylab_text <- gsub(pattern, paste0("[", var_unit, "]"), ylab_text)
   }
-  
+
   legend_text <- paste0(
     get_climatology_word(language),
     " (",
@@ -477,31 +613,31 @@ draw_monthly_fieldmean_plot <- function(variable,
     climate_year_end,
     ")"
   )
-  
+
   x_dates <- as.Date(sprintf(
     "%s-%02d-15",
     plot_data$current_year,
     plot_data$selected_months
   ))
-  
+
   all_values <- c(
     as.numeric(plot_data$ensemble),
     plot_data$climatology,
     plot_data$current
   )
   all_values <- all_values[is.finite(all_values)]
-  
+
   if (length(all_values) == 0) {
     stop("No finite monthly fieldmean values are available for plotting.")
   }
-  
+
   y_min <- min(0, min(all_values, na.rm = TRUE))
   y_max <- max(all_values, na.rm = TRUE)
   limit_y <- signif(ceiling(y_max + abs(y_max) / 15), digits = 2)
   if (limit_y <= y_min) {
     limit_y <- y_min + 1
   }
-  
+
   draw_one_frame <- function(n_current) {
     graphics::par(
       cex = 1.2,
@@ -509,12 +645,12 @@ draw_monthly_fieldmean_plot <- function(variable,
       mar = c(2.2, 4, 3.5, 2),
       mgp = c(3, 1, 0)
     )
-    
+
     current_to_plot <- plot_data$current
     if (n_current < length(current_to_plot)) {
       current_to_plot[(n_current + 1):length(current_to_plot)] <- NA_real_
     }
-    
+
     set_time_locale(language)
     tryCatch(
       graphics::plot(
@@ -531,18 +667,18 @@ draw_monthly_fieldmean_plot <- function(variable,
       ),
       finally = {set_time_locale("")}
     )
-    
+
     year_max_end_value <- -Inf
     year_max_end <- NULL
     year_min_end_value <- Inf
     year_min_end <- NULL
     year_min_pos_value <- Inf
     year_min_pos_index <- max(1, round(length(x_dates) * 0.9))
-    
+
     for (i in seq_len(nrow(plot_data$ensemble))) {
       dat <- as.numeric(plot_data$ensemble[i, ])
       graphics::lines(x_dates, dat, col = "grey", lwd = 2)
-      
+
       final_value <- dat[length(dat)]
       if (!is.na(final_value) && final_value > year_max_end_value) {
         year_max_end_value <- final_value
@@ -556,16 +692,16 @@ draw_monthly_fieldmean_plot <- function(variable,
         year_min_pos_value <- dat[year_min_pos_index]
       }
     }
-    
+
     graphics::lines(x_dates, plot_data$climatology, col = "black", lwd = 5)
     graphics::lines(x_dates, current_to_plot, col = "red", lwd = 5)
-    
+
     if (output_format == "animation") {
       current_label <- format(x_dates[n_current], ifelse(language == "deu", "%m.%Y", "%Y-%m"))
     } else {
       current_label <- as.character(plot_data$current_year)
     }
-    
+
     graphics::legend(
       "topleft",
       legend = c(legend_text, current_label),
@@ -573,7 +709,7 @@ draw_monthly_fieldmean_plot <- function(variable,
       lwd = 4,
       cex = 1.0
     )
-    
+
     graphics::par(usr = c(0, 1, 0, 1))
     graphics::rasterImage(
       logo_cmsaf,
@@ -583,7 +719,7 @@ draw_monthly_fieldmean_plot <- function(variable,
       logo.y + (AR * logo.size / 2),
       interpolate = TRUE
     )
-    
+
     if (dwd_logo) {
       graphics::rasterImage(
         logo_dwd,
@@ -594,7 +730,7 @@ draw_monthly_fieldmean_plot <- function(variable,
         interpolate = TRUE
       )
     }
-    
+
     if (show_extreme_climate_years && plot_data$accumulate) {
       if (!is.null(year_max_end) && is.finite(year_max_end_value)) {
         graphics::text(x = 0.9, y = year_max_end_value / limit_y, labels = year_max_end, col = "darkgrey")
@@ -604,7 +740,7 @@ draw_monthly_fieldmean_plot <- function(variable,
       }
     }
   }
-  
+
   if (output_format == "graphic") {
     picout <- file.path(out_dir, outfile_name)
     grDevices::png(
@@ -616,16 +752,16 @@ draw_monthly_fieldmean_plot <- function(variable,
     )
     draw_one_frame(length(x_dates))
     grDevices::dev.off()
-    
+
     if (verbose) {
       message(paste("Image has been created at", normalizePath(picout)))
     }
   }
-  
+
   if (output_format == "animation") {
     vidout <- file.path(out_dir, outfile_name)
     nr_frozen_frames <- ifelse(freeze_animation, 100, 0)
-    
+
     if (verbose) {
       pb <- progress::progress_bar$new(
         format = "Creating monthly animation [:bar] :percent eta: :eta",
@@ -634,7 +770,7 @@ draw_monthly_fieldmean_plot <- function(variable,
         callback = function(x) {message("Created monthly animation")}
       )
     }
-    
+
     animation::saveVideo(
       video.name = vidout,
       img.name = "Rplot",
@@ -663,16 +799,31 @@ draw_monthly_fieldmean_plot <- function(variable,
       }
     )
   }
-  
+
   if (verbose) {
     final_index <- length(plot_data$current)
     ensemble_final <- plot_data$ensemble[, final_index]
-    year_max <- names(which.max(ensemble_final))
-    year_min <- names(which.min(ensemble_final))
-    
+    valid_ensemble <- is.finite(ensemble_final)
+
+    year_max <- NA_character_
+    year_min <- NA_character_
+    max_value <- NA_real_
+    min_value <- NA_real_
+
+    if (any(valid_ensemble)) {
+      valid_values <- ensemble_final[valid_ensemble]
+      valid_years <- names(ensemble_final)[valid_ensemble]
+      year_max <- valid_years[which.max(valid_values)]
+      year_min <- valid_years[which.min(valid_values)]
+      max_value <- valid_values[which.max(valid_values)]
+      min_value <- valid_values[which.min(valid_values)]
+    } else {
+      warning("No finite ensemble values are available at the final selected month.")
+    }
+
     titles <- c("Analyzed year", "Climatology", "Maximum valued year", "Minimum valued year")
     standout_years <- c(
-      plot_data$current_year,
+      as.character(plot_data$current_year),
       paste(climate_year_start, climate_year_end, sep = " - "),
       year_max,
       year_min
@@ -680,29 +831,33 @@ draw_monthly_fieldmean_plot <- function(variable,
     standout_values <- c(
       plot_data$current[final_index],
       plot_data$climatology[final_index],
-      ensemble_final[year_max],
-      ensemble_final[year_min]
+      max_value,
+      min_value
     )
-    
+
     final_values <- data.frame(
       title = titles,
       years = standout_years,
       value = as.numeric(standout_values)
     )
-    
-    ranking_values <- ranking(
-      out_dir = out_dir,
-      var = variable,
-      country_code = country_code,
-      climate_year_start = min(plot_data$comparison_years),
-      climate_year_end = max(plot_data$comparison_years),
-      doy = final_index,
-      years = plot_data$comparison_years,
-      values = as.numeric(ensemble_final)
-    )
-    
-    calc.parameters.monitor.climate(final_values, ranking_values)
-    
+
+    if (any(valid_ensemble)) {
+      ranking_values <- ranking(
+        out_dir = out_dir,
+        var = variable,
+        country_code = country_code,
+        climate_year_start = min(plot_data$comparison_years[valid_ensemble]),
+        climate_year_end = max(plot_data$comparison_years[valid_ensemble]),
+        doy = final_index,
+        years = plot_data$comparison_years[valid_ensemble],
+        values = as.numeric(ensemble_final[valid_ensemble])
+      )
+
+      calc.parameters.monitor.climate(final_values, ranking_values)
+    } else {
+      print(final_values)
+    }
+
     if (plot_data$accumulate) {
       message("Significant values at the final month:")
       print(final_values)
