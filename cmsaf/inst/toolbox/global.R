@@ -184,6 +184,7 @@ operators[["Correlation and covariance"]] <- c("Correlation in grid space" = "fl
 operators[["Selection"]] <- c("Select region by longitude and latitude" = "sellonlatbox",
                               "Select data at given point" = "selpoint",
                               "Select data at multiple points" = "selpoint.multi",
+                              "Select data for one or more countries" = "selcountry",
                               "Select list of months" = "selmon",
                               "Select time period" = "selperiod",
                               "Select list of years" = "selyear",
@@ -215,6 +216,7 @@ operators[["Compare Data"]] <- c("Difference plot (absolute)" = "cmsaf.diff.abso
 
 operatorOptions <- c("constant",
                      "region",
+                     "country",
                      "point",
                      "useFastTrend",
                      "dateRange",
@@ -249,6 +251,7 @@ operatorOptionsDict[["region"]] <- c("sellonlatbox",
                                      "climatology_map",
                                      "fieldmean_plot",
                                      "fieldmean_and_anomaly_map")
+operatorOptionsDict[["country"]] <- c("selcountry")
 operatorOptionsDict[["point"]] <- c("selpoint", "selpoint.multi")
 operatorOptionsDict[["useFastTrend"]] <- c("trend")
 operatorOptionsDict[["dateRange"]] <- c("selperiod",

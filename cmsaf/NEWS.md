@@ -1,5 +1,8 @@
 # Release notes for cmsaf
 
+## 3.7.0
+- Add `selcounty()` to `selection` operators
+
 ## 3.6.1
 - Improve color choice for significance mask
 

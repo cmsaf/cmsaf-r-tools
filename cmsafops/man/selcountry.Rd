@@ -12,6 +12,7 @@ selcountry(
   crop = TRUE,
   overwrite = FALSE,
   states = FALSE,
+  mask_buffer_cells = 0,
   verbose = FALSE,
   nc = NULL
 )
@@ -35,6 +36,12 @@ box of the selected country or countries before the mask is applied.}
 
 \item{states}{Logical; reserved for future support of sub-national regions.
 Currently only country polygons are supported.}
+
+\item{mask_buffer_cells}{Non-negative integer. If greater than 0, the
+country mask is expanded by the given number of neighbouring grid cells.
+This can reduce visible gaps along country borders for coarse-resolution
+data, but it also includes additional pixels outside the exact country
+polygon.}
 
 \item{verbose}{Logical; if TRUE, progress messages are shown.}
 

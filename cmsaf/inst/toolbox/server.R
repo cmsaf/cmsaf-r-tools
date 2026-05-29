@@ -3097,7 +3097,31 @@ function(input, output, session) {
 
     countries_choosable <- codes[, "iso3c"]
     names(countries_choosable) <- codes[, "country.name.en"]
-
+    
+    country_codes_only <- codes[codes[, "iso3c"] %in% countriesHigh$ISO3.1, ]
+    countries_choosable_only <- country_codes_only[, "iso3c"]
+    names(countries_choosable_only) <- country_codes_only[, "country.name.en"]
+    
+    if (operatorInput_value() == "selcountry") {
+      output$select_country <- renderUI({
+        tagList(
+          selectInput("country",
+                      label = "Please select one or more countries",
+                      choices = countries_choosable_only,
+                      selected = if ("DEU" %in% countries_choosable_only) "DEU" else countries_choosable_only[1],
+                      width = "320px",
+                      multiple = TRUE),
+          selectInput("mask_buffer_cells",
+                      label = "Country mask border tolerance",
+                      choices = c("Exact mask (0 grid cells)" = 0,
+                                  "Include neighbouring border pixels (1 grid cell)" = 1,
+                                  "Wider border pixels (2 grid cells)" = 2),
+                      selected = 0,
+                      width = "320px")
+        )
+      })
+    }
+    
     if (operatorInput_value() %in% climate_analysis_ops) {
       # If the monitor climate name is chosen, we will visualize right away!
       shinyjs::show("ClimateAnalysisMessage")
@@ -3419,6 +3443,8 @@ function(input, output, session) {
         shinyjs::show("times_to_select")
       } else if (currentOperatorOption() == "region") {
         shinyjs::show("region_to_select")
+      } else if (currentOperatorOption() == "country") {
+        shinyjs::show("select_country")
       } else if (currentOperatorOption() == "point.multi") {
         shinyjs::show("points_to_select")
       } else if (currentOperatorOption() == "monitor_climate") {
@@ -3782,6 +3808,17 @@ function(input, output, session) {
                            lat2 = input$latRegionMax,
                            nc34 = input$format,
                            overwrite = TRUE,
+                           nc = nc_object_analyze())
+    } else if (currentOperatorOption() == "country") {
+      argumentList <- list(var = input$usedVariable,
+                           infile = nc_path_analyze(),
+                           outfile = newOutfile,
+                           country_code = input$country,
+                           crop = TRUE,
+                           overwrite = TRUE,
+                           states = FALSE,
+                           mask_buffer_cells = if (is.null(input$mask_buffer_cells)) 0L else as.integer(input$mask_buffer_cells),
+                           verbose = FALSE,
                            nc = nc_object_analyze())
     } else if (currentOperatorOption() == "point") {
       if (operatorInput_value() == "selpoint") {
@@ -4621,6 +4658,8 @@ function(input, output, session) {
                                                                        "lon: [", input$lonRegionMin, " ", input$lonRegionMax, "]"))
         } else if (currentOperatorOption() == "dateRange") {
           newRow <- data.frame(operatorInput_value(), "dateRange", paste0("from ", input$dateRange_analyze[1], " to ", input$dateRange_analyze[1]))
+        } else if (currentOperatorOption() == "country") {
+          newRow <- data.frame(operatorInput_value(), "country", paste(input$country, collapse = ", "))
         } else {
           newRow <- data.frame(operatorInput_value(), currentOperatorOption(), input[[currentOperatorOption()]])
         }
@@ -7616,13 +7655,13 @@ function(input, output, session) {
     cat("The CMSAF Visualizer is part of the CM SAF R Toolbox.", "\n")
     cat("This tool helps you to visualize 1D-timeseries and 2D-maps.", "\n")
     cat("\n")
-    cat("This version ('Funny, It Worked Last Time...') was tested with the cmsaf", "\n")
-    cat("R-package in version 3.6.0.", "\n")
+    cat("This version ('You'll Thank Me Later') was tested with the cmsaf", "\n")
+    cat("R-package in version 3.7.0.", "\n")
     cat("\n")
     cat("Suggestions for improvements and praise for the developers", "\n")
     cat("can be send to contact.cmsaf@dwd.de.", "\n")
     cat("\n")
-    cat("                              - Steffen Kothe - 2025-10-20 -", "\n")
+    cat("                              - Steffen Kothe - 2026-05-29 -", "\n")
     cat("\n")
     cat("\n")
   })

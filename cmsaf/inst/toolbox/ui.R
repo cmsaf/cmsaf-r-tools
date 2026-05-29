@@ -9,7 +9,7 @@
 descriptionString <-
   "
 
-The CM SAF R TOOLBOX 3.6.0 -- 'Funny, It Worked Last Time...'
+The CM SAF R TOOLBOX 3.7.0 -- 'You'll Thank Me Later'
 
 The intention of the CM SAF R Toolbox is to help you using
 CM SAF NetCDF formatted climate data
@@ -25,7 +25,7 @@ right in and analyze or visualize a .nc file.
 Suggestions for improvements and praise for the developers
 can be sent to contact.cmsaf@dwd.de.
 
-- Steffen Kothe - 2025-10-20 -"
+- Steffen Kothe - 2026-05-29 -"
 
 # Variable can be found in global.R
 if (isRunningLocally) {

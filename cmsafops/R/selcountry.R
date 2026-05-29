@@ -17,6 +17,11 @@
 #' @param overwrite Logical; should an existing output file be overwritten?
 #' @param states Logical; reserved for future support of sub-national regions.
 #'   Currently only country polygons are supported.
+#' @param mask_buffer_cells Non-negative integer. If greater than 0, the
+#'   country mask is expanded by the given number of neighbouring grid cells.
+#'   This can reduce visible gaps along country borders for coarse-resolution
+#'   data, but it also includes additional pixels outside the exact country
+#'   polygon.
 #' @param verbose Logical; if TRUE, progress messages are shown.
 #' @param nc Alternatively to `infile` you can specify the input as an object of
 #'   class `ncdf4` as returned from `ncdf4::nc_open`.
@@ -53,6 +58,7 @@ selcountry <- function(var,
                        crop = TRUE,
                        overwrite = FALSE,
                        states = FALSE,
+                       mask_buffer_cells = 0,
                        verbose = FALSE,
                        nc = NULL) {
   check_variable(var)
@@ -86,6 +92,12 @@ selcountry <- function(var,
   if (!is.logical(states) || length(states) != 1) {
     stop("states must be TRUE or FALSE.")
   }
+  if (!is.numeric(mask_buffer_cells) || length(mask_buffer_cells) != 1 ||
+      is.na(mask_buffer_cells) || mask_buffer_cells < 0 ||
+      mask_buffer_cells != floor(mask_buffer_cells)) {
+    stop("mask_buffer_cells must be a non-negative integer.")
+  }
+  mask_buffer_cells <- as.integer(mask_buffer_cells)
   if (!is.logical(verbose) || length(verbose) != 1) {
     stop("verbose must be TRUE or FALSE.")
   }
@@ -156,6 +168,7 @@ selcountry <- function(var,
     infile = work_file,
     outfile = mask_file,
     country_poly = country_poly,
+    mask_buffer_cells = mask_buffer_cells,
     nc = work_nc,
     verbose = verbose
   )
@@ -390,6 +403,51 @@ selcountry_get_bbox <- function(country_poly, grid_info) {
   )
 }
 
+#' Expand a logical mask by neighbouring grid cells
+#'
+#' @noRd
+ selcountry_expand_mask_cells <- function(inside, mask_buffer_cells = 0) {
+  if (!is.matrix(inside) || !is.logical(inside)) {
+    stop("inside must be a logical matrix.")
+  }
+  
+  if (!is.numeric(mask_buffer_cells) || length(mask_buffer_cells) != 1 ||
+      is.na(mask_buffer_cells) || mask_buffer_cells < 0 ||
+      mask_buffer_cells != floor(mask_buffer_cells)) {
+    stop("mask_buffer_cells must be a non-negative integer.")
+  }
+  
+  mask_buffer_cells <- as.integer(mask_buffer_cells)
+  
+  if (mask_buffer_cells == 0 || !any(inside, na.rm = TRUE)) {
+    return(inside)
+  }
+  
+  expanded <- inside
+  nr <- nrow(expanded)
+  nc <- ncol(expanded)
+  
+  for (step in seq_len(mask_buffer_cells)) {
+    current <- expanded
+    padded <- matrix(FALSE, nrow = nr + 2L, ncol = nc + 2L)
+    padded[2L:(nr + 1L), 2L:(nc + 1L)] <- current
+    
+    next_expanded <- current
+    for (di in 0:2) {
+      for (dj in 0:2) {
+        if (di == 1L && dj == 1L) {
+          next
+        }
+        next_expanded <- next_expanded |
+          padded[(1L + di):(nr + di), (1L + dj):(nc + dj)]
+      }
+    }
+    expanded <- next_expanded
+  }
+  
+  expanded
+}
+
 #' Create a one-timestep country mask on the input grid
 #'
 #' The mask contains 0 inside the selected country polygons and missing values
@@ -400,6 +458,7 @@ selcountry_get_bbox <- function(country_poly, grid_info) {
 selcountry_create_mask <- function(infile,
                                    outfile,
                                    country_poly,
+                                   mask_buffer_cells = 0,
                                    nc = NULL,
                                    verbose = TRUE) {
   if (!is.null(nc)) {
@@ -437,7 +496,22 @@ selcountry_create_mask <- function(infile,
   grid <- sp::SpatialGrid(grid_topology, proj4string = sp::proj4string(country_poly))
   
   inside <- !is.na(sp::over(grid, country_poly))
-  mask <- matrix(ifelse(inside, 0, NA_real_), nrow = nx, ncol = ny)
+  inside_matrix <- matrix(inside, nrow = nx, ncol = ny)
+  
+  if (mask_buffer_cells > 0) {
+    if (verbose) {
+      message(
+        "Expanding country mask by ", mask_buffer_cells,
+        " neighbouring grid cell(s)."
+      )
+    }
+    inside_matrix <- selcountry_expand_mask_cells(
+      inside = inside_matrix,
+      mask_buffer_cells = mask_buffer_cells
+    )
+  }
+  
+  mask <- ifelse(inside_matrix, 0, NA_real_)
   
   # Keep the orientation consistent with the existing country-mask workflow.
   mask <- mask[, ny:1]
