@@ -18,6 +18,7 @@
 fieldmean_plot <- function(config = NULL,
                            variable = NULL,
                            accumulate = FALSE,
+                           time_resolution = "auto",
                            infile = NULL,
                            temp_dir = tempdir(),
                            out_dir = getwd(),
@@ -56,6 +57,7 @@ fieldmean_plot <- function(config = NULL,
   # Use parsed arguments
   variable <- parsedArguments$variable
   accumulate <- parsedArguments$accumulate
+  time_resolution <- parsedArguments$time_resolution
   temp_dir <- parsedArguments$temp_dir
   infile <- parsedArguments$infile
   climate_dir <- parsedArguments$climate_dir
@@ -99,6 +101,50 @@ fieldmean_plot <- function(config = NULL,
     )
     infile <- new_infile
   }
+
+  if (time_resolution == "auto") {
+    time_resolution <- detect_fieldmean_time_resolution(
+      variable = variable,
+      infile = infile,
+      nc = nc
+    )
+  }
+
+  if (time_resolution == "monthly") {
+    return(fieldmean_plot_monthly(
+      variable = variable,
+      accumulate = accumulate,
+      infile = infile,
+      temp_dir = temp_dir,
+      out_dir = out_dir,
+      climate_year_start = climate_year_start,
+      climate_year_end = climate_year_end,
+      show_extreme_climate_years = show_extreme_climate_years,
+      start_date = start_date,
+      end_date = end_date,
+      country_code = country_code,
+      lon_min = lon_min,
+      lon_max = lon_max,
+      lat_min = lat_min,
+      lat_max = lat_max,
+      outfile_name = outfile_name,
+      output_format = output_format,
+      animation_pace = animation_pace,
+      freeze_animation = freeze_animation,
+      language = language,
+      keep_files = keep_files,
+      states = states,
+      dwd_logo = dwd_logo,
+      verbose = verbose,
+      nc = nc
+    ))
+  }
+
+  if (time_resolution != "daily") {
+    stop("Unsupported time_resolution. Use 'auto', 'daily', or 'monthly'.")
+  }
+
+  mask_file_final <- NULL
 
     # If user wants to accumulate the file, we do so here.
     finalInfile <- extractFinalOutfile(

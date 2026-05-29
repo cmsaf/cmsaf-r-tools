@@ -65,6 +65,8 @@ parameters can be defined:
 \item legend: TRUE / FALSE
 \item colorscale: character (e.g., Viridis)
 \item unit: character (e.g., Percent / '\%')
+\item ticks: optional numeric vector with colorbar tick positions
+\item tick_labels: optional character vector with labels for ticks
 \item var_name: character (e.g., Percent / '\%')
 \item bluemarble: TRUE / FALSE
 \item mirror_data: TRUE / FALSE / NP / SP

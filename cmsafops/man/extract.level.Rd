@@ -100,6 +100,7 @@ unlink(c(file.path(tempdir(),"CMSAF_example_file.nc"),
 \seealso{
 Other selection and removal functions: 
 \code{\link{extract.period}()},
+\code{\link{selcountry}()},
 \code{\link{sellonlatbox}()},
 \code{\link{selmon}()},
 \code{\link{selperiod}()},

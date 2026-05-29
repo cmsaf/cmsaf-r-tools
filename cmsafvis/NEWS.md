@@ -1,5 +1,14 @@
 # Changelog for cmsafvis package
 
+## 1.5.0
+- Improved `fieldmean_plot()` by adding support for monthly input data, including accumulated 
+monthly fieldmean plots for larger regions such as Europe or Africa, and made the existing 
+daily workflow more robust for non-country regions.
+
+## 1.4.0
+- Added optional `ticks` and `tick_labels` parameters to the quicklook 
+configuration to allow explicit control of colorbar tick positions and labels.
+
 ## 1.3.0
 - Added option to change textsize in figures via Toolbox (cmsaf R-package)
 - Adapt quicklook config for anomalies

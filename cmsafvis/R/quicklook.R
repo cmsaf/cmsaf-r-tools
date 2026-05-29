@@ -32,6 +32,8 @@
 #' \item legend: TRUE / FALSE
 #' \item colorscale: character (e.g., Viridis)
 #' \item unit: character (e.g., Percent / '%')
+#' \item ticks: optional numeric vector with colorbar tick positions
+#' \item tick_labels: optional character vector with labels for ticks
 #' \item var_name: character (e.g., Percent / '%')
 #' \item bluemarble: TRUE / FALSE
 #' \item mirror_data: TRUE / FALSE / NP / SP
@@ -277,6 +279,8 @@ quicklook <- function(config,
   scalef <- c()
   smoothf <- c()
   tick_lab <- vector(mode = "list", length = 1)
+  tick_at <- vector(mode = "list", length = 1)
+  tick_labels <- vector(mode = "list", length = 1)
   remap_q <- FALSE
   triup <- c()
   tridown <- c()
@@ -349,6 +353,53 @@ quicklook <- function(config,
     }
     tick_lab[[i]] <- tl
     
+    # Optional colorbar tick positions for continuous legends.
+    # This is independent of tick_lab, which is used for discrete/class labels.
+    ticks_cfg <- configParams[[file_info$product_type]][[file_info$id]][[vars[i]]]$ticks
+    
+    if (is.null(ticks_cfg)) {
+      tick_at[i] <- list(NULL)
+      tick_labels[i] <- list(NULL)
+    } else {
+      ticks_cfg <- as.numeric(unlist(ticks_cfg))
+      
+      if (any(is.na(ticks_cfg))) {
+        stop("Invalid ticks for variable '", vars[i], "': all ticks must be numeric.")
+      }
+      
+      tick_at[i] <- list(ticks_cfg)
+      
+      tick_labels_cfg <- configParams[[file_info$product_type]][[file_info$id]][[vars[i]]]$tick_labels
+      
+      if (is.null(tick_labels_cfg)) {
+        tick_labels[i] <- list(as.character(ticks_cfg))
+      } else {
+        tick_labels_cfg <- as.character(unlist(tick_labels_cfg))
+        
+        if (length(tick_labels_cfg) != length(ticks_cfg)) {
+          stop(
+            "Invalid tick_labels for variable '", vars[i],
+            "': tick_labels must have the same length as ticks."
+          )
+        }
+        
+        tick_labels[i] <- list(tick_labels_cfg)
+      }
+      
+      if (verbose) {
+        cat(
+          "Using configured colorbar ticks for variable", vars[i], ":",
+          paste(tick_at[[i]], collapse = ", "),
+          "\n"
+        )
+        cat(
+          "Using configured colorbar tick labels for variable", vars[i], ":",
+          paste(tick_labels[[i]], collapse = ", "),
+          "\n"
+        )
+      }
+    }
+    
     smfa <- configParams[[file_info$product_type]][[file_info$id]][[vars[i]]]$smooth_factor
     if (is.null(smfa)) {
       smfa <- NA
@@ -372,6 +423,21 @@ quicklook <- function(config,
       ilogsc <- FALSE
     }
     logsc <- append(logsc, ilogsc)
+        
+    if (!is.null(tick_at[[i]]) && ilogsc && any(tick_at[[i]] <= 0)) {
+      stop(
+        "Invalid ticks for variable '", vars[i],
+        "': ticks must be greater than 0 when log_scale is TRUE."
+       )
+    }
+    
+    if (!is.null(tick_at[[i]]) &&
+        any(tick_at[[i]] < plot_lim[i, 1] | tick_at[[i]] > plot_lim[i, 2])) {
+      warning(
+        "Some ticks for variable '", vars[i],
+        "' are outside the configured plot limits."
+      )
+    }
     
     itriup <- configParams[[file_info$product_type]][[file_info$id]][[vars[i]]]$tri_up
     if (is.null(itriup)) {
@@ -1462,7 +1528,53 @@ quicklook <- function(config,
       }
 
       if (legends[j]) {
+        legend_axis_args <- list(cex.axis = 1 * fsf)
+        
+        if (!is.null(tick_at[[j]])) {
+          legend_axis_args$at <- tick_at[[j]]
+          legend_axis_args$labels <- tick_labels[[j]]
+        }
+        
+        legend_axis_args_log <- list(
+          cex.axis = 1 * fsf,
+          at = log(ticks),
+          labels = ticks_labs
+        )
+        
+        if (!is.null(tick_at[[j]])) {
+          legend_axis_args_log$at <- log(tick_at[[j]])
+          legend_axis_args_log$labels <- tick_labels[[j]]
+        }
+                
         if (logsc[j]) {
+          legend_axis_args_log <- list(
+            cex.axis = 1 * fsf,
+            at = log(ticks),
+            labels = ticks_labs
+          )
+          
+          if (!is.null(tick_at[[j]])) {
+            tick_at_log <- tick_at[[j]]
+            tick_labels_log <- tick_labels[[j]]
+            
+            # Preserve the old behaviour for log scales with lower limit 0:
+            # the function internally replaces 0 by a small positive value
+            # stored in plot_lim[j, 1] and labels this artificial tick as "0".
+            if (logzero) {
+              zero_tick <- plot_lim[j, 1]
+              
+              if (is.finite(zero_tick) &&
+                  zero_tick > 0 &&
+                  !any(abs(tick_at_log - zero_tick) < sqrt(.Machine$double.eps))) {
+                tick_at_log <- c(zero_tick, tick_at_log)
+                tick_labels_log <- c("0", tick_labels_log)
+              }
+            }
+            
+            legend_axis_args_log$at <- log(tick_at_log)
+            legend_axis_args_log$labels <- tick_labels_log
+          }
+          
           if (logzero) {
             raster::plot(raster::calc(plotdata, fun=log) * scalef[j],
                          main = "",
@@ -1479,8 +1591,7 @@ quicklook <- function(config,
                                           font = 2,
                                           line = 0.2,
                                           cex = 1.25*fsf),
-                         axis.args=list(cex.axis = 1*fsf,
-                                        at=log(ticks), labels=ticks_labs),
+                         axis.args = legend_axis_args_log,
                          col = col,
                          add = TRUE)  
             
@@ -1526,8 +1637,7 @@ quicklook <- function(config,
                                                 font = 2, 
                                                 line = 0.2, 
                                                 cex = 1.25*fsf),
-                               axis.args=list(cex.axis = 1*fsf,
-                                              at=log(ticks), labels=ticks_labs),
+                               axis.args = legend_axis_args_log,
                                col = col,
                                add = TRUE)
           }
@@ -1589,7 +1699,7 @@ quicklook <- function(config,
                                              font = 2, 
                                              line = 0.2, 
                                              cex = 1.25*fsf),
-                            axis.args=list(cex.axis = 1*fsf),
+                            axis.args = legend_axis_args,
                             col = col,
                             add = TRUE)
              } else {
@@ -1608,7 +1718,7 @@ quicklook <- function(config,
                                              font = 2, 
                                              line = 0.2, 
                                              cex = 1.25*fsf),
-                            axis.args=list(cex.axis = 1*fsf),
+                            axis.args = legend_axis_args,
                             col = col,
                             add = TRUE)
              }

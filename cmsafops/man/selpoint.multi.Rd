@@ -117,6 +117,7 @@ unlink(c(file.path(tempdir(),"CMSAF_example_file.nc"), file.path(tempdir(),"A.cs
 Other selection and removal functions: 
 \code{\link{extract.level}()},
 \code{\link{extract.period}()},
+\code{\link{selcountry}()},
 \code{\link{sellonlatbox}()},
 \code{\link{selmon}()},
 \code{\link{selperiod}()},

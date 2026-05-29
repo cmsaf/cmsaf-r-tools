@@ -1,5 +1,8 @@
 # Changelog for cmsafops package
 
+## 1.5.0
+- Add `selcountry()` to select one or more countries and write masked result to a new NetCDF file
+
 ## 1.4.4
 - Include keep_sig in remap and arith_wrapper to keep `sig` variable if existing 
 
