@@ -1535,17 +1535,6 @@ quicklook <- function(config,
           legend_axis_args$labels <- tick_labels[[j]]
         }
         
-        legend_axis_args_log <- list(
-          cex.axis = 1 * fsf,
-          at = log(ticks),
-          labels = ticks_labs
-        )
-        
-        if (!is.null(tick_at[[j]])) {
-          legend_axis_args_log$at <- log(tick_at[[j]])
-          legend_axis_args_log$labels <- tick_labels[[j]]
-        }
-                
         if (logsc[j]) {
           legend_axis_args_log <- list(
             cex.axis = 1 * fsf,
