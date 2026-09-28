@@ -14,9 +14,15 @@ get_file_info <- function(filename) {
   ar <- substr(basename(filename), 30, 31)
   id <- paste0(product, interval, stats, version_number, source, level, ar)
   # `naming_conventions` is generated in data-raw/generate_internal_data.R
+    # Monthly climatological means (e.g. SIScm, SDUcm).
+  time_interval <- if (interval == "c" && stats == "m") {
+    "monthly"
+  } else {
+    naming_conventions$TimeInterval[[interval]]
+  }
   return(list(
     product_type = product,
-    time_interval = naming_conventions$TimeInterval[[interval]],
+    time_interval = time_interval,
     statistics = naming_conventions$Statistics[[stats]],
     date_time = as.POSIXct(date_time, format = "%Y%m%d%H%M"),
     version_number = version_number,

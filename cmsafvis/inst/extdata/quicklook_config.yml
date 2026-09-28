@@ -3331,7 +3331,19 @@
         legend: TRUE
         colorscale: Blue-Red 3
         logo: black
+        tri_up: TRUE
+        tri_down: TRUE
         var_name: Anomaly of Sunshine Duration
+    SDUcm0011000101MA:
+      Dataset: SARAH-3 Normals (1991-2020)
+      SDU:
+        limits:
+          min: 0
+          max: 400
+        legend: TRUE
+        colorscale: Plasma
+        logo: black
+        var_name: Sunshine Duration
   SID:
     SIDdm4101000101MA:
       Dataset: ICDR Seviri Radiation
@@ -3565,7 +3577,19 @@
         legend: TRUE
         colorscale: Blue-Red 3
         logo: black
+        tri_up: TRUE
+        tri_down: TRUE
         var_name: Anomaly of Surface Downwelling Shortwave Radiation
+    SIScm0011000101MA:
+      Dataset: SARAH-3 Normals (1991-2020)
+      SIS:
+        limits:
+          min: 0
+          max: 450
+        legend: TRUE
+        colorscale: Viridis
+        logo: black
+        var_name: Surface Incoming Shortwave Radiation
   SNL:
     SNLmm003AVPOS01GL:
       Dataset: CLARA-A3

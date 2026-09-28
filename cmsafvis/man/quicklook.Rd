@@ -15,7 +15,8 @@ quicklook(
   copyright = TRUE,
   bluemarble = FALSE,
   maxpixels = TRUE,
-  verbose = TRUE
+  verbose = TRUE,
+  slot = NULL
 )
 }
 \arguments{
@@ -44,6 +45,10 @@ our website https://www.cmsaf.eu/R_toolbox}
 \item{maxpixels}{logical; use actual number of pixels or default (100000)}
 
 \item{verbose}{logical; if TRUE, progress messages are shown}
+
+\item{slot}{optional positive integer selecting the time step for all plotted
+variables. Overrides the YAML slot. If NULL, the YAML slot is used,
+falling back to time step 1 if neither is specified.}
 }
 \value{
 A jpeg file with the same name as the original NetCDF file.

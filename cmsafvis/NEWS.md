@@ -4,6 +4,9 @@
 - Improved `fieldmean_plot()` by adding support for monthly input data, including accumulated 
 monthly fieldmean plots for larger regions such as Europe or Africa, and made the existing 
 daily workflow more robust for non-country regions.
+- Added support for monthly normals (`cm`) with month names in quicklook titles.
+- Added a `slot` argument to `quicklook()` that overrides the YAML setting, with validation of the selected time step.
+- Fixed slot selection when smoothing, plotting without a logo, restoration of user settings, and reuse of data between variables.
 
 ## 1.4.0
 - Added optional `ticks` and `tick_labels` parameters to the quicklook 

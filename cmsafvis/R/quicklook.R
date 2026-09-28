@@ -18,6 +18,9 @@
 #'   Due to data size this option is not available for the cmsafvis package on CRAN. Please have a look at
 #'   our website https://www.cmsaf.eu/R_toolbox
 #'@param verbose logical; if TRUE, progress messages are shown
+#'@param slot optional positive integer selecting the time step for all plotted
+#'  variables. Overrides the YAML slot. If NULL, the YAML slot is used,
+#'  falling back to time step 1 if neither is specified.
 #'
 #'@return A jpeg file with the same name as the original NetCDF file.
 #'@details This operator can be applied using a configuration file (quicklook_config.yml).
@@ -60,17 +63,20 @@ quicklook <- function(config,
                       copyright = TRUE,
                       bluemarble = FALSE,
                       maxpixels = TRUE,
-                      verbose = TRUE) {
+                      verbose = TRUE,
+                      slot = NULL) {
   # Make sure that any user settings are reset when the function exits
   # This is a requirement by CRAN
   oldpar <- graphics::par(no.readonly = TRUE)
-  # Warning: In graphics::par(oldpar) : par(new) ohne Plot aufgerufen
-  on.exit(suppressWarnings(graphics::par(oldpar)))
-  
-  # temporarly switch warnings off due to unwanted crs warnings
-  oldw <- getOption("warn")
+  on.exit(
+    suppressWarnings(graphics::par(oldpar)),
+    add = TRUE
+  )
+
+  # Temporarily suppress unwanted CRS warnings.
+  original_warn <- getOption("warn")
   options(warn = -1)
-  on.exit(options(warn = oldw))
+  on.exit(options(warn = original_warn), add = TRUE)
   
   ### check parameters ###
   assert_that(is.string(config))
@@ -94,7 +100,34 @@ quicklook <- function(config,
   assert_that(is.flag(logo))
   assert_that(is.flag(copyright))
   assert_that(is.flag(bluemarble))
+
+  validate_slot <- function(x) {
+    if (!is.numeric(x) || length(x) != 1L ||
+        !is.finite(x) || x < 1 || x != floor(x)) {
+      stop("slot must be a single positive integer.", call. = FALSE)
+    }
+    x
+  }
+
+  if (!is.null(slot)) {
+    slot <- validate_slot(slot)
+  }
   
+  normal_month_label <- function(time) {
+    month_number <- as.integer(format(time, "%m"))
+
+    if (length(month_number) != 1L ||
+        is.na(month_number) ||
+        !(month_number %in% 1:12)) {
+      stop(
+        "Cannot determine the month of the selected normal.",
+        call. = FALSE
+      )
+    }
+
+    month.name[month_number]
+  }
+
   ### Define helper function: Code from R-package plotrix 3.8-2
   ### Plotrix: a package in the red light district of R
   ### Author: J. Lemon
@@ -163,8 +196,10 @@ quicklook <- function(config,
   cloud_mask2 <- c("transparent", "transparent", "gray60", "white", "white")
   
   ### Read and format logo ###
-  
-  if (logo) {
+
+  xwidth <- iwidth
+
+  if (logo || copyright) {
     lf_black <- ifelse(logo == "color","CMSAF_NoName_Colour_crop.png","CMSAF_NoName_Black.png")
     
     logo_cmsaf_path_black <- system.file(
@@ -175,7 +210,6 @@ quicklook <- function(config,
     )
     
     # Size and location of the logo
-    xwidth <- iwidth
     logo.scale_black <- 0.3
     
     logo.x <- 0
@@ -305,7 +339,14 @@ quicklook <- function(config,
     limits <- configParams[[file_info$product_type]][[file_info$id]][[vars[i]]]$limits
     plot_lim <- rbind(plot_lim, c(limits$min, limits$max))
     legends <- c(legends, configParams[[file_info$product_type]][[file_info$id]][[vars[i]]]$legend)
-    slots <- c(slots, configParams[[file_info$product_type]][[file_info$id]][[vars[i]]]$slot)
+    selected_slot <- slot
+    if (is.null(selected_slot)) {
+      selected_slot <- configParams[[file_info$product_type]][[file_info$id]][[vars[i]]]$slot
+    }
+    if (is.null(selected_slot)) {
+      selected_slot <- 1L
+    }
+    slots <- c(slots, validate_slot(selected_slot))
     marble <- c(marble, configParams[[file_info$product_type]][[file_info$id]][[vars[i]]]$bluemarble)
     
     isysd <- configParams[[file_info$product_type]][[file_info$id]][[vars[i]]]$sysdata
@@ -452,7 +493,13 @@ quicklook <- function(config,
     tridown <- append(tridown, itridown)
     
     col_from_config <- c(col_from_config, configParams[[file_info$product_type]][[file_info$id]][[vars[i]]]$colorscale)
-    if (logo) logos <- c(logos, configParams[[file_info$product_type]][[file_info$id]][[vars[i]]]$logo)
+    if (logo || copyright) {
+      logo_style <- configParams[[file_info$product_type]][[file_info$id]][[vars[i]]]$logo
+      if (is.null(logo_style)) {
+        logo_style <- "black"
+      }
+      logos <- c(logos, logo_style)
+    }
   }
   
   mirror <- toupper(mirror)
@@ -554,8 +601,18 @@ quicklook <- function(config,
   # get time info for all slots
   date.time   <- ncdf4::ncvar_get(nc,"time") 
   t_unit      <- ncdf4::ncatt_get(nc,"time","units")$value
-  date.time   <- cmsafops::get_time(t_unit,date.time)
-  date.time   <- date.time[slots]
+  date.time <- cmsafops::get_time(t_unit, date.time)
+
+  if (any(slots > length(date.time))) {
+    ncdf4::nc_close(nc)
+    stop(
+      "Selected slot exceeds the number of time steps in ",
+      basename(ref_file), " (", length(date.time), ").",
+      call. = FALSE
+    )
+  }
+
+  date.time <- date.time[slots]
   
   ncdf4::nc_close(nc)
   
@@ -574,7 +631,7 @@ quicklook <- function(config,
           iheight <- round((iwidth/aspect)*0.95)
   }
   
-  if (logo) {
+  if (logo || copyright) {
     if (area == "NP" | area == "SP") {
       AR_color <- dims_color[1] / dims_color[2] * iwidth / iheight
       AR_black <- dims_black[1] / dims_black[2] * iwidth / iheight
@@ -584,7 +641,7 @@ quicklook <- function(config,
     }
   }
   
-  if (logo) {
+  if (logo || copyright) {
     if (area == "GL") {
       logo.scale_black <- 0.18
       logo.height_black <- logo.scale_black * iwidth * dims_black[1] / dims_black[2]
@@ -642,8 +699,6 @@ quicklook <- function(config,
     m <- maps::map("world", plot = FALSE)
   
   ### Plot ###
-  oldw <- getOption("warn")
-  options(warn = -1)
     
     # read data
     stacks <- c()
@@ -677,33 +732,23 @@ quicklook <- function(config,
           cat(paste("Couldn't find aux_file: ", auxf, sep=""), "\n")
       }
     }
-    
-  options(warn = oldw)
-    
+
     # filename and timestamp for title
     filename <- unlist(strsplit(basename(plotfile[1]), "\\."))
     outfile <- file.path(outpath, paste0(filename[1], ".jpg"))
-    fi <- get_file_info(filename[1])
-    if (is.null(slots[1])) {
-      file_time <- fi$date_time
-      slot_i <- 1
-    } else {
-      file_time <- date.time[1]
-      slot_i <- slots[1]
-    }
-    
-    if (file_info$time_interval == "instantaneous" | file_info$time_interval == "hourly")
+    slot_i <- slots[1]
+    file_time <- date.time[1]
+
+    is_monthly_normal <- substr(basename(ref_file), 4, 5) == "cm"
+
+    if (is_monthly_normal) {
+      file_time <- normal_month_label(file_time)
+    } else if (isTRUE(file_info$statistics == "mean diurnal cycle")) {
+      file_time <- format(file_time, "%Y-%m %R")
+    } else if (isTRUE(file_info$time_interval == "monthly")) {
+      file_time <- format(file_time, "%Y-%m")
+    } else if (isTRUE(file_info$time_interval %in% c("instantaneous", "hourly"))) {
       file_time <- format(file_time, "%Y-%m-%d %R")
-    if (!is.null(file_info$statistics)){
-      if (file_info$statistics == "mean diurnal cycle")
-        file_time <- format(file_time, "%Y-%m %R")
-    }
-    if (!is.null(file_info$statistics)){
-      if (file_info$time_interval == "monthly" & file_info$statistics != "mean diurnal cycle")
-        file_time <- format(file_time, "%Y-%m")
-    } else {
-      if (file_info$time_interval == "monthly")
-        file_time <- format(file_time, "%Y-%m")
     }
     
     if (is_multiplot && (ceiling(nvars/ceiling(sqrt(nvars))) == 1)) {
@@ -750,7 +795,13 @@ quicklook <- function(config,
     }
 
     for (j in seq_along(vars)) {
-      
+      slot_i <- slots[j]
+
+      # Prevent reuse of data from the previous variable.
+      if (exists("datav", inherits = FALSE)) {
+        rm(datav)
+      }
+
       # Check bluemarble 
       if (bluemarbles[j] && !file_info$grid == "Satellite projection MSG/Seviri") {
         stop("Bluemarble plotting is only available for CLAAS data on MSG grid.")
@@ -1329,7 +1380,9 @@ quicklook <- function(config,
               
             } else {
                 if (!is.na(smoothf[j])) {
-                  smp <- raster::disaggregate(stacks[[j]], fact = smoothf[j], method='bilinear')
+                  smp <- raster::disaggregate(
+                    plotdata, fact = smoothf[j], method = "bilinear"
+                  )
                   
                   raster::image(smp,
                                 main = "",
